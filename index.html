@@ -689,7 +689,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.38</span>
+    <span class="build">pAdo · v2.39</span>
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
       <option value="">🪜 단계 선택 안 함</option>
@@ -2629,6 +2629,7 @@ const MODE_TUTOR = `\n\n[튜터 모드] 이 대화창은 네(pAdo)가 수업을 
   ④ 맞으면 왜 맞는지 짚고 다음 조각으로. 틀리면 아깝게 틀린 지점을 짚고 그 자리에서 다시 시도하게 한다 — 정답을 대신 말해버리지 않는다.
 - 문장이 완성되면: 완성 문장 + 발음 표기([발음 표기] 형식) + 구문 풀이("/" 덩어리 + 아랫줄 한국어 짝)로 정리하고, 방금 배운 조립 규칙을 한 줄로 복습한 뒤 "다음 문장으로 갈까요?"라고 묻는다.
 - 학습자가 도중에 자유 질문을 하면 튜터답게 답하고, 끝나면 진행 중이던 문장으로 자연스럽게 돌아온다.
+- [힌트 버튼] "힌트 조금만 요청."이 오면: 정답으로 곧장 가지 말고 **직전 힌트보다 딱 한 걸음만 가까운** 힌트 하나를 준다. 힌트 사다리: ① 뜻·역할 귀띔("~라는 느낌의 단어예요") → ② 첫 글자("r로 시작해요") → ③ 글자 수·발음 근사 → ④ 보기 3개. 이미 준 힌트는 반복하지 않고 다음 칸으로 간다. "보기 3개 요청."이 오면 사다리를 건너뛰고 곧장 보기 3개(정답 1 + 헷갈리기 쉬운 오답 2)를 준다.
 ⚠️ 단계 우선 규칙: [학습 단계]가 바뀌면 다음 문장부터 그 단계에 맞춘다 — 대화 이력의 옛 난이도보다 현재 단계가 항상 우선.`;
 
 function getSystemBase(){
@@ -3194,7 +3195,7 @@ function renderChatLog(){
     log.innerHTML = chat.map((m, i) => m.role === "user"
       ? `<div class="msg user" data-mi="${i}"><div class="md">${mdRender(m.content)}</div>${m.img ? imgHTML(m.img) : ""}</div>`
       : `<div class="msg ai${m.collapsed ? " collapsed" : ""}" data-mi="${i}"><button class="fold" data-fold="${i}" type="button" title="답변 접기/펼치기">${m.collapsed ? "▸" : "▾"}</button><div class="md">${mdRender(m.content)}</div>${m.grade ? gradeCardHTML(m.grade) : ""}</div>`).join("")
-      + ansRowHTML(threadCfg(state.activeWord), chat); // 작문 연습이면 답안 버튼 상주 (v2.0)
+      + ansRowHTML(threadCfg(state.activeWord), chat) + tutorRowHTML(threadCfg(state.activeWord), chat); // 작문=답안 버튼(v2.0) / 튜터=힌트 버튼(v2.39) 상주
   }
   log.scrollTop = log.scrollHeight;
   document.getElementById("chat-sub").textContent = state.activeWord === GLOBAL_ID
@@ -3363,6 +3364,12 @@ function ansRowHTML(cfg, msgs){
     ? `<div class="ans-row"><button class="ans-btn" data-ans type="button">📝 영어 답안 확인하기</button><span class="ans-hint">먼저 스스로 영어로 써 보고, 준비되면 눌러요</span></div>`
     : `<div class="ans-row"><button class="ans-btn" data-ans type="button">📖 한국어 풀이 확인하기</button><span class="ans-hint">먼저 스스로 한국어로 옮겨 보고, 준비되면 눌러요</span></div>`;
 }
+/* v2.39: 튜터 힌트 버튼 — "모르겠다" 타이핑 없이 버튼으로 한 단계씩 힌트에 다가간다 (사용자 요청) */
+function tutorRowHTML(cfg, msgs){
+  if(!cfg || cfg.mode !== "tutor") return "";
+  if(!msgs || !msgs.length || msgs[msgs.length - 1].role !== "assistant" || msgs[msgs.length - 1].partial) return ""; // 답변 완료 후에만
+  return `<div class="ans-row"><button class="ans-btn" data-tu-hint type="button">💡 힌트 조금만</button><button class="ans-btn" data-tu-opts type="button">🔢 보기 3개</button><span class="ans-hint">막히면 눌러요 — 누를 때마다 한 걸음씩 가까워져요</span></div>`;
+}
 
 /* 질문 목록 — 우측 파도 탭 리스트의 중앙판. 긴 대화에서 내 질문 위치로 바로 점프 */
 let qIndexOpen = false;
@@ -3392,6 +3399,8 @@ document.getElementById("q-index").addEventListener("click", (e) => {
 /* 답변 접기 — 부분 갱신(해당 말풍선만), 전체 재렌더 없음 → 입력·스크롤 보존 */
 document.getElementById("chat-log").addEventListener("click", (e) => {
   if(e.target.closest("[data-ans]")){ sendMainText(threadCfg(state.activeWord).mode === "ew" ? "풀이 보기" : "답안 보기"); return; } // 📝답안/📖풀이 확인 (작문 연습)
+  if(e.target.closest("[data-tu-hint]")){ sendMainText("힌트 조금만 요청."); return; } // v2.39: 튜터 — 한 걸음 힌트
+  if(e.target.closest("[data-tu-opts]")){ sendMainText("보기 3개 요청."); return; } // v2.39: 튜터 — 보기로 바로
   const fu = e.target.closest("[data-fu]");
   if(fu){ // v2.34: 첨삭 후속 버튼(중앙) — 그 모범 문장을 인용한 파도를 우측에 만들어/재사용해 거기서 답변
     const host = fu.closest(".msg[data-mi]");
@@ -3791,7 +3800,7 @@ function renderRightBody(){
       </div>
       <div class="wave-log" id="wave-log">${(wv.msgs.map((m, i) => m.role === "user"
         ? `<div class="msg user" data-mi="${i}"><div class="md">${mdRender(m.content)}</div></div>`
-        : `<div class="msg ai" data-mi="${i}"><div class="md">${mdRender(m.content)}</div>${m.grade ? gradeCardHTML(m.grade) : ""}</div>`).join("") + ansRowHTML(threadCfg(wv.id), wv.msgs)) || '<div class="msg notice">떼어온 부분에 대해 무엇이든 물어보세요</div>'}</div>
+        : `<div class="msg ai" data-mi="${i}"><div class="md">${mdRender(m.content)}</div>${m.grade ? gradeCardHTML(m.grade) : ""}</div>`).join("") + ansRowHTML(threadCfg(wv.id), wv.msgs) + tutorRowHTML(threadCfg(wv.id), wv.msgs)) || '<div class="msg notice">떼어온 부분에 대해 무엇이든 물어보세요</div>'}</div>
       <div class="chat-input">
         <textarea id="wave-input" rows="1" placeholder="이 부분에 대해 더 묻기... (Shift+Enter = 줄바꿈)">${esc(getDraft(wv.id))}</textarea>
         <button class="send-btn${ACTIVE.has(wv.msgs) ? " stop" : ""}" id="wave-send" type="button"${ACTIVE.has(wv.msgs) ? ' title="답변 중단"' : ""}>${ACTIVE.has(wv.msgs) ? "⏹" : "↑"}</button>
@@ -4490,6 +4499,11 @@ document.querySelector("aside.right").addEventListener("click", (e) => {
   if(e.target.closest("[data-ans]")){ // 📝답안/📖풀이 확인 (작문 연습 파도)
     const ansWv = state.waves.find(x => x.id === state.activeRight);
     if(ansWv) sendWaveText(ansWv, threadCfg(ansWv.id).mode === "ew" ? "풀이 보기" : "답안 보기");
+    return;
+  }
+  if(e.target.closest("[data-tu-hint]") || e.target.closest("[data-tu-opts]")){ // v2.39: 튜터 힌트 버튼 (파도)
+    const tuWv = state.waves.find(x => x.id === state.activeRight);
+    if(tuWv) sendWaveText(tuWv, e.target.closest("[data-tu-hint]") ? "힌트 조금만 요청." : "보기 3개 요청.");
     return;
   }
   const fuW = e.target.closest("[data-fu]");
