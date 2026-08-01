@@ -689,7 +689,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.37</span>
+    <span class="build">pAdo · v2.38</span>
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
       <option value="">🪜 단계 선택 안 함</option>
@@ -2522,7 +2522,8 @@ function levelOptions(sel){
 function modeOptions(sel){
   return `<option value=""${!sel ? " selected" : ""}>💬 질의응답</option>` +
     `<option value="we"${sel === "we" ? " selected" : ""}>✍️ 작문 한→영</option>` +
-    `<option value="ew"${sel === "ew" ? " selected" : ""}>✍️ 작문 영→한</option>`;
+    `<option value="ew"${sel === "ew" ? " selected" : ""}>✍️ 작문 영→한</option>` +
+    `<option value="tutor"${sel === "tutor" ? " selected" : ""}>🎓 튜터</option>`; // v2.38
 }
 function curWord(){ if(state.activeWord === GLOBAL_ID) return GLOBAL_WORD; return WORDS.find(w => w.base === state.activeWord) || WORDS[0]; }
 /* v2.20: 총괄 스레드의 표시명 = "파도 Chat" — 내부 저장값(sourceWord·saved src)은 "총괄" 유지(레거시 데이터 호환) */
@@ -2618,6 +2619,17 @@ tag는 반드시 다음 중에서만 고른다: 의미 왜곡, 누락, 과잉 �
 - 연습 문제가 아닌 영어 문장을 직접 가져와 물으면, 그 문장을 ① 자연스러운 한국어로 옮기고 ② 직역과의 차이를 짧게 보여준다.
 ⚠️ 단계 우선 규칙: [학습 단계]가 바뀌면 이전 문제들의 난이도와 무관하게 현재 단계에 맞춰 출제한다 — 시스템의 현재 단계가 대화 이력보다 항상 우선. 문제 제목에 현재 단계를 그대로 표기하라(예: "중급 번역 문제").
 원문에 없는 정보를 더하지 않는다.`;
+/* v2.38: 🎓 튜터 모드 — 튜터가 먼저 말을 걸고 한 걸음씩 리드하는 작문 튜토리얼 (사용자 설계) */
+const MODE_TUTOR = `\n\n[튜터 모드] 이 대화창은 네(pAdo)가 수업을 이끄는 튜터 모드다 — 질문을 기다리지 말고 네가 리드한다.
+- 수업 시작 요청이 오면: 한 줄로 반갑게 인사하고 곧바로 첫 문장을 제시한다. 이 대화창의 단어를 활용하는 한국어 문장 1개를 학습 단계에 맞춰 만든다(예: "그 영화는 내가 지금까지 본 최고의 영화예요."). 정답 영어를 절대 먼저 주지 않는다.
+- 한 걸음씩 튜토리얼로 이끈다 — 한 턴에 한 걸음만, 짧게 묻고 학습자가 답하게 한다:
+  ① "영어로 옮길 때 첫 번째 덩어리는 뭘까요?"처럼 다음 한 조각만 유추하게 한다.
+  ② 학습자가 한 덩어리(구문)를 완성하면: 왜 그렇게 조립되는지(품사 순서·조립 규칙 — [문장 해부]의 규칙을 재사용)를 2~3줄로 설명하고, 도움이 될 요령이 있으면 "💡 꿀팁:" 한 줄로 붙인다.
+  ③ 학습자가 막히면(모르겠다고 하거나 같은 지점에서 2번 틀리면) 보기를 준다: 그럴듯한 보기 3개(정답 1 + 한국인이 헷갈리기 쉬운 오답 2)를 번호로 제시하고 고르게 한 뒤, 고른 다음에 왜 그런지 설명한다.
+  ④ 맞으면 왜 맞는지 짚고 다음 조각으로. 틀리면 아깝게 틀린 지점을 짚고 그 자리에서 다시 시도하게 한다 — 정답을 대신 말해버리지 않는다.
+- 문장이 완성되면: 완성 문장 + 발음 표기([발음 표기] 형식) + 구문 풀이("/" 덩어리 + 아랫줄 한국어 짝)로 정리하고, 방금 배운 조립 규칙을 한 줄로 복습한 뒤 "다음 문장으로 갈까요?"라고 묻는다.
+- 학습자가 도중에 자유 질문을 하면 튜터답게 답하고, 끝나면 진행 중이던 문장으로 자연스럽게 돌아온다.
+⚠️ 단계 우선 규칙: [학습 단계]가 바뀌면 다음 문장부터 그 단계에 맞춘다 — 대화 이력의 옛 난이도보다 현재 단계가 항상 우선.`;
 
 function getSystemBase(){
   // 사용자가 ⚙️ 설정에서 지시문을 수정했으면 그것을, 아니면 기본 PHILO
@@ -2646,6 +2658,7 @@ function buildSystem(extra, cfg, ownerKey){
     else base += `\n\n[학습 단계 — 미선택] 사용자의 질문 어휘·수준에서 눈높이를 추정해 맞추고, 확신이 없으면 쉬운 쪽으로. ${OVERLOAD_RULE}`;
     if(cfg && cfg.mode === "we") base += MODE_WE;
     else if(cfg && cfg.mode === "ew") base += MODE_EW;
+    else if(cfg && cfg.mode === "tutor") base += MODE_TUTOR; // v2.38
     const rules = localStorage.getItem(LS_RULES);
     if(rules && rules.trim()) base += `\n\n[전체 지침 — 총괄 대화에서 사용자와 합의된 것. 반드시 따를 것]\n${rules.trim()}`;
   } catch(e){}
@@ -3194,12 +3207,13 @@ function renderChatLog(){
     else {
       const mode = threadCfg(state.activeWord).mode;
       qaRow.innerHTML = `
+        <button class="qa-btn" data-qa="tutor" type="button" title="튜터가 먼저 말을 걸어요 — 문장을 제시하고 첫 단어부터 한 걸음씩 작문을 이끌어 줘요">🎓 튜터</button>
         <button class="qa-btn" data-qa="we" type="button" title="이 대화를 작문 연습(한→영)으로 바꾸고 바로 문제 하나를 받아요">✍️ 작문 한→영</button>
         <button class="qa-btn" data-qa="ew" type="button" title="이 대화를 번역 연습(영→한)으로 바꾸고 바로 문제 하나를 받아요">✍️ 작문 영→한</button>
         <button class="qa-btn" data-qa="analyze" type="button" title="이 단어를 표준 형식으로 깊게 분석">🔍 단어 분석</button>
         <button class="qa-btn" data-qa="quiz" type="button" title="지금 단계에 맞는 퀴즈 한 문제">🧩 단어 퀴즈</button>
         <button class="qa-btn" data-qa="examples" type="button" title="결이 서로 다른 예문 3개 만들기">✏️ 예문 만들기</button>` +
-        (mode ? `<button class="qa-btn back" data-qa="qa" type="button" title="작문 모드를 끄고 기본 질의응답으로 돌아가요">💬 질의응답으로</button>` : "");
+        (mode ? `<button class="qa-btn back" data-qa="qa" type="button" title="작문·튜터 모드를 끄고 기본 질의응답으로 돌아가요">💬 질의응답으로</button>` : "");
     }
   }
   // v2.3: 이 스레드의 입력 초안 복원 — 단어·탭을 오가도 쓰던 질문 유지 (클로드 코드처럼)
@@ -4750,6 +4764,12 @@ document.getElementById("qa-row").addEventListener("click", (e) => {
     return;
   }
   const lvl = effLevel(state.activeWord); // v2.9: 발화에 현재 단계를 직접 실음 — 대화 이력의 옛 난이도 관성 차단 (사용자 신고: 중급으로 바꿔도 초급 출제)
+  if(act === "tutor"){ // v2.38: 튜터가 먼저 말을 걸도록 — 모드 설정 + 시작 요청 발화
+    setThreadCfg(state.activeWord, { mode: "tutor" });
+    renderChatLog(); // 모드 셀렉트·복귀 버튼 즉시 반영
+    sendMainText(`"${w.base}" 단어 튜터 수업 시작 요청${lvl ? ` — ${lvl} 단계 기준` : ""}.`);
+    return;
+  }
   if(act === "we"){
     setThreadCfg(state.activeWord, { mode: "we" });
     renderChatLog(); // 모드 셀렉트·복귀 버튼 즉시 반영
