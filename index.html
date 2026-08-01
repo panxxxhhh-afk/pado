@@ -540,6 +540,16 @@
   .rv-title{font-weight:700;font-size:.85rem;}
   .rv-why{font-size:.78rem;color:var(--text-mute);margin-top:2px;line-height:1.5;}
   .rv-drill{font-size:.8rem;margin-top:4px;background:var(--card-soft);border-radius:7px;padding:5px 9px;line-height:1.5;}
+  /* v2.37: 간격 반복(오늘의 복습) — 1·3·10·30·90일 재출현 */
+  .srs-box{border:1px solid var(--accent);border-radius:10px;padding:9px 12px;margin-bottom:12px;background:var(--card);}
+  .srs-head{font-size:.78rem;color:var(--text-mute);margin-bottom:6px;line-height:1.5;}
+  .srs-item{padding:7px 0;border-top:1px dashed var(--border-soft);}
+  .srs-stage{font-weight:400;font-size:.7rem;color:var(--text-mute);background:var(--card-soft);border-radius:999px;padding:1px 8px;margin-left:6px;white-space:nowrap;}
+  .srs-acts{display:flex;gap:6px;margin-top:6px;}
+  .srs-acts button{border:1px solid var(--border);border-radius:8px;background:var(--card-soft);padding:4px 10px;font-size:.75rem;cursor:pointer;color:var(--text);}
+  .srs-acts button:hover{border-color:var(--accent);}
+  .srs-empty{font-size:.78rem;color:var(--text-mute);padding:4px 0;}
+  #btn-review .srs-due{background:var(--accent);color:#fff;border-radius:999px;padding:0 6px;font-size:.68rem;margin-left:2px;}
   .qh-date{font-weight:700;font-size:.85rem;margin:12px 0 6px;color:var(--accent-deep);}
   .qh-item{display:flex;gap:8px;align-items:baseline;width:100%;text-align:left;background:var(--card);border:1px solid var(--border-soft);border-radius:9px;padding:7px 10px;margin-bottom:5px;cursor:pointer;color:var(--text);font-size:.82rem;}
   .qh-item:hover{border-color:var(--accent);}
@@ -679,7 +689,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.36</span>
+    <span class="build">pAdo · v2.37</span>
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
       <option value="">🪜 단계 선택 안 함</option>
@@ -2381,14 +2391,14 @@ function gradeCardHTML(g){
   return `<div class="grade-card ${g.pass ? "ok" : "bad"}"><span class="g-score">${g.score}점</span><span class="g-verdict">${g.pass ? "통과" : "다시 도전"}</span>${(g.errors || []).map(e => `<span class="g-tag" title="${esc(e.note || "")}">${esc(e.tag)}</span>`).join("")}${g.fix ? `<div class="g-fix">✓ ${esc(g.fix)}</div>` : ""}${fu}</div>`;
 }
 /* v2.31→v2.34: 후속 질문 문구 6종 — 채점 카드의 모범 문장(fix)을 대상으로 */
-const FU_NEXT = "다음 — 방금 대화를 이어서 계속 진행해줘.";
+const FU_NEXT = "다음 — 방금 대화에 이어서 계속 진행 요청."; // v2.37: 버튼 발화는 "~요청" 명사형 통일
 function fuText(kind, fix){
-  if(kind === "sim") return `"${fix}" — 이 문장의 유사 표현 2개를 보여줘. 각각 원문과의 결(뉘앙스) 차이를 한 줄씩.`;
-  if(kind === "syn") return `이 문장을 구문 분석해줘: "${fix}"`;
-  if(kind === "pron") return `"${fix}" — 이 문장의 발음을 알려줘: IPA와 한글+스펠링 혼용 표기, 끊어 읽기(호흡 단위)와 강세 포인트까지.`;
-  if(kind === "situ") return `"${fix}" — 이 문장은 어떤 상황에서 쓰는지 알려줘: 장소, 말하는 사람과 듣는 사람, 분위기(격식/친근)를 구체적인 장면 예시 1~2개와 함께.`;
-  if(kind === "cont") return `"${fix}" — 이 문장으로 대화를 시작해서, 자연스럽게 이어질 다음 대화 한 턴(상대의 응답 + 나의 대답)을 영어와 한국어 뜻으로 보여줘. 내가 "다음"이라고 하면 한 턴씩 계속 이어가자.`;
-  return `"${fix}" — 이 문장의 전체 답안을 섹션별로 정리해줘: ## 유사 표현(2개 + 결 차이) ## 구문 분석 ## 발음(IPA + 한글·스펠링 혼용 표기·끊어 읽기) ## 어떤 상황(장소·사람·분위기) ## 대화 잇기(자연스러운 다음 대화 한 턴).`;
+  if(kind === "sim") return `"${fix}" — 유사 표현 2개 요청. 각각 원문과의 결(뉘앙스) 차이를 한 줄씩.`;
+  if(kind === "syn") return `구문 분석 요청: "${fix}"`;
+  if(kind === "pron") return `"${fix}" — 발음 표기 요청: IPA와 한글+스펠링 혼용 표기, 끊어 읽기(호흡 단위)와 강세 포인트까지.`;
+  if(kind === "situ") return `"${fix}" — 쓰임 상황 요청: 장소, 말하는 사람과 듣는 사람, 분위기(격식/친근)를 구체적인 장면 예시 1~2개와 함께.`;
+  if(kind === "cont") return `"${fix}" — 대화 잇기 요청: 이 문장으로 대화를 시작해서, 자연스럽게 이어질 다음 대화 한 턴(상대의 응답 + 나의 대답)을 영어와 한국어 뜻으로. 내가 "다음"이라고 하면 한 턴씩 계속.`;
+  return `"${fix}" — 전체 답안 요청: ## 유사 표현(2개 + 결 차이) ## 구문 분석 ## 발음(IPA + 한글·스펠링 혼용 표기·끊어 읽기) ## 어떤 상황(장소·사람·분위기) ## 대화 잇기(자연스러운 다음 대화 한 턴).`;
 }
 /* v2.34: 같은 파도에서 대화 잇기를 또 누르면 "다음"으로 이어진다 (다음>다음> 체인) */
 function fuTextFor(kind, fix, wv){
@@ -2541,6 +2551,16 @@ const PHILO = `너는 "pAdo"(파도 엔진) — 한국인 영어 학습자를 �
   · 붙어 읽는 연음은 붙여 쓴다: check it out = 체끼라웃
   발음은 실제로 일어나는 현상만(연음·약화·강세) — 지어내지 않는다. 한글 표기는 근사치임을 전제한다.
 - 문장을 통째로 분석해 달라는 요청에는 4단으로: ① 구문 분석(구성|내용|역할 표) ② 끊어 읽기(호흡 단위 + 발음 팁) ③ 핵심 단어 풀이(품사별 변형·파생어·뉘앙스) ④ 유사 문장 2개(각각 구조 분석 + 원문과의 뉘앙스 차이).
+- [문장 해부 — 영어 문장이 입력되면] 사용자가 영어 문장을 보내면(질문이 따로 붙지 않아도) 그 문장을 낱낱이 뜯어 "이 문장이 왜 이렇게 조립됐는지"를 보여준다:
+  ① 왼쪽→오른쪽 사슬: 단어마다 품사와 역할을 나온 순서대로. 예: I(주어·대명사) → completely(부사 — 동사를 꾸미러 동사 앞에 옴) → forgot(동사 forget의 과거형) → about(전치사) → the deadline(관사 the="너도 알지?" 신호 + 명사).
+  ② 그 지점에서 작동한 조립 규칙을 그때그때 콜아웃한다. 자주 짚는 규칙(정확한 것만 — 학습자가 잘못 아는 통념은 바로잡아 준다):
+  · 전치사(about·for·of·in 등) 뒤에 동사가 오면 -ing(동명사) 모양이 된다.
+  · to부정사의 to 뒤에는 반드시 동사원형. (단, 전치사로 쓰인 to 뒤에는 -ing: look forward to meeting — 헷갈리기 쉬운 지점)
+  · 한 절에는 시제를 가진 동사가 하나 — 동사를 겹치려면 조동사+원형(can go), be+~ing(is going), have+과거분사(has gone)처럼 정해진 짝으로만.
+  · 주어와 동사는 수를 맞춘다(He runs / They run).
+  · "동사 앞에는 다른 말이 못 온다"는 틀린 통념 — 주어가 되는 명사·대명사는 원래 동사 앞에 오고(The dog runs), completely forgot처럼 부사도, will go처럼 조동사도 동사 앞에 온다. 다만 형용사는 동사를 직접 꾸미지 못한다(꾸미는 건 부사의 일).
+  ③ 구문 풀이("/" 덩어리 + 아랫줄 한국어 짝)와 전체 뜻으로 마무리.
+  작문 채점 중이면 채점 형식이 우선 — 해부는 답안 설명의 구문 풀이 안에서 간단히 녹인다.
 - [기초 개념 물음] "동사가 뭐예요?" 같은 기초 개념 질문에는 짧은 정의 + 쉬운 예로 답한다 (아래 정의를 기준으로, 단계가 낮을수록 더 짧게):
   · 동사 = 행동(움직임·상태)을 뜻하는 단어. 예: do=하다 · walk=걷다 · run=달리다 · drive=운전하다 · find=찾다 · have=가지다
   · 과거형 = 동사가 지나간 일을 나타내도록 모양이 바뀐 것 — 규칙적으로 바뀌기도(walk→walked), 통째로 달라지기도(go→went), 안 바뀌기도(put→put) 한다
@@ -4012,8 +4032,8 @@ document.getElementById("comment-chip").addEventListener("click", () => {
 /* v2.28: 둘러싼 문장을 함께 실어 "문장을 이해한 다음" 뜻을 찾게 — 짧은 선택(단어·구)일 때만 (문장 통째 선택엔 불필요) */
 function meaningAskText(){
   const ctx = chipCtx && chipCtx.length > chipText.length + 4
-    ? `\n(이 부분이 쓰인 문장: "${chipCtx.slice(0, 140)}" — 이 문장 안에서 쓰인 의미로 해석해줘)` : "";
-  return `이 부분 뜻을 해석해줘: "${chipText}"` + ctx;
+    ? `\n(이 부분이 쓰인 문장: "${chipCtx.slice(0, 140)}" — 이 문장 안에서 쓰인 의미로)` : "";
+  return `뜻 해석 요청: "${chipText}"` + ctx;
 }
 document.getElementById("meaning-chip-center").addEventListener("click", () => {
   selChips.style.display = "none";
@@ -4242,6 +4262,7 @@ ${mat}`;
     if(!pts.length) throw new Error("복습 포인트가 비어 있어요. 다시 시도해 주세요.");
     REVIEW.unshift({ id: "rv" + Date.now(), ts: Date.now(), points: pts.slice(0, 10).map(p => ({ title: String(p.title).slice(0, 120), why: String(p.why || "").slice(0, 240), drill: String(p.drill || "").slice(0, 240) })) });
     saveReview();
+    srsAdd(REVIEW[0].points, REVIEW[0].ts); // v2.37: 새 복습 포인트는 간격 반복 큐에도 — 내일부터 재출현
     renderReview();
   } catch(err){
     console.error("[review]", err);
@@ -4253,23 +4274,97 @@ ${mat}`;
     if(b2){ b2.disabled = false; b2.textContent = "✨ 복습 포인트 만들기"; }
   }
 }
+/* ── v2.37: 간격 반복 학습(SRS) — 복습 포인트가 1·3·10·30·90일 간격으로 다시 나타난다 ──
+   에빙하우스 망각 곡선 대응: 잊을 만할 때 다시 꺼내야 장기 기억으로 넘어간다(사용자 설계 간격 그대로).
+   "외웠어요" = 다음 간격으로 전진, "내일 다시" = 처음 간격부터(라이트너 방식). 반복 단위 = 복습 포인트. */
+const LS_SRS = "we_srs_v1";
+const SRS_INTERVALS = [1, 3, 10, 30, 90]; // 일 — 1일차에 공부 → 다음 날 → 3일 → 10일 → 한 달 → 석 달
+const SRS_LABELS = ["1일", "3일", "10일", "한 달", "석 달"];
+const DAY_MS = 24 * 60 * 60 * 1000;
+let SRS = [];
+try { SRS = JSON.parse(localStorage.getItem(LS_SRS) || "[]") || []; } catch(e){ SRS = []; }
+function saveSrs(){ try { while(SRS.length > 200) SRS.pop(); localStorage.setItem(LS_SRS, JSON.stringify(SRS)); } catch(e){} }
+let _srsSeq = SRS.reduce((m, it) => { const n = parseInt(String(it.id).split("_")[1], 10); return isNaN(n) ? m : Math.max(m, n + 1); }, 0); // v2.37 QA: id 유일성 — 호출별 지역 카운터는 같은 ms 다중 세트 백필에서 충돌(sr<ms>_0 중복 → 클릭이 엉뚱한 항목 갱신)
+function srsAdd(points, ts){
+  let added = 0;
+  (points || []).forEach(p => {
+    const t = String((p && p.title) || "").trim();
+    if(!t || SRS.some(it => it.title === t)) return; // 같은 제목은 한 번만 — 재출현은 간격이 담당
+    added++;
+    SRS.unshift({ id: "sr" + Date.now() + "_" + (_srsSeq++), title: t.slice(0, 120), why: String(p.why || "").slice(0, 240), drill: String(p.drill || "").slice(0, 240), ts: ts || Date.now(), stage: 0, next: (ts || Date.now()) + SRS_INTERVALS[0] * DAY_MS, hist: [] });
+  });
+  if(added){ saveSrs(); updateSrsBadge(); }
+  return added;
+}
+function srsBackfill(){ // 절대 규칙 #5: 새 스키마 = 기존 데이터 백필 — 이미 만든 복습 세트를 만든 날짜 기준으로 등록
+  REVIEW.slice().reverse().forEach(set => srsAdd(set.points, set.ts)); // 오래된 세트부터 — 최신 포인트가 큐 앞에 오게
+}
+(function(){ let has = null; try { has = localStorage.getItem(LS_SRS); } catch(e){ return; } if(has === null) srsBackfill(); })();
+function srsDue(){
+  const end = new Date(); end.setHours(23, 59, 59, 999);
+  return SRS.filter(it => it.next && it.next <= end.getTime());
+}
+function updateSrsBadge(){
+  const b = document.getElementById("btn-review");
+  if(!b) return;
+  const n = srsDue().length;
+  b.innerHTML = n ? `🧠 복습 <b class="srs-due">${n}</b>` : "🧠 복습";
+}
+function srsSectionHTML(){
+  const due = srsDue();
+  const head = `<div class="srs-head"><b>🔔 오늘의 복습</b> — 잊을 만할 때 다시 만나야 오래 남아요: 1일 → 3일 → 10일 → 한 달 → 석 달 간격으로 다시 나타나요</div>`;
+  if(!due.length) return `<div class="srs-box">${head}<div class="srs-empty">오늘 볼 항목이 없어요 — 복습 포인트를 만들면 다음 날부터 여기 나타나요.</div></div>`;
+  return `<div class="srs-box">${head}${due.map(it => `<div class="srs-item" data-srs="${esc(it.id)}">
+    <div class="rv-title">${esc(it.title)}<span class="srs-stage">${it.stage + 1}번째 만남</span></div>
+    ${it.why ? `<div class="rv-why">${esc(it.why)}</div>` : ""}
+    ${it.drill ? `<div class="rv-drill">✏️ ${esc(it.drill)}</div>` : ""}
+    <div class="srs-acts"><button type="button" data-srs-ok="${esc(it.id)}">✅ 외웠어요</button><button type="button" data-srs-again="${esc(it.id)}">🔁 내일 다시</button></div>
+  </div>`).join("")}</div>`;
+}
 function renderReview(){
   const body = document.getElementById("review-body");
   if(!body) return;
-  if(!REVIEW.length){ body.innerHTML = '<div class="qh-empty">아직 만든 복습 포인트가 없어요 — 위 버튼을 누르면 지금까지의 대화·연습 기록·저장 항목을 모아 복습 카드로 정리해 드려요.</div>'; return; }
-  body.innerHTML = REVIEW.map(set => `<div class="rv-set" data-rv="${esc(set.id)}">
+  const sets = !REVIEW.length
+    ? '<div class="qh-empty">아직 만든 복습 포인트가 없어요 — 위 버튼을 누르면 지금까지의 대화·연습 기록·저장 항목을 모아 복습 카드로 정리해 드려요.</div>'
+    : REVIEW.map(set => `<div class="rv-set" data-rv="${esc(set.id)}">
     <div class="rv-head"><b>${new Date(set.ts).toLocaleDateString("ko-KR")} ${new Date(set.ts).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}</b> · ${set.points.length}개<button class="sv-del" type="button" data-rv-del="${esc(set.id)}">삭제</button></div>
     ${set.points.map((p, i) => `<div class="rv-point"><div class="rv-title">${i + 1}. ${esc(p.title)}</div>${p.why ? `<div class="rv-why">${esc(p.why)}</div>` : ""}${p.drill ? `<div class="rv-drill">✏️ ${esc(p.drill)}</div>` : ""}</div>`).join("")}
   </div>`).join("");
+  body.innerHTML = srsSectionHTML() + sets;
 }
 document.getElementById("review-body").addEventListener("click", (e) => {
+  const ok = e.target.closest("[data-srs-ok]"), ag = e.target.closest("[data-srs-again]");
+  if(ok || ag){ // v2.37: 오늘의 복습 — 성공=간격 전진, 실패=처음부터
+    const it = SRS.find(x => x.id === (ok ? ok.dataset.srsOk : ag.dataset.srsAgain));
+    if(!it) return;
+    (it.hist = it.hist || []).push({ ts: Date.now(), ok: !!ok }); // 점수제·평가 인용용 이력
+    if(ok){
+      it.stage += 1;
+      if(it.stage >= SRS_INTERVALS.length){ it.next = null; weToast("🎉 완주 — 석 달 뒤까지 다 기억했어요. 장기 기억에 안착!"); }
+      else { it.next = Date.now() + SRS_INTERVALS[it.stage] * DAY_MS; weToast(`좋아요 — 다음은 ${SRS_LABELS[it.stage]} 뒤에 다시 나와요`); }
+    } else {
+      it.stage = 0; it.next = Date.now() + DAY_MS;
+      weToast("괜찮아요 — 내일 다시 만나요");
+    }
+    saveSrs(); updateSrsBadge(); renderReview();
+    return;
+  }
   const del = e.target.closest("[data-rv-del]");
   if(!del) return;
-  if(!confirm("이 복습 세트를 지울까요? (언제든 다시 만들 수 있어요)")) return;
+  if(!confirm("이 복습 세트를 지울까요? (언제든 다시 만들 수 있어요 — 간격 반복 큐의 항목은 유지돼요)")) return;
   REVIEW = REVIEW.filter(s => s.id !== del.dataset.rvDel);
   saveReview();
   renderReview();
 });
+// 하루 1회 — 오늘 볼 복습이 있으면 앱을 켠 김에 알려준다 (복습 루프 진입)
+(function srsNudge(){
+  const n = srsDue().length;
+  if(!n) return;
+  const today = new Date().toDateString();
+  try { if(localStorage.getItem("we_srs_nudge") === today) return; localStorage.setItem("we_srs_nudge", today); } catch(e){}
+  weToast(`🔔 오늘의 복습 ${n}개가 기다리고 있어요 — 🧠 복습에서 확인`);
+})();
+updateSrsBadge();
 function openReview(){ renderReview(); document.getElementById("review-modal").classList.add("show"); modalBg.classList.add("show"); }
 function closeReview(){ document.getElementById("review-modal").classList.remove("show"); modalBg.classList.remove("show"); }
 document.getElementById("btn-review").addEventListener("click", openReview);
@@ -4305,7 +4400,7 @@ function autoSyntaxAnalyze(wv){
   const fmt = isWord ? WORD_FORMAT : SYNTAX_FORMAT;
   const extra = fmt + `\n\n[분석 대상 — 사용자가 드래그한 부분]\n"""${wv.quote}"""`
     + (wv.ctx ? `\n[이 부분이 쓰인 문장]\n"""${wv.ctx}"""\n문장을 먼저 이해하고, 그 안에서 쓰인 의미를 기준으로 분석하라 — 같은 글자의 다른 뜻(동음이의어)으로 새지 마라.` : ""); // v2.28
-  sendToThread({ thread: wv.msgs, text: isWord ? "이 단어를 분석해줘" : "이 문장을 구문 분석해줘", systemExtra: extra, logEl, onDone: waveDone(wv), cfgKey: wv.id });
+  sendToThread({ thread: wv.msgs, text: isWord ? "이 단어 분석 요청." : "이 문장 구문 분석 요청.", systemExtra: extra, logEl, onDone: waveDone(wv), cfgKey: wv.id });
   focusWaveInput();
 }
 
@@ -4658,18 +4753,18 @@ document.getElementById("qa-row").addEventListener("click", (e) => {
   if(act === "we"){
     setThreadCfg(state.activeWord, { mode: "we" });
     renderChatLog(); // 모드 셀렉트·복귀 버튼 즉시 반영
-    sendMainText(`"${w.base}" 단어를 활용하는 ${lvl ? lvl + " 단계 " : ""}작문 문제를 1개 내줘.`);
+    sendMainText(`"${w.base}" 단어를 활용한 ${lvl ? lvl + " 단계 " : ""}작문 문제 1개 요청.`); // v2.37: 버튼 발화는 "~요청" 명사형 — 명령 멘트("내줘") 제거 (사용자 요청)
     return;
   }
   if(act === "ew"){
     setThreadCfg(state.activeWord, { mode: "ew" });
     renderChatLog();
-    sendMainText(`"${w.base}" 단어가 들어간 ${lvl ? lvl + " 단계 " : ""}번역 문제를 1개 내줘.`); // 정답 보류는 MODE_EW가 항구 보장 (기획 렌즈 — 비문·1회성 지시 해소)
+    sendMainText(`"${w.base}" 단어가 들어간 ${lvl ? lvl + " 단계 " : ""}번역 문제 1개 요청.`); // 정답 보류는 MODE_EW가 항구 보장 (기획 렌즈 — 비문·1회성 지시 해소)
     return;
   }
-  if(act === "analyze"){ sendMainText("이 단어를 분석해줘", WORD_FORMAT + `\n\n[분석 대상 — 이 스레드의 단어. 드래그가 아니라 버튼으로 요청됨. 이 요청에 한해 위 표준 형식이 앞의 "통째로 반복하지 말라"는 지시보다 우선한다 — 형식대로 온전히 분석하라]\n"""${w.base}"""`); return; } // QA 권고: 지침 긴장 해소 (실제 시스템 문구 인용으로 정합 — v2.8)
-  if(act === "quiz"){ sendMainText(`"${w.base}" 단어로 ${lvl ? lvl + " 단계에" : "지금 내 단계에"} 맞는 퀴즈 1문제를 내줘. 정답과 해설은 내가 답한 뒤에 알려줘.`); return; }
-  if(act === "examples"){ sendMainText(`"${w.base}" 단어가 들어간, 결이 서로 다른 예문 3개를 만들어줘 — 각각 어떤 상황·어떤 느낌인지 한 줄씩.`); return; }
+  if(act === "analyze"){ sendMainText("이 단어 분석 요청.", WORD_FORMAT + `\n\n[분석 대상 — 이 스레드의 단어. 드래그가 아니라 버튼으로 요청됨. 이 요청에 한해 위 표준 형식이 앞의 "통째로 반복하지 말라"는 지시보다 우선한다 — 형식대로 온전히 분석하라]\n"""${w.base}"""`); return; } // QA 권고: 지침 긴장 해소 (실제 시스템 문구 인용으로 정합 — v2.8)
+  if(act === "quiz"){ sendMainText(`"${w.base}" 단어 퀴즈 1문제 요청 — ${lvl ? lvl + " 단계" : "지금 내 단계"} 기준. (정답과 해설은 내가 답한 뒤에)`); return; }
+  if(act === "examples"){ sendMainText(`"${w.base}" 단어가 들어간, 결이 서로 다른 예문 3개 요청 — 각각 어떤 상황·어떤 느낌인지 한 줄씩.`); return; } // v2.37 기획·QA: 유일하게 남았던 명령형 발화 전환
 });
 document.getElementById("chat-input").addEventListener("keydown", (e) => {
   if(e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); sendMain(); } // isComposing: 한글 조합 확정 Enter 오발송 방지
