@@ -311,7 +311,9 @@
 
   /* 파도 승격 (파도 → 📊 분석 탭 보관) */
   .wave-actions{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
-  .wp-btn{border:1px solid var(--border);background:var(--card);color:var(--text-soft);border-radius:8px;padding:4px 11px;font-size:.78rem;cursor:pointer;font-weight:600;}
+  /* v2.40 기획 지적: 파도 패널의 셀렉트+버튼 줄도 중앙과 같은 공통 높이 — "버튼들" 전반의 정갈함 */
+  .wave-actions .mini-sel,.wave-actions .wp-btn,.wave-actions button{height:30px;box-sizing:border-box;}
+  .wp-btn{border:1px solid var(--border);background:var(--card);color:var(--text-soft);border-radius:8px;padding:0 11px;height:30px;display:inline-flex;align-items:center;font-size:.78rem;cursor:pointer;font-weight:600;box-sizing:border-box;}
   .wp-btn:hover{border-color:var(--accent);color:var(--accent-deep);background:var(--card-soft);}
   .wp-btn:disabled{opacity:.5;cursor:default;}
   .wa-hint{font-size:.72rem;color:var(--text-mute);}
@@ -481,7 +483,12 @@
   /* v2.7: 중앙 채팅 빠른 실행 버튼 — 단어 스레드에서 한 번에 연습 시작 */
   .qa-row{display:flex;flex-wrap:wrap;gap:6px;padding:7px 14px;border-bottom:1px solid var(--border-soft);background:var(--card);}
   .qa-row:empty{display:none;}
-  .qa-btn{border:1px solid var(--border);background:var(--card);color:var(--text-soft);border-radius:8px;padding:3px 11px;font-size:.76rem;cursor:pointer;font-weight:500;}
+  /* v2.40: 버튼 정갈 — 빠른 버튼·채팅 컨트롤 공통 높이(30px)로 들쭉날쭉 제거 (사용자: "정갈하지 못해, 간격도 마음대로") */
+  .qa-btn{border:1px solid var(--border);background:var(--card);color:var(--text-soft);border-radius:8px;padding:0 12px;height:30px;display:inline-flex;align-items:center;font-size:.76rem;cursor:pointer;font-weight:500;box-sizing:border-box;}
+  .chat-head .mini-sel{height:30px;box-sizing:border-box;}
+  .chat-head button{height:30px;display:inline-flex;align-items:center;box-sizing:border-box;}
+  .key-open{margin:8px 0 2px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:8px;padding:6px 14px;font-size:.8rem;cursor:pointer;font-family:var(--font);}
+  .key-open:hover{background:var(--accent-deep);border-color:var(--accent-deep);}
   .qa-btn:hover{border-color:var(--accent);color:var(--accent-deep);background:var(--card-soft);}
   .qa-btn.back{border-style:dashed;color:var(--text-mute);}
 
@@ -637,13 +644,15 @@
     body[data-mtab="chat"] .chat-head .sub{display:none;} /* 셀렉터가 스레드명을 대신함 */
     /* v2.25: 채팅 탭 컨트롤 압축 — 4줄 → 2줄, 여백 최소화 (사용자: 버튼이 공간을 너무 차지) */
     body[data-mtab="chat"] .chat-head .t{display:none;} /* 스레드 셀렉터가 문맥을 말해줘서 타이틀 불필요 */
-    body[data-mtab="chat"] .chat-head{padding:6px 8px;gap:4px;}
-    body[data-mtab="chat"] .chat-head .mini-sel{font-size:.72rem;padding:3px 3px;max-width:104px;}
+    body[data-mtab="chat"] .chat-head{padding:6px 8px;gap:5px;} /* v2.40: 간격 통일 */
+    body[data-mtab="chat"] .chat-head .mini-sel{font-size:.72rem;padding:3px 3px;max-width:104px;height:28px;}
+    body[data-mtab="chat"] .chat-head button{height:28px;} /* v2.40: 모바일 컨트롤 공통 높이 */
     body[data-mtab="chat"] .q-list-btn{padding:3px 8px;font-size:.7rem;margin-left:0;}
     .ch-actions{display:contents;} /* v2.32: 모바일은 그룹 상자를 없애 v2.25 컴팩트 배치(초기화 우측 밀기 등) 그대로 유지 */
     body[data-mtab="chat"] #btn-chat-reset{margin-left:auto;}
     body[data-mtab="chat"] .qa-row{flex-wrap:nowrap;overflow-x:scroll;gap:5px;padding:4px 8px 5px;-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 22px),transparent);} /* 한 줄 가로 스크롤 + 우측 페이드 = "옆에 더 있다" 힌트 (기획 지적) */
-    body[data-mtab="chat"] .qa-btn{white-space:nowrap;flex:none;padding:3px 9px;font-size:.72rem;}
+    body[data-mtab="chat"] .qa-btn{white-space:nowrap;flex:none;padding:0 10px;height:28px;font-size:.72rem;} /* v2.40: 공통 높이 */
+    .wave-actions .mini-sel,.wave-actions .wp-btn,.wave-actions button{height:28px;} /* v2.40: 파도 패널도 모바일 공통 높이 */
     body[data-mtab="chat"] .chat-log{padding:10px 10px;gap:9px;}
     /* 파도 탭: 우측 페인이 전체 화면 */
     body[data-mtab="waves"] main.center, body[data-mtab="waves"] aside.words, body[data-mtab="waves"] #center-resizer{display:none;}
@@ -689,7 +698,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.39</span>
+    <span class="build">pAdo · v2.40</span>
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
       <option value="">🪜 단계 선택 안 함</option>
@@ -2630,6 +2639,7 @@ const MODE_TUTOR = `\n\n[튜터 모드] 이 대화창은 네(pAdo)가 수업을 
 - 문장이 완성되면: 완성 문장 + 발음 표기([발음 표기] 형식) + 구문 풀이("/" 덩어리 + 아랫줄 한국어 짝)로 정리하고, 방금 배운 조립 규칙을 한 줄로 복습한 뒤 "다음 문장으로 갈까요?"라고 묻는다.
 - 학습자가 도중에 자유 질문을 하면 튜터답게 답하고, 끝나면 진행 중이던 문장으로 자연스럽게 돌아온다.
 - [힌트 버튼] "힌트 조금만 요청."이 오면: 정답으로 곧장 가지 말고 **직전 힌트보다 딱 한 걸음만 가까운** 힌트 하나를 준다. 힌트 사다리: ① 뜻·역할 귀띔("~라는 느낌의 단어예요") → ② 첫 글자("r로 시작해요") → ③ 글자 수·발음 근사 → ④ 보기 3개. 이미 준 힌트는 반복하지 않고 다음 칸으로 간다. "보기 3개 요청."이 오면 사다리를 건너뛰고 곧장 보기 3개(정답 1 + 헷갈리기 쉬운 오답 2)를 준다.
+- [다음 버튼] "다음 문장 요청."이 오면 다음 문장으로 넘어간다: 진행 중이던 문장이 아직 미완성이면 정답 문장+구문 풀이를 두세 줄로 짧게 정리해 주고, 곧바로 새 한국어 문장을 제시한다 — 같은 단어 활용, 학습 단계 준수, 직전 문장과 결(상황·구조)이 다른 문장으로.
 ⚠️ 단계 우선 규칙: [학습 단계]가 바뀌면 다음 문장부터 그 단계에 맞춘다 — 대화 이력의 옛 난이도보다 현재 단계가 항상 우선.`;
 
 function getSystemBase(){
@@ -2863,7 +2873,7 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
         rollback();
       }
     } else if(String(err.message) === "NO_KEY"){
-      mdEl.innerHTML = '<b>API 키가 아직 없어요.</b><br>우측 상단 <b>⚙️ 설정</b>에서 Claude API 키를 넣으면 대화가 시작됩니다.<br><span style="color:var(--text-mute);font-size:.85em">키는 이 브라우저에만 저장돼요. (console.anthropic.com에서 발급)</span>';
+      mdEl.innerHTML = '<b>API 키가 아직 없어요.</b><br>아래 버튼으로 <b>⚙️ 설정</b>을 열어 Claude API 키를 넣으면 대화가 시작됩니다.<br><button class="key-open" type="button" data-open-settings>⚙️ 설정 열기</button><br><span style="color:var(--text-mute);font-size:.85em">키는 이 브라우저에만 저장돼요 — 컴퓨터·폰 각각 한 번씩 넣어 주세요. (console.anthropic.com에서 발급)</span>'; // v2.40: 모바일엔 "우측 상단 ⚙️"가 없음(보관 탭 안) — 안내에서 바로 연다
       rollback(); // 실패한 user 턴 롤백
       if(!getDraft(ownerKey)){ setDraft(ownerKey, text); saveState(); } // 질문은 입력창 초안으로 — 즉시 저장(디바운스 400ms 안에 reload가 겹치면 유실되는 race 차단, 개발 렌즈)
       if(img){ _pendImg = img; showImgPrev(img); } // v2.35 QA: 첨부 이미지도 되돌린다 — 무언 유실 방지 (NO_KEY에서 특히 흔한 시나리오)
@@ -3368,7 +3378,7 @@ function ansRowHTML(cfg, msgs){
 function tutorRowHTML(cfg, msgs){
   if(!cfg || cfg.mode !== "tutor") return "";
   if(!msgs || !msgs.length || msgs[msgs.length - 1].role !== "assistant" || msgs[msgs.length - 1].partial) return ""; // 답변 완료 후에만
-  return `<div class="ans-row"><button class="ans-btn" data-tu-hint type="button">💡 힌트 조금만</button><button class="ans-btn" data-tu-opts type="button">🔢 보기 3개</button><span class="ans-hint">막히면 눌러요 — 누를 때마다 한 걸음씩 가까워져요</span></div>`;
+  return `<div class="ans-row"><button class="ans-btn" data-tu-hint type="button">💡 힌트 조금만</button><button class="ans-btn" data-tu-opts type="button">🔢 보기 3개</button><button class="ans-btn" data-tu-next type="button">⏭ 다음 문장</button><span class="ans-hint">막히면 힌트, 다 풀었으면 다음 문장</span></div>`;
 }
 
 /* 질문 목록 — 우측 파도 탭 리스트의 중앙판. 긴 대화에서 내 질문 위치로 바로 점프 */
@@ -3401,6 +3411,7 @@ document.getElementById("chat-log").addEventListener("click", (e) => {
   if(e.target.closest("[data-ans]")){ sendMainText(threadCfg(state.activeWord).mode === "ew" ? "풀이 보기" : "답안 보기"); return; } // 📝답안/📖풀이 확인 (작문 연습)
   if(e.target.closest("[data-tu-hint]")){ sendMainText("힌트 조금만 요청."); return; } // v2.39: 튜터 — 한 걸음 힌트
   if(e.target.closest("[data-tu-opts]")){ sendMainText("보기 3개 요청."); return; } // v2.39: 튜터 — 보기로 바로
+  if(e.target.closest("[data-tu-next]")){ sendMainText("다음 문장 요청."); return; } // v2.40: 튜터 — 다음 문장으로
   const fu = e.target.closest("[data-fu]");
   if(fu){ // v2.34: 첨삭 후속 버튼(중앙) — 그 모범 문장을 인용한 파도를 우측에 만들어/재사용해 거기서 답변
     const host = fu.closest(".msg[data-mi]");
@@ -3656,7 +3667,7 @@ async function fillRulesFromChat(){
   } catch(err){
     console.error("[rules-fill]", err);
     const raw = String(err.message || "");
-    alert(raw === "NO_KEY" ? "API 키가 필요해요 — 우측 상단 ⚙️ 설정에서 넣어 주세요."
+    alert(raw === "NO_KEY" ? "API 키가 필요해요 — ⚙️ 설정에서 넣어 주세요. (컴퓨터: 우측 상단 · 폰: ⭐ 보관 탭)"
       : /[가-힣]/.test(raw) ? "요약 실패: " + raw
       : "요약 실패: 잠시 후 다시 시도해 주세요.");
   } finally {
@@ -4501,9 +4512,9 @@ document.querySelector("aside.right").addEventListener("click", (e) => {
     if(ansWv) sendWaveText(ansWv, threadCfg(ansWv.id).mode === "ew" ? "풀이 보기" : "답안 보기");
     return;
   }
-  if(e.target.closest("[data-tu-hint]") || e.target.closest("[data-tu-opts]")){ // v2.39: 튜터 힌트 버튼 (파도)
+  if(e.target.closest("[data-tu-hint]") || e.target.closest("[data-tu-opts]") || e.target.closest("[data-tu-next]")){ // v2.39·v2.40: 튜터 버튼 (파도)
     const tuWv = state.waves.find(x => x.id === state.activeRight);
-    if(tuWv) sendWaveText(tuWv, e.target.closest("[data-tu-hint]") ? "힌트 조금만 요청." : "보기 3개 요청.");
+    if(tuWv) sendWaveText(tuWv, e.target.closest("[data-tu-hint]") ? "힌트 조금만 요청." : e.target.closest("[data-tu-opts]") ? "보기 3개 요청." : "다음 문장 요청.");
     return;
   }
   const fuW = e.target.closest("[data-fu]");
@@ -4603,7 +4614,7 @@ ${convo ? "\n[대화]\n" + convo : ""}`;
     const raw = String(err.message || "");
     // 학습자 화면엔 한국어만: 우리가 만든 한국어 메시지(한글 포함)는 그대로, JSON SyntaxError 등 영어 예외는 고정 문구로
     const msg = raw === "NO_KEY"
-      ? "API 키가 필요해요 — 우측 상단 ⚙️ 설정에서 넣어 주세요."
+      ? "API 키가 필요해요 — ⚙️ 설정에서 넣어 주세요. (컴퓨터: 우측 상단 · 폰: ⭐ 보관 탭)"
       : /[가-힣]/.test(raw)
         ? "저장 실패: " + raw
         : "저장 실패: 답변을 분석 자료로 정리하지 못했어요. 잠시 후 다시 시도해 주세요.";
@@ -4814,6 +4825,7 @@ function openSettings(){
 }
 function closeSettings(){ modalBg.classList.remove("show"); modal.classList.remove("show"); }
 document.getElementById("btn-settings").addEventListener("click", openSettings);
+document.addEventListener("click", (e) => { if(e.target.closest("[data-open-settings]")) openSettings(); }); // v2.40: 키 없음 안내 말풍선에서 바로 설정 열기 (모바일 포함 — 위임이라 재렌더 생존)
 document.getElementById("set-cancel").addEventListener("click", closeSettings);
 /* v2.18: 영상 도크 컨트롤 — 닫기·최대화(섹션 밖 확대)·전체 화면(모니터 꽉)·그립 높이 조절 */
 document.getElementById("vd-close").addEventListener("click", closeVideo);
