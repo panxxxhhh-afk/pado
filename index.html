@@ -270,7 +270,9 @@
   .img-prev img{height:44px;border-radius:8px;border:1px solid var(--border);}
   .img-prev .ip-hint{font-size:.75rem;color:var(--text-mute);flex:1;}
   #img-prev-x{border:1px solid var(--border);background:var(--card);border-radius:6px;cursor:pointer;padding:2px 8px;}
-  .msg-img{display:block;max-width:min(320px,100%);border-radius:10px;margin-top:6px;border:1px solid var(--border-soft);}
+  .msg-img{display:block;max-width:min(320px,100%);border-radius:10px;margin-top:6px;border:1px solid var(--border-soft);cursor:zoom-in;} /* v2.42: 클릭 = 크게 보기 */
+  .img-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.86);display:flex;align-items:center;justify-content:center;z-index:9999;cursor:zoom-out;}
+  .img-lightbox img{max-width:96vw;max-height:96vh;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.5);}
   .fu-btn{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:999px;padding:3px 11px;font-size:.74rem;cursor:pointer;}
   .fu-btn:hover{border-color:var(--accent);color:var(--accent-deep);}
   .pr-sum{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin:8px 0 10px;}
@@ -557,6 +559,7 @@
   .srs-acts button:hover{border-color:var(--accent);}
   .srs-empty{font-size:.78rem;color:var(--text-mute);padding:4px 0;}
   #btn-review .srs-due{background:var(--accent);color:#fff;border-radius:999px;padding:0 6px;font-size:.68rem;margin-left:2px;}
+  .stub-note{border:1px dashed var(--border);border-radius:10px;padding:10px 14px;font-size:.8rem;color:var(--text-mute);background:var(--card-soft);margin-top:4px;line-height:1.6;} /* v2.42: 깊이 콘텐츠 준비 중 안내 */
   .qh-date{font-weight:700;font-size:.85rem;margin:12px 0 6px;color:var(--accent-deep);}
   .qh-item{display:flex;gap:8px;align-items:baseline;width:100%;text-align:left;background:var(--card);border:1px solid var(--border-soft);border-radius:9px;padding:7px 10px;margin-bottom:5px;cursor:pointer;color:var(--text);font-size:.82rem;}
   .qh-item:hover{border-color:var(--accent);}
@@ -699,7 +702,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.41</span>
+    <span class="build">pAdo · v2.42</span>
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
       <option value="">🪜 단계 선택 안 함</option>
@@ -986,7 +989,88 @@ const WORDS = [
   {"base":"out","ko":"안→밖으로 벗어남","metaphor":"📤 경계 넘어 밖으로","desc":"out은 \"밖\"이라는 장소가 아니라 \"안에서 밖으로 벗어나는 움직임\"이다. 방을 나가도(go out), 불이 꺼져도(the fire is out — 타던 상태에서 벗어남), 종이가 다 떨어져도(out of paper) 전부 out.","tagline":"경계를 넘어 벗어나면 전부 out","main":{"en":"You really went out of your way.","ko":"너 정말 네 길을 벗어나면서까지(굳이) 해 줬어."}},
   {"base":"really","ko":"real(진짜) + ly = 진짜로","metaphor":"✅ 진짜 도장","desc":"really는 그냥 강조가 아니라 real(진짜)에서 온 \"진짜로\"다. Really?라고 되물을 때 우리는 사실인지 확인하는 것 — 진짜라는 도장을 찍는 단어다.","tagline":"real에서 온 말 — 사실임을 확인하는 강조","main":{"en":"You really went out of your way.","ko":"너 정말(진짜로) 굳이 그렇게까지 해 줬어."}},
   {"base":"go","ko":"여기서 멀어지는 움직임","metaphor":"🚶 멀어지는 화살표","desc":"go는 \"가다\"보다 \"여기서 멀어진다\"가 정확하다. 기준점은 말하는 사람 — 나에게서 멀어지면 go, 나(또는 상대)에게 다가가면 come. 그래서 전화로 \"지금 갈게!\"는 I'm coming이지 I'm going이 아니다.","tagline":"멀어지면 go, 다가가면 come","main":{"en":"Go and get some rest.","ko":"가서 (그리고) 좀 쉬어."}},
-  {"base":"about","ko":"둘레를 빙 돌기 — ~에 관해·대략","metaphor":"🔄 주위를 빙 두르기","desc":"about의 뿌리는 \"바깥 둘레에\"다. 어떤 주제의 둘레를 도는 게 talk about(~에 관해 이야기하다), 숫자의 둘레를 도는 게 about ten(대략 열). 정중앙을 찍는 게 아니라 그 언저리를 도는 느낌.","tagline":"주제의 둘레면 '~에 관해', 숫자의 둘레면 '대략'","main":{"en":"Could you please tell me about this?","ko":"이것에 대해 나에게 말해 줄 수 있나요?"}}
+  {"base":"about","ko":"둘레를 빙 돌기 — ~에 관해·대략","metaphor":"🔄 주위를 빙 두르기","desc":"about의 뿌리는 \"바깥 둘레에\"다. 어떤 주제의 둘레를 도는 게 talk about(~에 관해 이야기하다), 숫자의 둘레를 도는 게 about ten(대략 열). 정중앙을 찍는 게 아니라 그 언저리를 도는 느낌.","tagline":"주제의 둘레면 '~에 관해', 숫자의 둘레면 '대략'","main":{"en":"Could you please tell me about this?","ko":"이것에 대해 나에게 말해 줄 수 있나요?"}},
+  /* ── v2.42: 필수 80단어 확장 (20 → 100) — 대명사5·조동사7·동사20·전치사13·접속6·의문사5·부사7·명사10·형용사7 ── */
+  {"base":"I","ko":"언제나 대문자인 나","metaphor":"🙋 항상 대문자","desc":"영어의 I는 문장 어디에 있어도 대문자다. 한국어처럼 \"저/나\"의 높임 구분이 없어서 대통령 앞에서도 친구 앞에서도 같은 I를 쓴다 — 낮출 필요도 높일 필요도 없는 나.","tagline":"누구 앞에서든 같은 나","main":{"en":"I think you're right.","ko":"네 말이 맞는 것 같아."}},
+  {"base":"it","ko":"이미 아는 그것 + 자리 채우기","metaphor":"📦 자리를 채우는 상자","desc":"it은 \"그것\"을 넘어 자리 채우기 선수다. 날씨(It's raining)·시간(It's 3 o'clock)처럼 마땅한 주어가 없을 때 빈자리를 채운다. 한국어는 주어를 비우지만 영어는 it으로 채운다.","tagline":"주어 자리가 비면 it이 들어간다","main":{"en":"It's raining outside.","ko":"밖에 비가 와요."}},
+  {"base":"this","ko":"가까이 가리키는 손가락","metaphor":"👇 가까운 것 가리키기","desc":"this는 내 손이 닿는 것을 가리킨다. that(먼 것)의 짝 — 지금 벌어지는 일, 지금 하려는 말도 아직 내 손안에 있어서 this로 가리킨다.","tagline":"가까우면 this, 멀면 that","main":{"en":"This is my favorite song.","ko":"이건 내가 제일 좋아하는 노래야."}},
+  {"base":"we","ko":"나를 포함한 진짜 우리","metaphor":"🤝 나 + 너(그들)","desc":"영어 we는 반드시 \"나\"를 포함한 여럿이다. 한국어는 혼자여도 \"우리 엄마·우리 집\"이라 하지만 영어에선 my mom, my house — 정말 여럿일 때만 we/our를 쓴다.","tagline":"혼자면 my, 여럿이어야 we","main":{"en":"We need more time.","ko":"우리는 시간이 더 필요해요."}},
+  {"base":"they","ko":"복수는 전부 they — 사물도","metaphor":"👥 저쪽의 여럿","desc":"they는 사람 \"그들\"만이 아니라 사물 복수(the books → they)도 받는다. 성별을 모르는 한 명(Someone left their bag)을 they로 받는 것도 요즘 표준.","tagline":"사람·사물·모르는 한 명까지 they","main":{"en":"They are waiting for us.","ko":"그들이 우리를 기다리고 있어요."}},
+  {"base":"do","ko":"행동의 대표 + 문장의 시동키","metaphor":"🔑 시동을 거는 열쇠","desc":"do는 \"하다\"이자 의문문·부정문의 시동키다. Do you...? / I don't...의 do는 뜻 없이 문장을 굴리는 엔진 — 일반동사는 be처럼 스스로 뒤집지 못해서 do가 대신 나선다.","tagline":"의문·부정엔 do가 시동을 건다","main":{"en":"Do you like coffee?","ko":"커피 좋아해요?"}},
+  {"base":"will","ko":"지금 정한 의지","metaphor":"⚡ 지금 켜는 스위치","desc":"will은 \"미래\"보다 \"의지\"다. 말하는 순간 마음을 정했으면 I'll do it. 미리 잡아 둔 계획은 be going to — will은 그 자리에서 켜는 스위치다.","tagline":"지금 결심 = will, 이미 계획 = be going to","main":{"en":"I'll call you tonight.","ko":"오늘 밤에 전화할게."}},
+  {"base":"would","ko":"will의 한 발 물러선 그림자","metaphor":"🌫 부드러운 가정","desc":"would는 will이 한 발 물러선 것 — \"그렇다면 ~할 텐데\"라는 가정의 거리다. 이 거리감이 정중함이 된다. I would like = 원하는 마음을 한 발 물러서 건네기.","tagline":"물러선 만큼 부드러워진다","main":{"en":"I would like some water.","ko":"물을 좀 마시고 싶어요."}},
+  {"base":"can","ko":"가능의 문이 열려 있다","metaphor":"🚪 열려 있는 문","desc":"can은 \"할 수 있다(능력)\"만이 아니다. 능력(I can swim)·허락(You can go)·가능성(It can happen) — 전부 \"문이 열려 있다\"는 하나의 그림으로 통한다.","tagline":"능력·허락·가능 — 전부 열린 문","main":{"en":"You can sit here.","ko":"여기 앉아도 돼요."}},
+  {"base":"should","ko":"하는 게 좋다 — 권유의 나침반","metaphor":"🧭 권하는 나침반","desc":"should는 \"해야 한다\"보다 약한 \"하는 게 좋겠다\"다. must(다른 길 없음)·have to(사정상 필수)보다 부드러운 권유 — 조언할 때 should를 쓰는 이유다.","tagline":"must(강제) 〉 have to(필수) 〉 should(권유)","main":{"en":"You should get some rest.","ko":"좀 쉬는 게 좋겠어요."}},
+  {"base":"must","ko":"다른 길이 없다","metaphor":"🧱 벽 — 다른 길 없음","desc":"must는 빠져나갈 길이 없는 벽이다. 의무(반드시 해야 한다)에도, 강한 확신(He must be tired — 분명 피곤할 거야, 다른 가능성이 없다)에도 같은 벽이 선다.","tagline":"의무도 확신도 \"다른 가능성 없음\"","main":{"en":"You must wear a seatbelt.","ko":"안전벨트를 반드시 매야 해요."}},
+  {"base":"may","ko":"반쯤 열린 문","metaphor":"🌤 반쯤 열린 문","desc":"may는 can보다 조심스러운 \"그럴 수도 있다\"다. 허락을 구할 땐 가장 격식 있는 문(May I...?), 추측일 땐 반반의 가능성(It may rain).","tagline":"허락의 최고 격식 + 반반의 추측","main":{"en":"May I come in?","ko":"들어가도 될까요?"}},
+  {"base":"have","ko":"내 영역 안에 있다","metaphor":"🎒 내 가방 안","desc":"have는 \"가지다\"보다 \"내 영역 안에 있다\"다. 물건도, 시간도(have time), 식사도(have lunch — 식사가 내 앞에 놓인 시간), 경험도 전부 내 영역 안에 든다.","tagline":"소유·시간·식사·경험 — 전부 내 안에","main":{"en":"I have two tickets.","ko":"나 표 두 장 있어."}},
+  {"base":"get","ko":"없던 것이 손에 들어옴","metaphor":"🧲 손에 들어오는 순간","desc":"get의 핵심은 \"움직여서 손에 들어오는 순간\"이다. 물건을 얻고(get a gift), 상태가 내게 오고(get tired — 피곤함이 옴), 장소에 닿는다(get home).","tagline":"물건·상태·장소 — 도착의 순간","main":{"en":"I got your message.","ko":"네 메시지 받았어."}},
+  {"base":"make","ko":"없던 것을 빚어냄","metaphor":"🏺 빚어 만들기","desc":"make는 없던 것을 내 손에서 빚어내는 것이다. 요리도, 결정도(make a decision), 실수도(make a mistake) 새로 태어난다. do와 짝: do는 하고, make는 만든다.","tagline":"do는 하고, make는 만든다","main":{"en":"She made a big decision.","ko":"그녀는 큰 결정을 내렸어요."}},
+  {"base":"take","ko":"내 쪽으로 집어 가짐","metaphor":"✊ 집어서 가져가기","desc":"take는 손을 뻗어 내 쪽으로 집는 것이다. 물건을 집고, 버스를 잡아타고(take a bus), 시간을 집어 쓴다(It takes 10 minutes). give(건네기)의 반대 방향.","tagline":"give가 건네면 take는 집는다","main":{"en":"It takes ten minutes.","ko":"10분 걸려요."}},
+  {"base":"give","ko":"내 손에서 상대 손으로","metaphor":"🎁 건네는 손","desc":"give는 내 것이 상대 손으로 넘어가는 움직임이다. 물건뿐 아니라 기회(give a chance)·전화(give a call)·시간까지 — 건넬 수 있는 건 전부 give로 건넨다.","tagline":"물건·기회·전화 — 건네면 다 give","main":{"en":"Give me a second.","ko":"잠깐만 (시간을 줘)."}},
+  {"base":"come","ko":"대화의 자리로 다가옴","metaphor":"🧲 나에게 오는 화살표","desc":"come은 \"오다\"가 아니라 \"말하는 사람(또는 듣는 사람) 쪽으로 움직인다\"다. 상대에게 갈 때도 I'm coming!이라 하는 이유 — 기준이 \"우리 대화의 자리\"라서다.","tagline":"go(멀어짐) ↔ come(다가옴)","main":{"en":"I'm coming!","ko":"지금 가! (너에게 가는 중)"}},
+  {"base":"know","ko":"이미 안에 들어와 있는 앎","metaphor":"💡 이미 켜져 있는 불","desc":"know는 배우는 중이 아니라 이미 안에 있는 앎이다. 그래서 진행형을 쓰지 않는다(I'm knowing ✗). 사람을 know하면 \"아는 사이\"까지 포함한다.","tagline":"이미 아는 상태 — 진행형 없음","main":{"en":"I know how you feel.","ko":"네 기분이 어떤지 알아."}},
+  {"base":"think","ko":"머릿속에서 굴리는 중","metaphor":"🌀 머릿속 회전","desc":"think는 결론이 아니라 머릿속에서 굴리는 과정이다. I think = \"굴려 보니 이런 것 같다\"라는 부드러운 의견 — 한국어 \"~인 것 같아\"가 앉는 자리다.","tagline":"단정 대신 I think로 한 겹 감싼다","main":{"en":"I think it's a good idea.","ko":"좋은 생각인 것 같아."}},
+  {"base":"see","ko":"눈에 들어오다 → 이해하다","metaphor":"👁 눈에 들어옴","desc":"see는 노력 없이 눈에 들어오는 것이다(look은 일부러 보기). 그래서 \"이해\"로 자란다 — I see = \"그림이 눈에 들어왔다 = 알겠다\".","tagline":"보이면 see, 들여다보면 look","main":{"en":"I see what you mean.","ko":"무슨 말인지 알겠어."}},
+  {"base":"want","ko":"없어서 당기는 마음","metaphor":"🧲 끌어당기는 마음","desc":"want의 뿌리는 \"부족\"이다. 없으니 당긴다 — 그래서 직설적이고 힘이 세다. 부탁·주문에서는 would like로 한 발 물러서는 게 부드럽다.","tagline":"want(직진) ↔ would like(정중)","main":{"en":"I want to learn English.","ko":"나는 영어를 배우고 싶어."}},
+  {"base":"like","ko":"마음이 기울다 + 닮다","metaphor":"💗 기울고 닮음","desc":"like는 두 얼굴이다. 마음이 그쪽으로 기울면 \"좋아하다\", 모양이 그쪽으로 기울면 \"~같은\"(like a bird). 둘 다 \"그쪽으로 기울기\"라는 한 결이다.","tagline":"좋아함도 닮음도 \"기울기\"","main":{"en":"It looks like rain.","ko":"비가 올 것처럼 보여요."}},
+  {"base":"use","ko":"도구를 손에 쥐고 굴리기","metaphor":"🔧 손에 쥔 도구","desc":"use는 무언가를 도구 삼아 굴리는 것이다. 물건도, 시간도, 말도 도구가 된다. used to(예전엔 ~하곤 했다)는 \"예전에 늘 굴리던 습관\"이라는 다른 얼굴.","tagline":"도구로 쓰다 + used to(옛 습관)","main":{"en":"Can I use your phone?","ko":"전화 좀 써도 될까요?"}},
+  {"base":"find","ko":"찾아서 만나는 순간 + 알게 됨","metaphor":"🔍 발견의 순간","desc":"find는 찾는 과정(look for)이 아니라 만나는 순간이다. 그래서 \"겪어 보니 알게 됐다\"로 자란다 — I found it helpful(써 보니 도움이 되더라).","tagline":"look for(찾는 중) → find(찾았다!)","main":{"en":"I found my keys.","ko":"열쇠 찾았어!"}},
+  {"base":"work","ko":"일하다 + 제대로 굴러가다","metaphor":"⚙️ 굴러가는 톱니","desc":"work는 사람이 일하는 것만이 아니다. 기계가 돌아가도(It works), 계획이 먹혀도(The plan worked) work — \"제 기능대로 굴러간다\"가 핵심이다.","tagline":"사람·기계·계획 — \"굴러가면\" work","main":{"en":"My phone isn't working.","ko":"내 폰이 작동을 안 해요."}},
+  {"base":"help","ko":"짐을 나눠 드는 손","metaphor":"🤲 나눠 드는 손","desc":"help는 상대의 짐을 나눠 드는 것이다. help me finish처럼 동사가 바로 붙을 수 있다 — 손을 보태는 그림이라서. can't help ~ing은 \"어쩔 수 없이 하게 된다\".","tagline":"help + 사람 + 동사원형","main":{"en":"Can you help me carry this?","ko":"이거 옮기는 것 좀 도와줄래요?"}},
+  {"base":"try","ko":"결과 모르고 부딪혀 보기","metaphor":"🧗 일단 해보기","desc":"try는 결과를 모른 채 부딪혀 보는 것이다. try to(목표를 향해 애씀)와 try ~ing(시험 삼아 해보기)의 결이 다르다 — to는 몸부림, ~ing은 실험.","tagline":"try to(애씀) vs try ~ing(실험)","main":{"en":"I'll try my best.","ko":"최선을 다해 볼게요."}},
+  {"base":"feel","ko":"피부와 마음에 닿는 감각","metaphor":"🫧 닿아서 느껴짐","desc":"feel은 밖의 것이 피부·마음에 닿는 감각이다. 촉감도, 기분도(I feel tired), 직감도(I feel like...) 전부 닿아 오는 것이다.","tagline":"몸·마음에 닿으면 feel","main":{"en":"I feel much better now.","ko":"지금은 훨씬 나아졌어요."}},
+  {"base":"look","ko":"시선을 일부러 보내기","metaphor":"🔭 시선 화살","desc":"look은 시선을 일부러 그쪽으로 보내는 것이다(see는 저절로 보임). look at(점을 향해)·look for(찾아 두리번)·look after(뒤를 봐주다=돌보다) — 화살의 방향이 뜻을 만든다.","tagline":"look + 방향이 뜻을 만든다","main":{"en":"Look at this picture.","ko":"이 사진 좀 봐."}},
+  {"base":"say","ko":"말을 소리로 내놓기","metaphor":"🗣 내뱉은 말 자체","desc":"say는 말 자체를 내놓는 것 — 들은 그대로 옮길 때 쓴다(She said \"no\"). 사람에게 건네는 느낌은 tell의 몫이라, say me는 어색하고 tell me가 자연스럽다.","tagline":"내용 자체 = say, 사람에게 = tell","main":{"en":"What did she say?","ko":"그녀가 뭐라고 했어?"}},
+  {"base":"put","ko":"자리에 놓기 — 상태도 놓는다","metaphor":"📍 자리에 놓기","desc":"put은 무언가를 자리에 놓는 것이다. 물건을 놓고, 옷을 몸에 놓고(put on), 말을 자리에 놓는다(to put it simply — 쉽게 말하면). 과거형도 put — 모양이 안 변하는 동사.","tagline":"put on / off / away — 놓는 자리가 뜻","main":{"en":"Put it on the table.","ko":"그거 테이블 위에 놓아 줘."}},
+  {"base":"to","ko":"도착점을 향한 화살표","metaphor":"➡️ 도착점 화살표","desc":"to는 도착점을 향한 화살표다. 장소로도(go to school), 사람에게도(give it to me), 행동으로도(want to go — \"가기\"라는 도착점) 날아간다. to부정사의 to도 같은 화살표다.","tagline":"장소·사람·행동 — 화살표의 끝","main":{"en":"I'm going to the station.","ko":"역으로 가는 중이에요."}},
+  {"base":"in","ko":"경계 안에 폭 들어가 있음","metaphor":"📦 안에 폭","desc":"in은 경계 안에 들어가 있는 그림이다. 상자 안도, 도시 안도(in Seoul), 시간의 통 안도(in March), 상태 안도(in love) — 통 안이면 전부 in.","tagline":"공간·시간·상태 — 통 안이면 in","main":{"en":"She is in the kitchen.","ko":"그녀는 부엌에 있어요."}},
+  {"base":"at","ko":"지도 위의 한 점","metaphor":"📍 콕 찍은 점","desc":"at은 넓이 없는 \"점\"이다. 장소를 점으로 찍고(at the door), 시간을 점으로 찍고(at 3), 과녁을 점으로 겨눈다(look at). in(안)·on(면)·at(점) 삼형제의 막내.","tagline":"in(안) · on(면) · at(점)","main":{"en":"Let's meet at the station.","ko":"역에서 만나자."}},
+  {"base":"for","ko":"~를 향한 마음 + 맞바꿈","metaphor":"🎯 마음이 향하는 과녁","desc":"for는 대상을 향해 마음·용도가 겨눠진 것이다. 선물도(for you), 고마움의 이유도(thanks for), 맞바꿈도(for $10), 기간도(for two hours — 두 시간을 향해 쭉).","tagline":"용도·이유·교환·기간 — 겨눠지면 for","main":{"en":"This gift is for you.","ko":"이 선물은 너를 위한 거야."}},
+  {"base":"with","ko":"붙어서 함께 — 도구까지","metaphor":"🧷 붙어서 함께","desc":"with는 붙어 있는 그림이다. 사람과 함께 있고(with you), 도구를 손에 붙이고(cut with a knife), 특징을 몸에 붙인다(the girl with long hair).","tagline":"동행·도구·특징 — 붙으면 with","main":{"en":"Come with me.","ko":"나랑 같이 가자."}},
+  {"base":"from","ko":"출발점 — 뿌리","metaphor":"🌱 출발점 표시","desc":"from은 출발점이다. 장소의 출발(from Seoul), 시간의 출발(from Monday), 출신의 뿌리(I'm from Korea), 재료의 뿌리(made from grapes). to(도착점)의 짝이다.","tagline":"from(출발) ↔ to(도착)","main":{"en":"Where are you from?","ko":"어디 출신이에요?"}},
+  {"base":"by","ko":"곁에 — 수단·기한까지","metaphor":"🧍 바로 곁","desc":"by의 뿌리는 \"곁\"이다. 창가 곁에 서고(by the window), 버스 곁에 실려 가고(by bus), 기한 곁에 닿기 전까지 끝낸다(by Friday).","tagline":"곁·수단·기한 — 전부 \"곁\"","main":{"en":"I go to work by bus.","ko":"나는 버스로 출근해요."}},
+  {"base":"up","ko":"위로 + 끝까지 차오름","metaphor":"⬆️ 차오르는 화살표","desc":"up은 방향 \"위\"를 넘어 \"끝까지\"다. 다 마시면 drink up, 다 쓰면 use up, 시간이 다 차면 time's up — 컵에 물이 차오르듯 끝까지 가는 그림이다.","tagline":"위로 + 완전히(끝까지)","main":{"en":"Time is up.","ko":"시간이 다 됐어요."}},
+  {"base":"off","ko":"붙어 있던 것이 떨어짐","metaphor":"🧲 떨어지는 순간","desc":"off는 on(접촉)의 반대 — 붙어 있던 것이 떨어지는 순간이다. 불이 떨어지고(turn off), 옷이 몸에서 떨어지고(take off), 하루가 일에서 떨어지면 휴일(day off).","tagline":"on(붙음) ↔ off(떨어짐)","main":{"en":"Please turn off the light.","ko":"불 좀 꺼 주세요."}},
+  {"base":"over","ko":"위를 넘어 덮는 아치","metaphor":"🌈 넘어가는 아치","desc":"over는 위로 아치를 그리며 넘는 그림이다. 다리를 넘고(over the bridge), 끝을 넘으면 종료(The game is over), 전체를 덮으면 all over the world.","tagline":"넘고·덮고·끝나고 — 전부 아치","main":{"en":"The meeting is over.","ko":"회의가 끝났어요."}},
+  {"base":"under","ko":"아래에 — 영향 아래까지","metaphor":"⛱ 그늘 아래","desc":"under는 무언가의 아래에 들어가 있는 그림이다. 테이블 아래도, 압박 아래도(under pressure), 공사라는 지붕 아래면 공사 중(under construction).","tagline":"물리적 아래 + 영향력 아래","main":{"en":"The cat is under the table.","ko":"고양이가 테이블 아래에 있어요."}},
+  {"base":"into","ko":"안으로 파고드는 화살표","metaphor":"🎯 안으로 쏙","desc":"into는 in(안) + to(화살표) — 밖에서 안으로 들어가는 움직임이다. 방으로 들어가고, 변화 속으로 들어가면 변신(turn into), 푹 빠지면 I'm into it.","tagline":"이동·변화·몰입 — 안으로 들어감","main":{"en":"She walked into the room.","ko":"그녀는 방으로 걸어 들어갔어요."}},
+  {"base":"through","ko":"터널을 뚫고 통과","metaphor":"🚇 터널 통과","desc":"through는 안을 뚫고 지나가는 그림이다. 터널을 통과하고, 밤을 처음부터 끝까지 지나고(through the night), 힘든 일을 몸으로 통과한다(go through — 겪다).","tagline":"공간·시간·경험을 관통","main":{"en":"We drove through the tunnel.","ko":"우리는 터널을 통과해서 갔어요."}},
+  {"base":"but","ko":"방향을 꺾는 팔꿈치","metaphor":"↩️ 꺾이는 지점","desc":"but은 문장의 방향을 꺾는 팔꿈치다. 앞말을 지우는 게 아니라 \"그런데 방향은 이쪽\"이라고 트는 것 — 칭찬 뒤의 but이 뼈아픈 이유다.","tagline":"앞말 유지 + 방향 꺾기","main":{"en":"I'm tired, but I'm happy.","ko":"피곤하지만 행복해요."}},
+  {"base":"or","ko":"갈림길의 두 팻말","metaphor":"🔀 갈림길","desc":"or는 갈림길이다. 이 길 아니면 저 길(coffee or tea). 부정문에서는 \"둘 다 아님\"이 된다 — I don't drink coffee or tea(커피도 차도 안 마셔요).","tagline":"선택의 갈림길 — 부정문에선 둘 다 X","main":{"en":"Coffee or tea?","ko":"커피요, 아니면 차요?"}},
+  {"base":"if","ko":"문을 여는 조건의 열쇠","metaphor":"🗝 조건의 열쇠","desc":"if는 \"만약\"이라는 열쇠다. 이 열쇠가 맞으면 뒷문장이 열린다. 열쇠가 현실이면 will(If it rains, I'll stay), 상상이면 would — 열쇠의 재질이 시제를 정한다.","tagline":"현실은 if+will, 상상은 if+would","main":{"en":"If it rains, I'll stay home.","ko":"비가 오면 집에 있을 거야."}},
+  {"base":"because","ko":"\"왜?\"의 대답 — 원인의 뿌리","metaphor":"🌳 이유의 뿌리","desc":"because는 \"왜?\"에 대답하는 뿌리다. 결과 곁에 그 뿌리를 보여 준다. so와 방향이 반대 — \"아파서(because) 쉬었다\" ↔ \"아팠다, 그래서(so) 쉬었다\".","tagline":"because(뿌리) ↔ so(그래서)","main":{"en":"I stayed home because I was sick.","ko":"아파서 집에 있었어요."}},
+  {"base":"when","ko":"시간에 못을 박는 말","metaphor":"🕰 시간 못 박기","desc":"when은 사건을 시간에 못 박는다. 물을 때도(When...?), 이야기를 걸 때도(when I was young — 어릴 때라는 못에 걸린 이야기). 함정: when절의 미래는 현재형으로 쓴다(when I arrive).","tagline":"when절의 미래는 현재형으로","main":{"en":"Call me when you arrive.","ko":"도착하면 전화해 줘."}},
+  {"base":"then","ko":"그다음 칸 — 그렇다면","metaphor":"⏭ 다음 칸으로","desc":"then은 이야기의 다음 칸이다. 시간의 다음(First..., then...)도, 논리의 다음(그렇다면)도 then — 앞 칸을 딛고 다음 칸으로 넘어간다.","tagline":"시간의 다음 + 논리의 다음","main":{"en":"We had dinner, and then watched a movie.","ko":"우리는 저녁을 먹고, 그다음 영화를 봤어요."}},
+  {"base":"what","ko":"정체를 묻는 빈칸","metaphor":"❓ 빈칸 채우기","desc":"what은 \"무엇\"이라는 빈칸이다. 이름·내용·정체를 묻는 만능 빈칸 — 감탄에도 쓴다(What a day! — 어떤 하루인지 빈칸에 감탄을 채운다).","tagline":"정체를 묻는 만능 빈칸","main":{"en":"What do you mean?","ko":"무슨 뜻이에요?"}},
+  {"base":"who","ko":"사람 자리의 빈칸","metaphor":"🙎 누구?","desc":"who는 사람 자리의 빈칸이다. 묻기도 하고(Who is it?), 문장 속에서 사람을 이어 주는 손잡이도 된다(the person who called — 전화한 그 사람).","tagline":"묻기도 하고, 사람을 잇기도 한다","main":{"en":"Who told you that?","ko":"누가 그걸 말해 줬어?"}},
+  {"base":"how","ko":"방법과 정도를 재는 저울","metaphor":"⚖️ 어떻게·얼마나","desc":"how는 방법(어떻게)과 정도(얼마나)의 저울이다. How do you...?(방법), How old / How much(정도) — 저울에 무엇을 올리느냐만 다르다.","tagline":"how + 형용사 = 얼마나 ~한지","main":{"en":"How does this work?","ko":"이건 어떻게 작동해요?"}},
+  {"base":"where","ko":"장소 자리의 빈칸","metaphor":"🗺 어디?","desc":"where는 장소의 빈칸이다. 묻기도 하고, 장소를 이어 주기도 한다(the place where we met — 우리가 만난 그곳).","tagline":"장소를 묻고, 장소를 잇는다","main":{"en":"Where should we meet?","ko":"우리 어디서 만날까?"}},
+  {"base":"why","ko":"이유의 뿌리를 캐는 곡괭이","metaphor":"⛏ 왜? 뿌리 캐기","desc":"why는 because(뿌리)를 캐묻는 곡괭이다. Why not?은 \"안 될 이유가 어디 있어?\" = \"좋아, 하자\"라는 뜻 — 부정을 캐물어 긍정이 되는 재미있는 결.","tagline":"Why not? = 좋아, 하자","main":{"en":"Why did you choose this?","ko":"왜 이걸 골랐어요?"}},
+  {"base":"not","ko":"등호를 끊는 가위","metaphor":"✂️ 관계를 끊는 가위","desc":"not은 문장의 등호를 끊는 가위다. be·조동사 뒤에 딱 붙어서 자른다(is not, do not). 위치가 생명 — 일반동사 앞이 아니라 조동사 뒤에 선다.","tagline":"조동사·be 뒤에서 자른다","main":{"en":"I'm not sure.","ko":"확실하지 않아요."}},
+  {"base":"just","ko":"딱 — 방금·그냥·바로","metaphor":"🎯 딱 그 지점","desc":"just의 결은 \"딱\"이다. 시간이 딱 붙으면 \"방금\"(just arrived), 범위가 딱 좁혀지면 \"그냥\"(just looking), 정확히 딱 맞으면 \"바로\"(just right).","tagline":"방금·그냥·딱 — 전부 \"딱\"","main":{"en":"I just got home.","ko":"방금 집에 왔어."}},
+  {"base":"still","ko":"멈춘 듯 그대로 이어짐","metaphor":"🧊 그대로 이어짐","desc":"still은 \"아직도\"보다 \"그대로 이어지는 중\"이다. 움직임 없는 고요함(still water)과 상태가 안 변하고 이어짐(still waiting)이 한 뿌리다.","tagline":"변화 없이 이어지면 still","main":{"en":"Are you still there?","ko":"아직 거기 있어요?"}},
+  {"base":"already","ko":"예상보다 먼저 도착","metaphor":"🏁 벌써 결승선","desc":"already는 \"이미\"보다 \"예상보다 먼저\"다. 그래서 놀람이 배어 있다 — Is it 5 already?(벌써 5시야?). yet(아직 안 옴)의 짝이다.","tagline":"already(벌써 옴) ↔ yet(아직)","main":{"en":"I've already had lunch.","ko":"점심은 벌써 먹었어요."}},
+  {"base":"always","ko":"시간 전 구간에 칠해짐","metaphor":"🌈 전 구간 칠하기","desc":"always는 시간 전체에 칠해진 색이다. 빈도의 꼭대기(100%) — never(0%)의 반대 끝. 자리는 일반동사 앞, be동사 뒤다(I always go / I am always late).","tagline":"빈도 100% — 일반동사 앞·be 뒤","main":{"en":"She always keeps her promise.","ko":"그녀는 항상 약속을 지켜요."}},
+  {"base":"never","ko":"0% — 한 번도 없음","metaphor":"🚫 빈도 0%","desc":"never는 not보다 강한 \"한 번도 없음(0%)\"이다. never 자체가 부정이라 not과 겹쳐 쓰지 않는다 — I never give up 한 방이면 부정이 끝난다.","tagline":"never 하나로 부정 끝","main":{"en":"I'll never forget this.","ko":"이건 절대 잊지 않을 거야."}},
+  {"base":"too","ko":"선을 넘은 정도 + 나도","metaphor":"🌡 넘침 표시","desc":"too는 두 얼굴이다. 정도가 선을 넘으면 \"너무\"(too hot — 문제라는 신호), 문장 끝에 붙으면 \"~도\"(me too). very(그냥 강함)와 달리 too는 \"지나쳐서 문제\"다.","tagline":"very(강함) ↔ too(지나침) + 문끝 \"~도\"","main":{"en":"This coffee is too hot.","ko":"이 커피는 너무 뜨거워요."}},
+  {"base":"time","ko":"흐르는 시간 + 셀 수 있는 번","metaphor":"⏳ 흐름과 횟수","desc":"time은 흐르는 시간(셀 수 없음)이자 \"번·회\"(셀 수 있음 — three times)다. 함정: 시간이 있다/없다는 have time — 영어는 시간을 소유물처럼 가진다.","tagline":"흐름(time) + 횟수(times)","main":{"en":"I don't have time today.","ko":"오늘은 시간이 없어요."}},
+  {"base":"thing","ko":"이름 대신 담는 만능 상자","metaphor":"📦 만능 상자","desc":"thing은 이름이 안 떠오르거나 뭉뚱그릴 때 쓰는 만능 상자다. 물건도, 일도(things went well — 일들이 잘 굴러갔다), 추상적인 것도 다 담는다.","tagline":"이름 모를 땐 일단 thing","main":{"en":"How are things going?","ko":"요즘 일들은 어떻게 되어 가요?"}},
+  {"base":"day","ko":"하루 — 표현의 벽돌","metaphor":"☀️ 하루의 단위","desc":"day는 해가 뜨고 지는 하루다. one day(언젠가), these days(요즘), day off(일에서 떨어진 날 = 휴일) — 하루라는 단위가 표현의 벽돌이 된다.","tagline":"one day · these days · day off","main":{"en":"Have a nice day!","ko":"좋은 하루 보내요!"}},
+  {"base":"home","ko":"건물이 아니라 \"내 자리\"","metaphor":"🏠 마음이 놓이는 자리","desc":"home은 house(건물)와 다르다 — 마음이 놓이는 \"내 자리\"다. 그래서 go home에는 to가 없다. home이 장소 이름이 아니라 \"집으로\"라는 방향처럼 구르기 때문이다.","tagline":"go home — to 없음!","main":{"en":"I want to go home.","ko":"집에 가고 싶어요."}},
+  {"base":"friend","ko":"나이 무관 — 곁의 사람","metaphor":"🤝 곁을 지키는 사람","desc":"friend는 곁을 지키는 사람이다. 한국어 \"친구\"는 동갑 느낌이 있지만 영어 friend는 나이·상하가 없다 — 부모도, 스무 살 많은 사람도 friend가 될 수 있다.","tagline":"나이 무관 — 곁이면 friend","main":{"en":"She's an old friend of mine.","ko":"그녀는 나의 오랜 친구예요."}},
+  {"base":"mind","ko":"생각이 사는 방","metaphor":"🧠 생각의 방","desc":"mind는 생각이 사는 방이다. 방을 바꾸면 change one's mind(마음 바꾸기), 방에 걸려 있으면 on my mind(마음에 걸림), 방해가 싫으면 Do you mind...?(꺼리세요?).","tagline":"바꾸고·담고·꺼리는 생각의 방","main":{"en":"I changed my mind.","ko":"마음을 바꿨어요."}},
+  {"base":"heart","ko":"감정이 사는 심장","metaphor":"❤️ 감정의 집","desc":"heart는 심장이자 감정의 집이다. mind(생각의 방)와 짝 — 머리로 알고 가슴으로 느낀다. by heart(심장에 새겨서 = 외워서), break one's heart(마음을 부수다).","tagline":"mind(머리) ↔ heart(가슴)","main":{"en":"I learned it by heart.","ko":"그걸 통째로 외웠어요."}},
+  {"base":"word","ko":"말의 벽돌 + 약속의 무게","metaphor":"🧱 말의 벽돌","desc":"word는 말의 최소 벽돌이다. 이 벽돌 하나가 무거워지면 \"약속\"이 된다 — keep one's word(말을 지키다), You have my word(내 말을 걸게 = 약속할게).","tagline":"단어이자 약속","main":{"en":"I'll keep my word.","ko":"내 약속은 지킬게."}},
+  {"base":"world","ko":"우리 모두가 아는 그 세계","metaphor":"🌍 세계 전부","desc":"world는 지구라는 땅덩이보다 \"삶이 벌어지는 세계 전부\"다. 거의 항상 the가 붙는다 — 우리 모두가 아는 그 세계라서. 최상급 + in the world = 세상에서 제일.","tagline":"the world — 다 아는 그 세계","main":{"en":"She's the best in the world.","ko":"그녀가 세계 최고예요."}},
+  {"base":"life","ko":"살아 있음 + 살아온 이야기","metaphor":"🌱 살아 있음의 전부","desc":"life는 생명이자 한 사람이 살아온 이야기 전체다. 삶 일반을 말하면 관사 없이(Life is short), 한 사람의 인생이면 a를 붙인다(a happy life).","tagline":"삶 일반(무관사) + 한 인생(a life)","main":{"en":"Life is short.","ko":"인생은 짧아요."}},
+  {"base":"good","ko":"제 역할을 해내는 좋음","metaphor":"👍 제 몫을 함","desc":"good은 착함보다 \"제 역할을 해냄\"이다. 음식이 제 맛을 내면 good, 어떤 일에서 제 몫을 해내면 good at(잘함) — be good at cooking은 요리에서 제 몫을 하는 상태다.","tagline":"good at ~ = ~를 잘함","main":{"en":"She is good at cooking.","ko":"그녀는 요리를 잘해요."}},
+  {"base":"right","ko":"곧아서 맞다 — 오른쪽·권리까지","metaphor":"✅ 곧게 맞음","desc":"right의 뿌리는 \"곧다\"다. 곧으면 맞고(You're right), 곧게 뻗은 쪽이 오른쪽이고, 곧게 지켜져야 할 몫이 권리(rights)다. 대답 \"Right.\"은 맞장구.","tagline":"맞다·오른쪽·권리 — 뿌리는 \"곧음\"","main":{"en":"You're right about that.","ko":"그 점은 네 말이 맞아."}},
+  {"base":"new","ko":"시간이 안 묻은 상태","metaphor":"✨ 갓 나온 반짝임","desc":"new는 시간이 안 묻은 상태다. 물건도, 소식도(What's new? — 새로 생긴 일 있어?), 사람도(I'm new here — 여기 갓 온 사람이에요) 전부 new로 반짝인다.","tagline":"What's new? = 별일 있어?","main":{"en":"I'm new here.","ko":"저는 여기 처음이에요."}},
+  {"base":"sure","ko":"흔들리지 않는 확신 + 흔쾌한 대답","metaphor":"🪨 흔들림 없음","desc":"sure는 마음이 흔들리지 않는 상태다. 확신(I'm sure)이자, 부탁에 대한 흔쾌한 \"그럼요\"(Sure!) — 흔들림 없이 바로 나오는 대답이라서다.","tagline":"I'm sure(확신) + Sure!(그럼요)","main":{"en":"Are you sure about this?","ko":"이거 확실해요?"}},
+  {"base":"same","ko":"겹쳐 보면 하나","metaphor":"🪞 겹치면 하나","desc":"same은 겹쳐 보면 하나가 되는 것이다. 거의 항상 the와 다닌다(the same) — \"우리 둘 다 아는 그 기준과 겹친다\"는 신호가 필요해서다.","tagline":"항상 the same — the가 세트","main":{"en":"We have the same idea.","ko":"우리 생각이 같네요."}},
+  {"base":"different","ko":"다른 쪽으로 갈라짐","metaphor":"🔱 갈라진 길","desc":"different의 뿌리는 \"서로 다른 쪽으로 실려 감\"이다. 갈라진 만큼 다르다 — 비교 대상은 from으로 잇는다(different from — 어디에서 갈라졌는지).","tagline":"different from ~ = ~와 갈라짐","main":{"en":"My idea is different from yours.","ko":"내 생각은 네 생각과 달라요."}},
+  {"base":"important","ko":"안으로 무게가 실림","metaphor":"⚖️ 무게가 실림","desc":"important는 \"안으로 실어 나르다(import)\"에서 왔다 — 안에 무게가 실린 것이다. 무게가 실렸으니 다루는 순서가 앞으로 온다.","tagline":"무게가 실린 것부터 먼저","main":{"en":"This is really important to me.","ko":"이건 나에게 정말 중요해요."}},
 ];
 
 /* ── 문장 4단 분석 (기존 우측 콘텐츠 살리기 — 워크플로우 산출) ── */
@@ -2863,6 +2947,10 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
     committed = true;
     saveState();
   } catch(err){
+    // v2.42: 오류 말풍선도 liveTarget으로 — 전송 직후 재렌더가 끼면 mdEl이 분리된 노드가 되어
+    // 안내(키 없음·중단·오류)가 보이지 않는 간헐 결함(하네스에서 관찰). 스트리밍 경로와 같은 재조회 원칙.
+    const errT = liveTarget();
+    const errMd = errT ? errT.md : mdEl;
     if(err && (err.name === "AbortError" || /abort/i.test(String(err.message)))){
       // ⏹ 사용자가 중단 — 이미 온 내용이 있으면 그대로 기록, 없으면 질문 롤백
       if(acc){
@@ -2871,11 +2959,11 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
         committed = true;
         saveState();
       } else {
-        mdEl.innerHTML = "⏹ 답변을 중단했어요.";
+        errMd.innerHTML = "⏹ 답변을 중단했어요.";
         rollback();
       }
     } else if(String(err.message) === "NO_KEY"){
-      mdEl.innerHTML = '<b>API 키가 아직 없어요.</b><br>아래 버튼으로 <b>⚙️ 설정</b>을 열어 Claude API 키를 넣으면 대화가 시작됩니다.<br><button class="key-open" type="button" data-open-settings>⚙️ 설정 열기</button><br><span style="color:var(--text-mute);font-size:.85em">키는 이 브라우저에만 저장돼요 — 컴퓨터·폰 각각 한 번씩 넣어 주세요. (console.anthropic.com에서 발급)</span>'; // v2.40: 모바일엔 "우측 상단 ⚙️"가 없음(보관 탭 안) — 안내에서 바로 연다
+      errMd.innerHTML = '<b>API 키가 아직 없어요.</b><br>아래 버튼으로 <b>⚙️ 설정</b>을 열어 Claude API 키를 넣으면 대화가 시작됩니다.<br><button class="key-open" type="button" data-open-settings>⚙️ 설정 열기</button><br><span style="color:var(--text-mute);font-size:.85em">키는 이 브라우저에만 저장돼요 — 컴퓨터·폰 각각 한 번씩 넣어 주세요. (console.anthropic.com에서 발급)</span>'; // v2.40: 모바일엔 "우측 상단 ⚙️"가 없음(보관 탭 안) — 안내에서 바로 연다
       rollback(); // 실패한 user 턴 롤백
       if(!getDraft(ownerKey)){ setDraft(ownerKey, text); saveState(); } // 질문은 입력창 초안으로 — 즉시 저장(디바운스 400ms 안에 reload가 겹치면 유실되는 race 차단, 개발 렌즈)
       if(img){ _pendImg = img; showImgPrev(img); } // v2.35 QA: 첨부 이미지도 되돌린다 — 무언 유실 방지 (NO_KEY에서 특히 흔한 시나리오)
@@ -2894,9 +2982,9 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
         if(t) t.md.innerHTML = mdRender(aMsg.content);
       } else {
         if(kMsg.includes("유효하지 않아요")){ // v2.41: 키 오류(401) — 점검 절차 + 바로 여는 설정 버튼 (폰 복붙에서 자주 발생)
-          mdEl.innerHTML = '⚠️ <b>API 키가 유효하지 않아요.</b><br>점검해 보세요: ① 키가 <b>sk-ant-</b>로 시작하는지 ② 앞뒤가 잘리지 않고 <b>전체</b>가 붙여넣어졌는지 ③ 콘솔에서 그 키를 지웠다면 새 키 발급. (공백·줄바꿈은 저장할 때 자동으로 지워 드려요)<br><button class="key-open" type="button" data-open-settings>⚙️ 설정 열기</button>';
+          errMd.innerHTML = '⚠️ <b>API 키가 유효하지 않아요.</b><br>점검해 보세요: ① 키가 <b>sk-ant-</b>로 시작하는지 ② 앞뒤가 잘리지 않고 <b>전체</b>가 붙여넣어졌는지 ③ 콘솔에서 그 키를 지웠다면 새 키 발급. (공백·줄바꿈은 저장할 때 자동으로 지워 드려요)<br><button class="key-open" type="button" data-open-settings>⚙️ 설정 열기</button>';
         } else {
-          mdEl.innerHTML = "⚠️ " + esc(kMsg);
+          errMd.innerHTML = "⚠️ " + esc(kMsg);
         }
         rollback();
         if(!getDraft(ownerKey)){ setDraft(ownerKey, text); saveState(); } // 질문은 입력창 초안으로 — 즉시 저장(디바운스 400ms 안에 reload가 겹치면 유실되는 race 차단, 개발 렌즈)
@@ -3489,7 +3577,7 @@ function renderWordContent(){
       <div class="sent-ko">${esc(w.main.ko)}</div>
       <div class="sent-hint">${a ? "→ 우측 <b>📊 분석</b> 탭에 이 문장의 4단 파도가 있어요" : "이 문장의 4단 분석은 아직 없어요 — 위 대화창에 부탁하면 AI가 즉석에서 타 줍니다"}</div>
     </section>
-    ${(() => { const parts = richPartsHTML(w.base, false); if(!parts) return "";
+    ${(() => { const parts = richPartsHTML(w.base, false); if(!parts) return '<div class="stub-note">🌊 이 단어의 깊이 콘텐츠(함정·패턴·문화 노트)는 채워지는 중이에요 — 위 대화창에 물어보면 지금 바로 깊게 배울 수 있어요.</div>'; // v2.42: 신규 80단어 스텁 안내 (백필 큐 진행 중임을 학습자에게 정직하게)
       // 라벨은 이 단어에 실제로 있는 섹션 기준 (없는 섹션까지 세면 라벨이 화면과 어긋남 — QA 지적)
       const present = [...parts.matchAll(/data-sec="([a-z]+)"/g)].map(x => x[1]);
       const anyOpen = present.some(k => !FOLD[k]);
@@ -3511,7 +3599,14 @@ function detectWordsAll(text){
    srcText(지금 오가는 대화·스트리밍 중 텍스트 포함)에서 단어를 감지해 엔진에 쌓인 데이터를 꺼낸다.
    v2.8 주제 판정: 기능어(a·the·be·and·of·on)는 어느 영어 문장에나 등장 — AI 답변 예문에 우연히 나온 것만으로는
    주제가 아니다. 스레드의 주인 단어(anchor)이거나 사용자가 직접 쓴 텍스트(질문·인용)에 나왔을 때만 주제로 인정. */
-const FUNC_WORDS = new Set(["a", "the", "be", "and", "of", "on", "you", "that", "so", "out", "about", "really", "go"]);
+/* v2.42: 100단어 확장에 맞춰 기능어 세트 확장 — 어느 문장에나 나오는 단어가 관련 콘텐츠 주제를 도배하지 않게.
+   원칙(v2.8): 기능어·초고빈도 동사는 포함(사용자 텍스트에 직접 등장하면 여전히 주제로 인정), 내용어(kind·time·thing·try·help·work·find·형용사)는 제외. */
+const FUNC_WORDS = new Set(["a", "the", "be", "and", "of", "on", "you", "that", "so", "out", "about", "really", "go",
+  "I", "it", "this", "we", "they", "do", "will", "would", "can", "should", "must", "may",
+  "to", "in", "at", "for", "with", "from", "by", "up", "off", "over", "under", "into", "through",
+  "but", "or", "if", "because", "when", "then", "what", "who", "how", "where", "why",
+  "not", "just", "still", "already", "always", "never", "too",
+  "have", "get", "make", "take", "give", "come", "know", "think", "see", "want", "like", "use", "say", "look", "put", "feel"]);
 function relatedGroupsHTML(srcText, opt){
   opt = opt || {};
   const userWords = new Set(detectWordsAll(opt.userText || ""));
@@ -4757,7 +4852,24 @@ document.getElementById("chat-input").addEventListener("paste", async (e) => {
 document.getElementById("img-prev-x").addEventListener("click", clearImgPrev);
 // v2.35 QA: 재로드 복구(repairThread)가 살려 둔 미전송 첨부 이미지를 첨부 대기로 되돌린다
 if(saveState._restoreImg){ _pendImg = saveState._restoreImg; showImgPrev(_pendImg); delete saveState._restoreImg; }
-function imgHTML(img){ return `<img class="msg-img" src="data:${esc(img.media)};base64,${esc(img.data)}" alt="첨부 이미지">`; }
+function imgHTML(img){ return `<img class="msg-img" src="data:${esc(img.media)};base64,${esc(img.data)}" alt="첨부 이미지" title="클릭하면 크게 봐요">`; }
+/* v2.42: 말풍선 이미지 클릭 → 화면 크기로 크게 보기 (사용자 요청 "다시 클릭했을 때 원본 크기로") — 아무 데나 클릭·Esc로 닫기 */
+document.addEventListener("click", (e) => {
+  const im = e.target.closest(".msg-img");
+  if(!im) return;
+  const box = document.createElement("div");
+  box.className = "img-lightbox";
+  const big = document.createElement("img");
+  big.src = im.src; big.alt = "첨부 이미지 크게 보기";
+  box.appendChild(big);
+  box.addEventListener("click", () => box.remove());
+  document.body.appendChild(box);
+});
+document.addEventListener("keydown", (e) => {
+  if(e.key !== "Escape") return;
+  const lb = document.querySelector(".img-lightbox");
+  if(lb) lb.remove();
+});
 /* 텍스트로 직접 중앙 대화 시작 — 입력창 경유 없이 (📖 뜻 해석 · v2.7 빠른 실행 버튼) */
 function sendMainText(text, extra, img){
   if(!text && !img) return;
