@@ -527,7 +527,8 @@
   /* 설정 모달 */
   .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;display:none;backdrop-filter:blur(3px);}
   .modal-bg.show{display:block;}
-  .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.25);z-index:9999;width:min(92vw,520px);display:none;padding:22px 24px;}
+  .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.25);z-index:9999;width:min(92vw,520px);display:none;padding:22px 24px;max-height:92vh;overflow-y:auto;} /* v2.44: 기기 이사 섹션 추가로 설정창이 길어짐 — 작은 화면에서 내부 스크롤 */
+  #move-code{font-family:ui-monospace,Consolas,monospace;font-size:.7rem;word-break:break-all;}
   .modal.show{display:block;}
   .modal h2{font-size:1.05rem;margin-bottom:14px;}
   .modal label{display:block;font-size:.8rem;color:var(--text-mute);margin:12px 0 4px;}
@@ -702,7 +703,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.43</span>
+    <span class="build">pAdo · v2.44</span>
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
       <option value="">🪜 단계 선택 안 함</option>
@@ -853,7 +854,7 @@
   <h2>⚙️ 설정</h2>
   <label>Claude API 키</label>
   <input type="password" id="set-key" placeholder="sk-ant-..." autocomplete="off">
-  <div class="hint">키는 <b>이 브라우저의 localStorage에만</b> 저장되고, Anthropic API 호출에만 쓰입니다. 어디에도 전송·업로드되지 않습니다. 키 발급: console.anthropic.com → API Keys</div>
+  <div class="hint">키는 <b>이 브라우저에만</b> 저장되고, Anthropic API 호출에만 쓰입니다. 어디에도 전송·업로드되지 않습니다. 키 발급: console.anthropic.com → API Keys</div>
   <label>모델</label>
   <select id="set-model">
     <option value="claude-opus-4-8">Claude Opus 4.8 — 기본 (깊이 최상)</option>
@@ -863,6 +864,15 @@
   <label>AI 역할 지시문 (시스템 프롬프트) <button type="button" id="set-system-reset" style="float:right;border:1px solid var(--border);background:var(--card-soft);color:var(--text-soft);border-radius:6px;padding:1px 8px;font-size:.72rem;cursor:pointer;">기본값 복원</button></label>
   <textarea id="set-system" rows="8" spellcheck="false"></textarea>
   <div class="hint">이 앱의 AI가 "영어 튜터"처럼 행동하는 이유가 <b>바로 이 지시문</b>입니다 — 매 질문마다 함께 전송돼요. 자유롭게 수정하세요. 비우고 저장하면 기본값으로 돌아갑니다.</div>
+  <label style="margin-top:14px">📦 기기 이사 — PC ↔ 모바일 통째 옮기기</label>
+  <div class="hint">API 키·학습 기록(오늘의 복습)·대화·설정 <b>전부</b>를 코드 하나로 묶어요. 옮기는 법: <b>①</b> 지금 쓰던 기기에서 [이사 코드 만들기] → [복사] <b>②</b> 메일이나 메신저의 "나에게 보내기"로 다른 기기에 전달 <b>③</b> 그 기기에서 코드를 복사해 이 칸에 붙여넣고 [가져오기]. <b>⚠️ 코드 안에 API 키가 들어있어요 — 다른 사람에게는 절대 보내지 마세요.</b></div>
+  <textarea id="move-code" rows="3" spellcheck="false" placeholder="[이사 코드 만들기]를 누르면 여기에 코드가 나와요 — 다른 기기에서 만든 코드를 붙여넣는 곳이기도 해요"></textarea>
+  <div class="row" style="justify-content:flex-start;flex-wrap:wrap">
+    <button type="button" id="move-export">이사 코드 만들기</button>
+    <button type="button" id="move-copy">복사</button>
+    <button type="button" id="move-save-file">파일로 저장</button>
+    <button type="button" class="primary" id="move-import">가져오기</button>
+  </div>
   <div class="row">
     <button type="button" id="set-cancel">닫기</button>
     <button type="button" class="primary" id="set-save">저장</button>
@@ -5384,6 +5394,95 @@ document.getElementById("set-save").addEventListener("click", () => {
     else localStorage.setItem(LS_SYSTEM, sys);
   } catch(e){ console.warn(e); }
   closeSettings();
+});
+
+/* ── v2.44: 기기 이사 — PC↔모바일 통째 이송 ──
+   we_* 전 키(API 키·SRS·대화·설정·메모)를 "PADO1." + base64(JSON) 코드 하나로.
+   서버를 전혀 거치지 않는 기기→기기 직접 이송 — 키 보안 원칙(localStorage 밖 미전송) 유지. */
+const MOVE_MAGIC = "PADO1.";
+function moveB64Encode(str){
+  const bytes = new TextEncoder().encode(str);
+  let bin = "";
+  // String.fromCharCode(...bytes)는 수 MB에서 인자 한도 초과 — 반드시 청크로
+  for(let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+function moveB64Decode(b64){
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for(let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+function moveExportCode(){
+  const data = {};
+  for(let i = 0; i < localStorage.length; i++){
+    const k = localStorage.key(i);
+    if(k && k.indexOf("we_") === 0) data[k] = localStorage.getItem(k);
+  }
+  return MOVE_MAGIC + moveB64Encode(JSON.stringify({ app: "pado", v: 1, data }));
+}
+function moveParseCode(raw){
+  // 메신저·메일을 거치며 낀 공백·줄바꿈·제로폭 문자 제거 — base64에는 공백이 없다 (v2.41 키 정리와 같은 이유)
+  const code = String(raw || "").replace(/[\s​-‍﻿]+/g, "");
+  if(!code) return { ok: false, msg: "코드를 먼저 붙여넣어 주세요" };
+  const body = code.indexOf(MOVE_MAGIC) === 0 ? code.slice(MOVE_MAGIC.length) : code;
+  let obj = null;
+  try { obj = JSON.parse(moveB64Decode(body)); } catch(e){}
+  if(!obj || obj.app !== "pado" || !obj.data || typeof obj.data !== "object")
+    return { ok: false, msg: "이사 코드가 아니에요 — 코드를 처음부터 끝까지 전체 복사했는지 확인해 주세요" };
+  return { ok: true, data: obj.data };
+}
+function moveApplyData(data){
+  // 성공(ok)과 시도(total)를 분리해 반환 — 저장 공간 부족 등으로 일부만 들어가면 정직하게 알린다 (QA 렌즈)
+  let ok = 0, total = 0;
+  for(const k in data){
+    if(k.indexOf("we_") === 0 && typeof data[k] === "string"){
+      total++;
+      try { localStorage.setItem(k, data[k]); ok++; } catch(e){ console.warn("이사 항목 저장 실패:", k, e); }
+    }
+  }
+  return { ok, total };
+}
+document.getElementById("move-export").addEventListener("click", () => {
+  const ta = document.getElementById("move-code");
+  ta.value = moveExportCode();
+  ta.select();
+  weToast("📦 이사 코드를 만들었어요 — [복사]를 눌러 옮기세요");
+});
+document.getElementById("move-copy").addEventListener("click", async () => {
+  const ta = document.getElementById("move-code");
+  if(!ta.value){ weToast("먼저 [이사 코드 만들기]를 눌러 주세요"); return; }
+  let ok = false;
+  try { await navigator.clipboard.writeText(ta.value); ok = true; } catch(e){}
+  if(!ok){ try { ta.select(); ok = document.execCommand("copy"); } catch(e){} }
+  weToast(ok ? "복사했어요 — \"나에게 보내기\"로 다른 기기에 전달하세요" : "자동 복사가 막혔어요 — 코드를 길게 눌러 직접 복사해 주세요");
+});
+document.getElementById("move-save-file").addEventListener("click", () => {
+  const ta = document.getElementById("move-code");
+  if(!ta.value) ta.value = moveExportCode();
+  const blob = new Blob([ta.value], { type: "text/plain" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "pado-이사코드.txt";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+  weToast("파일로 저장했어요 — 다른 기기에서 파일을 열어 내용 전체를 복사해 붙여넣으세요");
+});
+document.getElementById("move-import").addEventListener("click", () => {
+  const p = moveParseCode(document.getElementById("move-code").value);
+  if(!p.ok){ weToast("⚠️ " + p.msg); return; }
+  // 적용은 확인 이후에만 — 확인 전에는 localStorage에 아무것도 쓰지 않는다
+  if(!confirm("이 기기의 학습 기록·설정을 가져온 내용으로 덮어써요.\n(코드에 담긴 항목만 바뀌고, 이 기기에만 있는 항목은 남아요)\n계속할까요?")) return;
+  const r = moveApplyData(p.data);
+  if(r.total === 0){ weToast("코드에 옮길 항목이 없었어요 — 원래 기기에서 [이사 코드 만들기]를 다시 눌러 보세요"); return; }
+  if(r.ok < r.total){
+    // 일부 실패를 성공처럼 알리지 않는다 — 정직한 실패 안내 원칙 (읽을 시간을 주고 새로 고침)
+    weToast("⚠️ 일부만 가져왔어요 (" + r.ok + "/" + r.total + ") — 브라우저 저장 공간이 부족할 수 있어요. 새로 고침할게요");
+    setTimeout(() => location.reload(), 2200);
+    return;
+  }
+  weToast("✅ 전부 가져왔어요 (" + r.ok + "칸) — 새로 고침할게요");
+  setTimeout(() => location.reload(), 700);
 });
 
 /* ── 리사이저 (가로: 중앙↔우측 · 세로: 파도 대화↔아래 콘텐츠) — 상태 영속 ── */
