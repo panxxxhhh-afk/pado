@@ -483,7 +483,7 @@
   .fold-all-btn:hover{border-color:var(--accent);color:var(--accent-deep);}
 
   /* v2.7: 중앙 채팅 빠른 실행 버튼 — 단어 스레드에서 한 번에 연습 시작 */
-  .qa-row{display:flex;flex-wrap:wrap;gap:6px;padding:7px 14px;border-bottom:1px solid var(--border-soft);background:var(--card);}
+  .qa-row{display:flex;flex-wrap:wrap;gap:6px;padding:7px 14px;border-top:1px solid var(--border-soft);background:var(--card);flex:none;} /* v2.46: 입력창 위로 이동(border-top) + flex:none — 세로 flex에서 shrink로 잘려 로그에 깔리던 결함 수정 */
   .qa-row:empty{display:none;}
   /* v2.40: 버튼 정갈 — 빠른 버튼·채팅 컨트롤 공통 높이(30px)로 들쭉날쭉 제거 (사용자: "정갈하지 못해, 간격도 마음대로") */
   .qa-btn{border:1px solid var(--border);background:var(--card);color:var(--text-soft);border-radius:8px;padding:0 12px;height:30px;display:inline-flex;align-items:center;font-size:.76rem;cursor:pointer;font-weight:500;box-sizing:border-box;}
@@ -703,7 +703,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.45</span>
+    <span class="build">pAdo · v2.46</span>
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
       <option value="">🪜 단계 선택 안 함</option>
@@ -744,8 +744,8 @@
           </div>
         </div>
         <div class="q-index" id="q-index" hidden></div>
-        <div class="qa-row" id="qa-row"></div>
         <div class="chat-log" id="chat-log"></div>
+        <div class="qa-row" id="qa-row"></div><!-- v2.46: 로그 아래·입력창 위 — 모바일에서 커서가 입력창에 간 순간 버튼이 엄지 거리 안 + 로그가 커져도 안 가려짐 -->
         <div class="img-prev" id="img-prev" hidden><!-- v2.35: 붙여넣은 이미지 첨부 미리보기 -->
           <img id="img-prev-img" alt="첨부한 이미지 미리보기">
           <span class="ip-hint">이미지 첨부됨 — 질문과 함께 전송돼요</span>
