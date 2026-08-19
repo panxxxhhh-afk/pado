@@ -703,7 +703,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.44</span>
+    <span class="build">pAdo · v2.45</span>
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
       <option value="">🪜 단계 선택 안 함</option>
@@ -873,6 +873,10 @@
     <button type="button" id="move-save-file">파일로 저장</button>
     <button type="button" class="primary" id="move-import">가져오기</button>
   </div>
+  <label style="margin-top:14px">🔄 자동 동기화 — 기기 간 학습 기록 자동 맞춤 (선택)</label>
+  <div class="hint">나만의 동기화 서버를 만들면(프로젝트 <b>sync 폴더의 10분 안내</b> 참조) 학습 기록·대화·설정이 기기 간 <b>자동으로</b> 맞춰져요. <b>API 키와 동기화 암호는 서버에 올라가지 않아요</b> — 키만은 위 [기기 이사]로 한 번 옮기세요. 두 칸을 비우고 저장하면 동기화가 꺼져요.</div>
+  <input type="text" id="sync-url" placeholder="동기화 서버 주소 — https://pado-sync-….workers.dev (비우면 꺼짐)" autocomplete="off">
+  <input type="password" id="sync-secret" placeholder="동기화 암호 — 서버 만들 때 정한 그 문장" autocomplete="off" style="margin-top:6px">
   <div class="row">
     <button type="button" id="set-cancel">닫기</button>
     <button type="button" class="primary" id="set-save">저장</button>
@@ -4952,6 +4956,8 @@ function openSettings(){
   document.getElementById("set-key").value = localStorage.getItem(LS_KEY) || "";
   document.getElementById("set-model").value = localStorage.getItem(LS_MODEL) || "claude-opus-4-8";
   document.getElementById("set-system").value = localStorage.getItem(LS_SYSTEM) || PHILO;
+  document.getElementById("sync-url").value = localStorage.getItem("we_sync_url") || ""; // v2.45
+  document.getElementById("sync-secret").value = localStorage.getItem("we_sync_secret") || "";
   modalBg.classList.add("show"); modal.classList.add("show");
 }
 function closeSettings(){ modalBg.classList.remove("show"); modal.classList.remove("show"); }
@@ -5392,6 +5398,14 @@ document.getElementById("set-save").addEventListener("click", () => {
     // 지시문: 비었거나 기본값과 동일하면 저장 안 함(기본 PHILO 사용) — 커스텀만 보관
     if(!sys.trim() || sys === PHILO) localStorage.removeItem(LS_SYSTEM);
     else localStorage.setItem(LS_SYSTEM, sys);
+    // v2.45: 자동 동기화 설정 — 암호도 키처럼 보이지 않는 문자 정리 (복붙 오염 방어)
+    const su = document.getElementById("sync-url").value.trim().replace(/\/+$/, "");
+    const ss = document.getElementById("sync-secret").value.replace(/[\s​-‍﻿]+/g, "");
+    const syncWasOn = syncCfg().on;
+    if(su) localStorage.setItem(LS_SYNC_URL, su); else localStorage.removeItem(LS_SYNC_URL);
+    if(ss) localStorage.setItem(LS_SYNC_SECRET, ss); else localStorage.removeItem(LS_SYNC_SECRET);
+    if(syncCfg().on) initSync(); // 켜짐/변경 — 즉시 pull부터 (initSync는 중복 타이머 가드)
+    else if(syncWasOn) weToast("🔄 자동 동기화를 껐어요");
   } catch(e){ console.warn(e); }
   closeSettings();
 });
@@ -5484,6 +5498,96 @@ document.getElementById("move-import").addEventListener("click", () => {
   weToast("✅ 전부 가져왔어요 (" + r.ok + "칸) — 새로 고침할게요");
   setTimeout(() => location.reload(), 700);
 });
+
+/* ── v2.45: 자동 동기화 — 기기 간 학습 기록 자동 맞춤 (Cloudflare Worker, sync/ 폴더) ──
+   흐름: 로드 시 pull 1회(원격이 최신이면 적용 → 실제로 달라진 값이 있을 때만 1회 새로 고침)
+        → 이후 push만(60초 간격 dirty 체크 + 창 이탈 시 flush).
+   안전장치:
+   - 제외 4종: we_api_key(키는 localStorage 밖 미전송 원칙), we_sync_url·we_sync_secret(암호를 서버에 안 올림),
+     we_sync_last(로컬 커서) — push·pull 양쪽에서 제외.
+   - pull이 한 번도 성공 못 한 기기는 push 금지(_syncPulledOk) — 새 기기의 빈 상태가 서버 기록을 덮는 사고 차단.
+   - 서버(worker.js)도 updatedAt 역행 PUT을 409로 거부 + we_api_key 이중 폐기.
+   - LWW(마지막 쓰기 승리) 블롭 단위 — 단일 학습자 전제(sync/README-설정.md에 명시). */
+const LS_SYNC_URL = "we_sync_url", LS_SYNC_SECRET = "we_sync_secret", LS_SYNC_LAST = "we_sync_last";
+const SYNC_EXCLUDE = [LS_KEY, LS_SYNC_URL, LS_SYNC_SECRET, LS_SYNC_LAST];
+let _syncPulledOk = false, _syncPushedHash = "", _syncBusy = false, _syncTimer = null;
+function syncCfg(){
+  const url = String(localStorage.getItem(LS_SYNC_URL) || "").trim().replace(/\/+$/, "");
+  const secret = String(localStorage.getItem(LS_SYNC_SECRET) || "").trim();
+  return { url, secret, on: !!(url && secret) };
+}
+function syncSnapshot(){
+  const data = {};
+  for(let i = 0; i < localStorage.length; i++){
+    const k = localStorage.key(i);
+    if(k && k.indexOf("we_") === 0 && SYNC_EXCLUDE.indexOf(k) < 0) data[k] = localStorage.getItem(k);
+  }
+  return data;
+}
+function syncHash(data){ // 가벼운 dirty 판정 (FNV-1a + 길이)
+  const s = JSON.stringify(data);
+  let h = 2166136261;
+  for(let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return String(h >>> 0) + ":" + s.length;
+}
+async function syncFetch(method, body){
+  const cfg = syncCfg();
+  if(!cfg.on) return null;
+  return fetch(cfg.url + "/sync", {
+    method,
+    headers: { "Authorization": "Bearer " + cfg.secret, "Content-Type": "application/json" },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+}
+async function syncPull(){
+  try {
+    const r = await syncFetch("GET");
+    if(!r) return;
+    if(r.status === 401){ weToast("🔄 동기화 암호가 서버와 달라요 — ⚙️ 설정에서 확인해 주세요"); return; }
+    if(!r.ok) return; // 일시 장애 — 조용히 다음 기회에
+    const remote = await r.json();
+    _syncPulledOk = true;
+    const last = Number(localStorage.getItem(LS_SYNC_LAST) || 0);
+    if(remote && remote.data && typeof remote.updatedAt === "number" && remote.updatedAt > last){
+      let changed = 0;
+      for(const k in remote.data){
+        if(k.indexOf("we_") !== 0 || SYNC_EXCLUDE.indexOf(k) >= 0) continue; // 제외 목록은 받아도 안 쓴다 (이중 방어)
+        if(typeof remote.data[k] !== "string") continue;
+        if(localStorage.getItem(k) !== remote.data[k]){ try { localStorage.setItem(k, remote.data[k]); changed++; } catch(e){ console.warn("동기화 적용 실패:", k, e); } }
+      }
+      localStorage.setItem(LS_SYNC_LAST, String(remote.updatedAt));
+      if(changed){
+        weToast("🔄 다른 기기의 학습 기록을 가져왔어요 — 새로 고침할게요");
+        setTimeout(() => location.reload(), 900);
+        return;
+      }
+    }
+    _syncPushedHash = syncHash(syncSnapshot()); // 현재 상태를 push 기준선으로
+  } catch(e){ /* 오프라인 등 — 조용히 */ }
+}
+async function syncPush(){
+  if(!_syncPulledOk || _syncBusy) return; // pull 성공 전 push 금지 — 빈 기기가 서버를 덮는 사고 차단
+  const data = syncSnapshot();
+  const h = syncHash(data);
+  if(h === _syncPushedHash) return; // 변화 없음
+  _syncBusy = true;
+  try {
+    const now = Date.now();
+    const r = await syncFetch("PUT", { updatedAt: now, data });
+    if(r && r.ok){ _syncPushedHash = h; localStorage.setItem(LS_SYNC_LAST, String(now)); }
+    else if(r && r.status === 409){ _syncBusy = false; await syncPull(); return; } // 다른 기기가 더 최신 — 받아온다
+  } catch(e){ /* 다음 기회에 */ }
+  _syncBusy = false;
+}
+function initSync(){
+  if(!syncCfg().on) return;
+  syncPull();
+  if(!_syncTimer){
+    _syncTimer = setInterval(syncPush, 60000);
+    document.addEventListener("visibilitychange", () => { if(document.visibilityState === "hidden") syncPush(); });
+  }
+}
+initSync();
 
 /* ── 리사이저 (가로: 중앙↔우측 · 세로: 파도 대화↔아래 콘텐츠) — 상태 영속 ── */
 (function initResizers(){
