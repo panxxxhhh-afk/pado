@@ -548,9 +548,26 @@
   .rv-head .sv-del{margin-left:auto;}
   .rv-point{padding:6px 0;border-top:1px dashed var(--border-soft);}
   .rv-title{font-weight:700;font-size:.85rem;}
-  .rv-why{font-size:.78rem;color:var(--text-mute);margin-top:2px;line-height:1.5;}
+  .rv-why{font-size:.78rem;color:var(--text-mute);margin-top:2px;line-height:1.5;white-space:pre-line;} /* v2.48: "원래 문맥" 줄이 붙지 않게 (esc는 그대로 — 개행만 살림) */
   .rv-drill{font-size:.8rem;margin-top:4px;background:var(--card-soft);border-radius:7px;padding:5px 9px;line-height:1.5;}
-  /* v2.37: 간격 반복(오늘의 복습) — 1·3·10·30·90일 재출현 */
+  .rv-manual{font-size:.68rem;border:1px solid var(--border);border-radius:999px;padding:1px 7px;color:var(--accent-deep);background:var(--accent-soft);} /* v2.48: 드래그로 직접 담은 복습 세트 표식 */
+  /* v2.47: 학습 진단 — 지표 카드·정착 막대·처방 */
+  .lr-box{border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:12px;background:var(--card-soft);}
+  .lr-line{margin:10px 0 4px;font-size:.84rem;color:var(--text);}
+  .lr-bar{display:flex;height:12px;border-radius:999px;overflow:hidden;margin:7px 0 5px;background:var(--border-soft);}
+  .lr-bar i{display:block;height:100%;}
+  .lr-bar i.e,.lr-leg i.e{background:#f3b64b;} .lr-bar i.m,.lr-leg i.m{background:#5d9cef;}
+  .lr-bar i.l,.lr-leg i.l{background:#6ac47e;} .lr-bar i.d,.lr-leg i.d{background:var(--accent);}
+  .lr-leg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.72rem;color:var(--text-mute);}
+  .lr-leg i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;}
+  /* 진단의 강조는 .hot(연습 기록의 "연속 오답")과 뜻이 달라 클래스를 분리 — 같은 표식이 두 의미를 갖지 않게 */
+  .lr-box .g-tag.lr-hot{border-color:rgba(194,88,88,.6);color:#c25858;font-weight:700;}
+  .lr-warn{margin-top:6px;font-size:.78rem;color:#b4541f;background:#fff3e8;border:1px solid #f2d3b6;border-radius:8px;padding:5px 9px;}
+  .lr-act{border-left:3px solid var(--accent);padding:5px 0 5px 10px;margin:6px 0;}
+  .lr-act b{display:block;font-size:.85rem;color:var(--text);}
+  .lr-act span{font-size:.76rem;color:var(--text-soft);}
+  .lr-ask{margin-top:10px;font-size:.76rem;color:var(--text-mute);border-top:1px dashed var(--border);padding-top:8px;}
+  /* v2.37: 간격 반복(오늘의 복습) — 1·3·7·14·30·90일 재출현 */
   .srs-box{border:1px solid var(--accent);border-radius:10px;padding:9px 12px;margin-bottom:12px;background:var(--card);}
   .srs-head{font-size:.78rem;color:var(--text-mute);margin-bottom:6px;line-height:1.5;}
   .srs-item{padding:7px 0;border-top:1px dashed var(--border-soft);}
@@ -703,7 +720,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.46</span>
+    <span class="build">pAdo · v2.48</span>
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
       <option value="">🪜 단계 선택 안 함</option>
@@ -815,6 +832,7 @@
   <button id="meaning-chip-center" class="sel-chip" type="button" title="드래그한 부분의 뜻을 중앙 대화창에서 해석">📖 뜻 해석 (중앙)</button>
   <button id="meaning-chip-wave" class="sel-chip" type="button" title="드래그한 부분의 뜻을 우측 서퍼(파도 대화)에서 해석 — 파도 안에서 드래그했으면 그 파도, 아니면 새 파도를 만들어서">📖 뜻 해석 (서퍼)</button>
   <button id="syntax-chip" class="sel-chip" type="button" title="드래그한 부분을 우측에서 바로 분석 — 한 단어면 단어 분석, 문장이면 구문 분석"><span>🔍</span> <span id="syntax-chip-label">구문 분석</span></button>
+  <button id="srs-chip" class="sel-chip" type="button" title="드래그한 부분을 복습 포인트로 담기 — 🧠 복습에 기록되고, 1일·3일·1주일·2주일·한 달·석 달 간격으로 다시 나타나요">🧠 복습 포인트</button>
   <button id="save-chip" class="sel-chip" type="button" title="꼭 기억할 부분으로 저장 — 상단 ⭐ 저장에서 모아 복습">⭐ 저장</button>
 </div>
 <div id="we-toast"></div>
@@ -839,8 +857,8 @@
   <div style="display:flex;justify-content:flex-end;margin-top:6px"><button class="g-btn" id="qh-close" type="button">닫기</button></div>
 </div>
 <div class="modal" id="practice-modal">
-  <h2>📈 작문 연습 기록</h2>
-  <div class="sv-hint">채점을 받을 때마다 자동으로 쌓여요. 이 기록은 앞으로 점수제·학습 평가 산정의 원자료로 그대로 쓰입니다 (이 브라우저에 저장).</div>
+  <h2>📊 학습 진단 · 연습 기록</h2>
+  <div class="sv-hint">공부한 흔적(질문·작문 채점·복습)을 모아 <b>내 공부법의 다음 한 걸음</b>을 뽑아 드려요. 모든 계산은 이 브라우저 안에서만 이뤄집니다.</div>
   <div id="practice-body"></div>
   <div style="display:flex;justify-content:flex-end;margin-top:6px"><button class="g-btn" id="practice-close" type="button">닫기</button></div>
 </div>
@@ -2760,6 +2778,37 @@ const LEVEL_SPEC = {
   "SAT": "시험 특화 — 학술 어휘·복문 독해·정답 근거 찾기. 지문형 예문과 오답 함정 분석 위주로 답하라."
 };
 const OVERLOAD_RULE = `분량 규칙: 질문에 필요한 만큼만 — 과잉 설명(투머치)은 눈높이를 벗어난 것과 같다. 더 깊이 갈 지점은 한 줄로 예고만 하고, 사용자가 파고들 때 연다.`;
+/* v2.47: pAdo 기능 카탈로그 — 총괄 튜터가 "이 앱으로 무엇을 어떻게 시킬지" 정확히 안내하도록.
+   데이터-주도: 기능을 늘리면 여기 한 줄만 추가하면 총괄 튜터의 지식도 함께 자란다. */
+const ENGINE_GUIDE = [
+  ["단어 스레드", "좌측 목록에서 단어를 고르면 그 단어 전용 대화가 열린다. 아래에는 그 단어의 결·함정·패턴 콘텐츠가 함께 있다."],
+  ["🎓 튜터", "그 단어로 문장을 제시하고 첫 덩어리부터 한 걸음씩 작문을 이끈다. 막히면 [💡 힌트 조금만][📚 단어 보기(영어 단어만 뒤죽박죽)][🔎 구문 보기(단어+뜻)][🔢 보기 3개][⏭ 다음 문장]."],
+  ["✍️ 작문 한→영 / 영→한", "AI가 문제만 내고 학습자가 직접 작문 → 첨삭·채점. 점수와 오류 태그가 기록에 쌓인다."],
+  ["🔍 단어 분석 / 🧩 단어 퀴즈 / ✏️ 예문 만들기", "그 단어를 표준 형식으로 깊게 분석하거나, 단계에 맞는 퀴즈·예문을 즉시 받는다."],
+  ["드래그 → 🌊 파도", "답변 중 궁금한 부분을 드래그하면 그 인용을 물고 우측에 별도 대화(파도)가 열린다. 본 대화를 밀어내지 않고 곁가지를 판다."],
+  ["🧠 복습", "대화·연습·저장 기록을 모아 복습 포인트를 만든다. 만들어진 포인트는 1일·3일·1주일·2주일·한 달·석 달 간격으로 다시 나타난다(간격 반복)."],
+  ["📊 학습 진단 · 연습 기록", "약점 태그, 점수 흐름, 복습 정착률·회상 성공률, 학습 리듬, 폭과 깊이를 계산해 '다음 한 걸음'을 제시한다."],
+  ["⭐ 저장 / ≡ 질문", "꼭 기억할 답변을 저장하거나, 지금까지 던진 질문을 날짜별로 되짚는다."],
+  ["🪜 학습 단계", "입문~SAT 8단계. 전역으로도, 대화창별로도 정할 수 있고 모든 설명 난이도가 여기에 맞춰진다."],
+  ["전체 지침", "파도 Chat에서 합의한 학습 규칙을 담아 두면 모든 대화에 함께 적용된다."],
+  ["📦 기기 이사 / 🔄 자동 동기화", "설정에서 학습 기록을 다른 기기로 옮기거나 자동으로 맞춘다."]
+];
+const MODE_COACH = `
+
+[총괄 튜터 모드 — 화면 표시명 "파도 Chat"]
+너는 이 학습자의 **전담 총괄 튜터**다. 개별 단어를 가르치는 단어별 튜터와 달리, 너는 (1) pAdo라는 도구 전체를 알고 (2) 이 학습자의 기록을 알고 (3) **영어를 완전히 해내게 만드는 전체 경로**를 설계·관리한다.
+
+역할 세 가지:
+1. **진단** — 아래 [이 학습자의 현재 상태] 수치를 근거로만 말한다. 수치가 없으면 "아직 자료가 부족하다"고 정직하게 말하고 무엇을 쌓아야 할지 알려 준다. 없는 약점을 지어내지 않는다.
+2. **처방** — 오늘·이번 주에 할 일을 **구체적 행동**으로 준다. "열심히 하세요" 금지. 대신 "밀린 복습 5개 → of 단어에서 관사 작문 3문제 → 파도로 한 지점만 파기"처럼 순서와 개수를 준다. 앱의 어느 버튼을 누르면 되는지 이름 그대로 알려 준다(아래 기능 목록 참고).
+3. **동행** — 학습자가 흔들릴 때(공백·점수 하락) 원인을 함께 찾고 계획을 낮춰 잡아 준다. 완벽한 계획보다 지속되는 계획이 낫다.
+
+간격 반복 원칙(이 앱의 뼈대): 복습 포인트는 **1일 → 3일 → 1주일 → 2주일 → 한 달 → 석 달** 간격으로 다시 나타난다. 잊기 직전에 다시 꺼내야 장기 기억으로 넘어가고, 밀리면 처음 간격부터 다시다. 학습자가 "다 안다"고 해도 이 루프를 건너뛰게 두지 마라.
+
+말투: 한국어. 숫자와 근거를 먼저, 그다음 한 걸음. 길게 늘어놓지 말고 지금 할 것 3가지 이내로.
+
+[pAdo 기능 목록 — 이 이름 그대로 안내할 것]
+${ENGINE_GUIDE.map(([k, v]) => `- ${k}: ${v}`).join("\n")}`;
 function buildSystem(extra, cfg, ownerKey){
   let base = getSystemBase();
   const key = ownerKey || state.activeWord; // v2.6: 스레드 소유자 기준 — 파도는 출처 단어로 정박 (화면의 중앙 단어와 무관)
@@ -2775,7 +2824,8 @@ function buildSystem(extra, cfg, ownerKey){
     if(rules && rules.trim()) base += `\n\n[전체 지침 — 총괄 대화에서 사용자와 합의된 것. 반드시 따를 것]\n${rules.trim()}`;
   } catch(e){}
   if(key === GLOBAL_ID){
-    base += `\n\n[총괄 모드] 지금은 특정 단어가 아니라 pAdo 전체 학습을 총괄하는 대화다(화면 표시명: "파도 Chat"). 학습 방향·규칙·단계를 사용자와 협의하라. 합의가 이뤄지면 "아래 '전체 지침' 칸에 담으면 모든 대화에 적용된다"고 안내하라.`;
+    base += MODE_COACH; // v2.47: 총괄 튜터 — pAdo를 다 알고, 학습자를 아는 코치
+    try { base += `\n\n[이 학습자의 현재 상태 — 앱이 기록에서 계산한 실제 수치. 여기 없는 약점을 지어내지 말 것]\n${learnBrief()}`; } catch(e){}
     return base + (extra ? "\n" + extra : "");
   }
   // v2.6: 파도 스레드 — 이 파도의 "출처 단어" 결로 정박 (이전엔 중앙 활성 단어가 잘못 붙던 버그)
@@ -3308,7 +3358,7 @@ function renderChatLog(){
   const chat = curChat();
   if(!chat.length){
     log.innerHTML = state.activeWord === GLOBAL_ID
-      ? `<div class="msg notice">🧭 파도 Chat — pAdo <b>전체</b>의 학습 방향을 여기서 협의하세요.<br><span style="font-size:.9em">예: "당분간 모든 설명에서 문법 용어를 빼줘" · 합의되면 아래 <b>전체 지침</b>에 담아 모든 대화에 적용</span></div>`
+      ? `<div class="msg notice">🧭 <b>파도 Chat — 내 총괄 튜터</b><br><span style="font-size:.9em">pAdo를 전부 알고, <b>내 학습 기록도 아는</b> 코치예요. 아래 <b>📊 학습 진단 받기</b>를 누르면 지금 상태와 다음 한 걸음부터 짚어 줘요. 학습 규칙을 합의하면 아래 <b>전체 지침</b>에 담아 모든 대화에 적용할 수 있어요.</span></div>`
       : `<div class="msg notice">"${esc(curWord().base)}"의 파도를 시작해 보세요 — 예: "${esc(curWord().base)}가 들어간 문장 3개를 결이 다르게 보여줘"<br><span style="font-size:.9em">답이 오면 <b>궁금한 부분을 드래그</b> → 🌊 버튼으로 우측 파도에 떼어갈 수 있어요</span></div>`;
   } else {
     log.innerHTML = chat.map((m, i) => m.role === "user"
@@ -3320,10 +3370,13 @@ function renderChatLog(){
   document.getElementById("chat-sub").textContent = state.activeWord === GLOBAL_ID
     ? "파도 Chat — 모든 대화에 적용할 방향 협의"
     : `단어 "${curWord().base}" 스레드`;
-  // v2.7: 빠른 실행 버튼 — 단어 스레드에서 한 클릭으로 연습 시작 (총괄엔 없음)
+  // v2.7: 빠른 실행 버튼 — 단어 스레드에서 한 클릭으로 연습 시작. v2.47: 총괄(파도 Chat)엔 코치 전용 3종
   const qaRow = document.getElementById("qa-row");
   if(qaRow){
-    if(state.activeWord === GLOBAL_ID) qaRow.innerHTML = "";
+    if(state.activeWord === GLOBAL_ID) qaRow.innerHTML = `
+        <button class="qa-btn" data-qa="diag" type="button" title="내 기록(약점·복습 정착률·리듬)을 읽고 지금 상태와 다음 한 걸음을 코칭해 줘요">📊 학습 진단 받기</button>
+        <button class="qa-btn" data-qa="plan" type="button" title="이번 주에 무엇을 며칠에 걸쳐 할지 구체적인 계획을 짜 줘요">🗓 이번 주 계획</button>
+        <button class="qa-btn" data-qa="drill" type="button" title="오늘 복습할 항목부터 바로 시작해요 — 밀린 것이 있으면 그것부터">🔁 오늘 할 복습</button>`;
     else {
       const mode = threadCfg(state.activeWord).mode;
       qaRow.innerHTML = `
@@ -4079,7 +4132,7 @@ function selectionChipHandler(e, origin){
       if(sv) sv.hidden = chipOrigin === "saved"; // v2.14: 저장함 안에서 또 저장은 무의미 — 숨김
       selChips.style.display = "flex";
       selChips.style.left = Math.min(e.clientX, window.innerWidth - 150) + "px";
-      selChips.style.top = Math.min(Math.max(8, e.clientY + 12), window.innerHeight - 260) + "px"; // 칩 6종 + 미니 사전 높이만큼 클램프 (v2.17)
+      selChips.style.top = Math.min(Math.max(8, e.clientY + 12), window.innerHeight - 296) + "px"; // 칩 7종 + 미니 사전 높이만큼 클램프 (v2.17, v2.48: 복습 포인트 추가로 한 줄 늘어남)
     } else { selChips.style.display = "none"; }
   }, 10);
 }
@@ -4237,6 +4290,36 @@ function savedSrcLabel(){
   }
   return state.activeWord === GLOBAL_ID ? "총괄" : state.activeWord;
 }
+/* v2.48: 드래그 → 🧠 복습 포인트 — 사용자가 직접 고른 조각을 복습 기록에 남기고 간격 반복 루프에 태운다.
+   (AI가 만드는 복습 포인트는 기록을 종합해 주지만, "지금 이 부분"은 학습자가 제일 잘 안다) */
+function addReviewPoint(text, src, ctx){
+  const title = String(text || "").trim().slice(0, 120);
+  if(!title) return { ok: false, msg: "" };
+  if(SRS.some(it => it.title === title)) return { ok: false, msg: "이미 복습 포인트에 있어요 — 🧠 복습에서 확인하세요" };
+  // 며칠 뒤 이 카드만 봤을 때 "왜 담았지?"가 되지 않도록, 드래그 시점에 이미 계산된 둘러싼 문장을 함께 남긴다 (기획 렌즈)
+  const around = String(ctx || "").trim();
+  const why = `${src || "대화"}에서 직접 담은 부분이에요.`
+    + (around && around !== title ? `\n원래 문맥: "${around.slice(0, 160)}"` : "");
+  const point = { title, why, drill: "" };
+  // ① 복습 기록(세트)에 남긴다 — 같은 날 담은 것은 한 세트로 모임
+  const today = new Date().toDateString();
+  let set = REVIEW.find(s => s.manual && new Date(s.ts).toDateString() === today);
+  if(!set){ set = { id: "rvm" + Date.now(), ts: Date.now(), manual: 1, points: [] }; REVIEW.unshift(set); }
+  set.points.push(point);
+  saveReview();
+  // ② 간격 반복 루프에 태운다 — 내일부터 1일·3일·1주일·2주일·한 달·석 달
+  srsAdd([point]);
+  return { ok: true, msg: "🧠 복습 포인트에 담았어요 — 내일부터 간격을 두고 다시 나와요" };
+}
+document.getElementById("srs-chip").addEventListener("click", () => {
+  selChips.style.display = "none";
+  const text = String(chipText || "").trim();
+  const sel = window.getSelection(); if(sel) sel.removeAllRanges();
+  if(!text) return;
+  const r = addReviewPoint(text, savedSrcLabel(), chipCtx);
+  if(r.msg) weToast(r.msg);
+  if(document.getElementById("review-modal").classList.contains("show")) renderReview(); // 복습 모달에서 담았으면 즉시 반영
+});
 document.getElementById("save-chip").addEventListener("click", () => {
   selChips.style.display = "none";
   const text = String(chipText || "").trim();
@@ -4275,11 +4358,124 @@ function practiceStreaks(){
   }
   return cur;
 }
+/* ── v2.47: 학습 진단 — 기록을 "공부법을 고치는 지표"로 바꾼다 ──
+   설계 원칙: 점수 나열이 아니라 **다음 행동이 나오는 지표만** 만든다. 모든 수치는 로컬 계산(데이터-주도)이고,
+   AI 코칭은 이 수치를 근거로만 말하게 한다 — 기록에 없는 약점을 지어내지 않도록(환각 금지 원칙 계승). */
+function learnStats(){
+  const now = Date.now();
+  const dayOf = (ts) => new Date(ts).toDateString();
+  const daysAgo = (ts) => Math.floor((now - ts) / DAY_MS);
+  // ① 약점 지도 — 무엇을 틀리는가 (최근 2주 재발을 우선 정렬)
+  const tot = {}, rec = {}, note = {};
+  PRACTICE.forEach(r => (r.errors || []).forEach(e => {
+    if(!e || !e.tag) return;
+    tot[e.tag] = (tot[e.tag] || 0) + 1;
+    if(now - r.t <= 14 * DAY_MS) rec[e.tag] = (rec[e.tag] || 0) + 1;
+    if(e.note) note[e.tag] = e.note;
+  }));
+  const weak = Object.keys(tot).sort((a, b) => (rec[b] || 0) - (rec[a] || 0) || tot[b] - tot[a]).slice(0, 5)
+    .map(t => ({ tag: t, n: tot[t], recent: rec[t] || 0, note: note[t] || "" }));
+  // ② 점수 추세 — 최근 8회 vs 그 전 8회
+  const sc = PRACTICE.map(r => Number(r.score) || 0);
+  const mean = (a) => a.length ? Math.round(a.reduce((s, v) => s + v, 0) / a.length) : null;
+  const recentAvg = mean(sc.slice(-8)), prevAvg = mean(sc.slice(-16, -8));
+  const trend = (sc.length < 6 || prevAvg === null) ? "자료 부족"
+    : recentAvg - prevAvg >= 4 ? "상승" : recentAvg - prevAvg <= -4 ? "하락" : "정체";
+  // ③ 정착률 — 장기 기억으로 넘어간 정도 (간격 반복 큐의 단계 분포)
+  const live = SRS.filter(it => it.next);
+  const settled = SRS.filter(it => !it.next).length; // 완주 = 석 달 뒤까지 성공
+  const earlyN = live.filter(it => (it.stage || 0) <= 1).length; // 1일·3일 구간
+  const midN = live.filter(it => (it.stage || 0) >= 2 && (it.stage || 0) <= 3).length; // 1주·2주
+  const lateN = live.filter(it => (it.stage || 0) >= 4).length; // 한 달·석 달
+  // ④ 회상 성공률 — 복습에서 실제로 기억해 냈는가
+  let ok = 0, ng = 0;
+  SRS.forEach(it => (it.hist || []).forEach(h => h.ok ? ok++ : ng++));
+  const recall = (ok + ng) ? Math.round(ok / (ok + ng) * 100) : null;
+  // ⑤ 복습 준수 — 밀린 항목
+  const due = srsDue().length;
+  const overdueList = SRS.filter(it => it.next && it.next < now - DAY_MS);
+  const overdueMax = overdueList.reduce((m, it) => Math.max(m, daysAgo(it.next)), 0);
+  // ⑥ 리듬 — 활동한 날짜(질문·연습·복습 전부 합집합)
+  const dset = new Set();
+  PRACTICE.forEach(r => { if(r.t) dset.add(dayOf(r.t)); });
+  SRS.forEach(it => (it.hist || []).forEach(h => { if(h.ts) dset.add(dayOf(h.ts)); }));
+  Object.keys(state.chats || {}).forEach(k => (state.chats[k] || []).forEach(m => { if(m.role === "user" && m.ts) dset.add(dayOf(m.ts)); }));
+  (state.waves || []).forEach(w => (w.msgs || []).forEach(m => { if(m.role === "user" && m.ts) dset.add(dayOf(m.ts)); }));
+  const dayTimes = Array.from(dset).map(d => new Date(d).getTime()).sort((a, b) => a - b);
+  const active30 = dayTimes.filter(t => now - t <= 30 * DAY_MS).length;
+  const gap = dayTimes.length ? daysAgo(dayTimes[dayTimes.length - 1]) : null;
+  let streak = 0;
+  for(let d = new Date(); dset.has(d.toDateString()); d = new Date(d.getTime() - DAY_MS)) streak++;
+  if(!streak){ // 오늘은 아직 안 했어도 어제까지 이어졌으면 그 연속을 인정 (오늘 0시에 끊긴 것처럼 보이지 않게)
+    for(let d = new Date(now - DAY_MS); dset.has(d.toDateString()); d = new Date(d.getTime() - DAY_MS)) streak++;
+  }
+  // ⑦ 깊이 vs 폭 — 단어를 몇 개 건드렸나 대비 단어당 몇 번 파고들었나
+  const wordKeys = Object.keys(state.chats || {}).filter(k => k !== GLOBAL_ID && (state.chats[k] || []).some(m => m.role === "user"));
+  const qTotal = wordKeys.reduce((s, k) => s + (state.chats[k] || []).filter(m => m.role === "user").length, 0);
+  const depth = wordKeys.length ? Math.round(qTotal / wordKeys.length * 10) / 10 : 0;
+  const s = { n: PRACTICE.length, avg: mean(sc), recentAvg, prevAvg, trend, weak, settled, earlyN, midN, lateN,
+    live: live.length, recall, due, overdue: overdueList.length, overdueMax, active30, gap, streak, words: wordKeys.length, qTotal, depth };
+  s.actions = learnActions(s);
+  return s;
+}
+/* 처방 — 지표에서 자동으로 나오는 "다음 행동". 근거(why)를 함께 담아 화면·AI 모두 같은 근거를 쓰게 한다. */
+function learnActions(s){
+  const out = [];
+  if(s.overdue >= 3 || s.overdueMax >= 3) out.push({ t: `밀린 복습 ${s.overdue}개부터 — 오늘은 5개만`, why: `가장 오래된 건 ${s.overdueMax}일 지났어요. 간격 반복은 밀리는 순간 처음부터 다시라 효과가 급격히 떨어져요.` });
+  if(s.weak[0] && s.weak[0].recent >= 2) out.push({ t: `"${s.weak[0].tag}"만 골라서 작문 3문제`, why: `최근 2주에만 ${s.weak[0].recent}번 틀렸어요 — 흩어서 연습하는 것보다 한 지점을 몰아 치는 게 훨씬 빨라요.` });
+  if(s.trend === "하락") out.push({ t: `학습 단계를 한 칸 낮춰 정확도부터 회복`, why: `최근 평균 ${s.recentAvg}점, 그 전 ${s.prevAvg}점 — 난이도가 실력보다 앞서 나갔을 때 나오는 신호예요.` });
+  if(s.recall !== null && s.recall < 60) out.push({ t: `복습 포인트를 더 짧게 쪼개기`, why: `복습에서 기억해 낸 비율이 ${s.recall}%예요 — 카드 하나에 담긴 정보가 많으면 회상이 무너져요.` });
+  if(s.words >= 8 && s.depth < 2) out.push({ t: `새 단어 대신, 배운 단어로 문장 3개 더`, why: `단어 ${s.words}개를 건드렸는데 단어당 질문이 ${s.depth}개예요 — 폭이 깊이를 앞섰어요.` });
+  if(s.gap !== null && s.gap >= 3) out.push({ t: `오늘 5분만 — 복습 3개`, why: `마지막 학습이 ${s.gap}일 전이에요. 리듬은 한 번의 분량보다 빈도가 만들어요.` });
+  if(s.n < 5) out.push({ t: `작문 연습 5회 채우기`, why: `채점 기록이 ${s.n}회라 약점 진단이 아직 흐려요 — 5회쯤부터 패턴이 보이기 시작해요.` });
+  if(!out.length) out.push({ t: `지금 리듬 유지 — 새 단어 2개 추가`, why: `밀린 복습도 없고 점수 흐름도 ${s.trend}예요. 폭을 넓힐 여유가 있어요.` });
+  return out.slice(0, 4);
+}
+/* AI(총괄 튜터)에게 넘기는 압축 프로필 — 화면과 같은 수치를 쓴다 (두 말이 갈리지 않게) */
+function learnBrief(){
+  const s = learnStats();
+  const w = s.weak.length ? s.weak.map(x => `${x.tag}(총 ${x.n}회, 최근 2주 ${x.recent}회)`).join(", ") : "아직 없음";
+  return [
+    `- 작문 채점 ${s.n}회` + (s.avg !== null ? `, 평균 ${s.avg}점, 최근 흐름 ${s.trend}` : ""),
+    `- 자주 틀리는 지점: ${w}`,
+    `- 복습 큐: 살아 있는 항목 ${s.live}개(초반 ${s.earlyN} / 중반 ${s.midN} / 후반 ${s.lateN}), 완주 ${s.settled}개` + (s.recall !== null ? `, 회상 성공률 ${s.recall}%` : ""),
+    `- 오늘 볼 복습 ${s.due}개, 밀린 것 ${s.overdue}개` + (s.overdue ? `(최대 ${s.overdueMax}일 지연)` : ""),
+    `- 리듬: 최근 30일 중 ${s.active30}일 학습, 연속 ${s.streak}일` + (s.gap !== null ? `, 마지막 학습 ${s.gap}일 전` : ""),
+    `- 폭과 깊이: 단어 ${s.words}개, 질문 ${s.qTotal}회(단어당 ${s.depth}회)`,
+    `- 지금 처방(앱이 계산한 것): ` + s.actions.map(a => a.t).join(" / ")
+  ].join("\n");
+}
+function learnReportHTML(){
+  const s = learnStats();
+  const bar = (n, total) => total ? Math.round(n / total * 100) : 0;
+  const srsTotal = s.live + s.settled;
+  const trendIcon = s.trend === "상승" ? "📈" : s.trend === "하락" ? "📉" : s.trend === "정체" ? "➡️" : "🌱";
+  return `<div class="lr-box">
+    <div class="pr-h">📊 지금 내 학습 상태</div>
+    <div class="pr-sum">
+      <div class="pr-stat"><b>${s.streak}일</b><span>연속 학습</span></div>
+      <div class="pr-stat"><b>${s.active30}일</b><span>최근 30일 중 학습한 날</span></div>
+      <div class="pr-stat"><b>${trendIcon} ${esc(s.trend)}</b><span>점수 흐름${s.recentAvg !== null ? ` (최근 ${s.recentAvg}점)` : ""}</span></div>
+      <div class="pr-stat"><b>${s.recall === null ? "–" : s.recall + "%"}</b><span>복습에서 기억해 낸 비율</span></div>
+    </div>
+    <div class="lr-line"><b>🧠 장기 기억으로 가는 중</b> — 복습 항목 ${srsTotal}개
+      ${srsTotal ? `<div class="lr-bar"><i class="e" style="width:${bar(s.earlyN, srsTotal)}%"></i><i class="m" style="width:${bar(s.midN, srsTotal)}%"></i><i class="l" style="width:${bar(s.lateN, srsTotal)}%"></i><i class="d" style="width:${bar(s.settled, srsTotal)}%"></i></div>
+      <div class="lr-leg"><span><i class="e"></i>초반 1·3일 ${s.earlyN}</span><span><i class="m"></i>1·2주 ${s.midN}</span><span><i class="l"></i>한 달·석 달 ${s.lateN}</span><span><i class="d"></i>완주 ${s.settled}</span></div>`
+        : `<div class="srs-empty">아직 복습 항목이 없어요 — 🧠 복습에서 복습 포인트를 만들면 여기 쌓여요.</div>`}
+      ${s.overdue ? `<div class="lr-warn">⚠️ 밀린 복습 ${s.overdue}개 (최대 ${s.overdueMax}일 지남) — 밀리면 처음 간격부터 다시예요</div>` : ""}
+    </div>
+    ${s.weak.length ? `<div class="lr-line"><b>🎯 자주 걸리는 지점</b>${s.weak.map(x => `<div class="pr-streak"><span class="g-tag${x.recent >= 2 ? " lr-hot" : ""}">${esc(x.tag)}</span>총 ${x.n}회${x.recent ? ` · 최근 2주 ${x.recent}회` : ""} <span class="pr-note">${esc(x.note)}</span></div>`).join("")}</div>` : ""}
+    <div class="pr-h">🧭 다음 한 걸음 — 이 순서로 하면 돼요</div>
+    ${s.actions.map((a, i) => `<div class="lr-act"><b>${i + 1}. ${esc(a.t)}</b><span>${esc(a.why)}</span></div>`).join("")}
+    <div class="lr-ask">더 깊은 코칭이 필요하면 <b>🧭 파도 Chat</b>에서 <b>📊 학습 진단 받기</b>를 눌러 보세요 — 이 수치를 그대로 읽고 계획을 짜 줘요.</div>
+  </div>`;
+}
 function renderPractice(){
   const body = document.getElementById("practice-body");
   if(!body) return;
   if(!PRACTICE.length){
-    body.innerHTML = '<div class="pr-empty">아직 기록이 없어요 — 단어 스레드의 <b>✍️ 작문</b> 버튼으로 연습을 시작하면, 채점을 받을 때마다 여기 쌓여요.</div>';
+    // v2.47: 작문 기록이 없어도 진단(복습·질문 리듬)은 의미가 있다 — 진단부터 보여 주고 연습을 권한다
+    body.innerHTML = learnReportHTML() + '<div class="pr-empty">아직 작문 채점 기록이 없어요 — 단어 스레드의 <b>✍️ 작문</b> 버튼으로 연습을 시작하면, 채점을 받을 때마다 여기 쌓이고 진단도 정밀해져요.</div>';
     return;
   }
   const n = PRACTICE.length;
@@ -4301,7 +4497,8 @@ function renderPractice(){
     const d = new Date(r.t);
     return `<details class="pr-row"><summary><span class="pr-score ${r.pass ? "ok" : "bad"}">${r.score}</span><b>${esc(r.w || r.key)}</b><span>${r.kind === "we" ? "✍️ 한→영" : "✍️ 영→한"}</span><span class="pr-note">${d.getMonth() + 1}/${d.getDate()}</span>${(r.errors || []).map(e => `<span class="g-tag">${esc(e.tag)}</span>`).join("")}</summary><div class="pr-detail">${r.q ? `<div>문제: ${esc(r.q)}</div>` : ""}<div>내 답: ${esc(r.a || "")}</div>${r.fix ? `<div>✓ ${esc(r.fix)}</div>` : ""}${(r.errors || []).map(e => `<div>• ${esc(e.tag)}: ${esc(e.note || "")}</div>`).join("")}</div></details>`;
   }).join("");
-  body.innerHTML = `
+  body.innerHTML = learnReportHTML() + `
+    <div class="pr-h">📈 작문 연습 기록</div>
     <div class="pr-sum">
       <div class="pr-stat"><b>${n}</b><span>채점 받은 횟수</span></div>
       <div class="pr-stat"><b>${avg}점</b><span>평균 점수</span></div>
@@ -4426,12 +4623,14 @@ ${mat}`;
     if(b2){ b2.disabled = false; b2.textContent = "✨ 복습 포인트 만들기"; }
   }
 }
-/* ── v2.37: 간격 반복 학습(SRS) — 복습 포인트가 1·3·10·30·90일 간격으로 다시 나타난다 ──
+/* ── v2.37: 간격 반복 학습(SRS) — 복습 포인트가 1·3·7·14·30·90일 간격으로 다시 나타난다 ──
    에빙하우스 망각 곡선 대응: 잊을 만할 때 다시 꺼내야 장기 기억으로 넘어간다(사용자 설계 간격 그대로).
-   "외웠어요" = 다음 간격으로 전진, "내일 다시" = 처음 간격부터(라이트너 방식). 반복 단위 = 복습 포인트. */
+   "외웠어요" = 다음 간격으로 전진, "내일 다시" = 처음 간격부터(라이트너 방식). 반복 단위 = 복습 포인트.
+   v2.47: 사용자 확정 6단(1일·3일·1주일·2주일·1개월·3개월) — 중반(10일 한 칸)을 1주·2주 두 칸으로 쪼개
+   "잊기 직전 재회" 밀도를 높였다. 기존 항목은 아래 마이그레이션이 stage를 보수적으로 재매핑한다. */
 const LS_SRS = "we_srs_v1";
-const SRS_INTERVALS = [1, 3, 10, 30, 90]; // 일 — 1일차에 공부 → 다음 날 → 3일 → 10일 → 한 달 → 석 달
-const SRS_LABELS = ["1일", "3일", "10일", "한 달", "석 달"];
+const SRS_INTERVALS = [1, 3, 7, 14, 30, 90]; // 일 — 다음 날 → 3일 → 1주일 → 2주일 → 한 달 → 석 달
+const SRS_LABELS = ["1일", "3일", "1주일", "2주일", "한 달", "석 달"];
 const DAY_MS = 24 * 60 * 60 * 1000;
 let SRS = [];
 try { SRS = JSON.parse(localStorage.getItem(LS_SRS) || "[]") || []; } catch(e){ SRS = []; }
@@ -4452,6 +4651,25 @@ function srsBackfill(){ // 절대 규칙 #5: 새 스키마 = 기존 데이터 �
   REVIEW.slice().reverse().forEach(set => srsAdd(set.points, set.ts)); // 오래된 세트부터 — 최신 포인트가 큐 앞에 오게
 }
 (function(){ let has = null; try { has = localStorage.getItem(LS_SRS); } catch(e){ return; } if(has === null) srsBackfill(); })();
+/* v2.47 마이그레이션(절대 규칙 #5): 구 5단[1,3,10,30,90] → 신 6단[1,3,7,14,30,90].
+   stage는 "다음에 쓸 간격의 인덱스" — 간격 배열이 바뀌면 같은 숫자가 다른 기간을 뜻하므로 재매핑한다.
+   보수적 원칙: 이미 도달한 기간보다 길어지지 않게(10일 → 1주일). 예약된 next 날짜는 건드리지 않는다
+   (사용자가 기다린 시간을 리셋하지 않기 위해 — 다음 성공부터 새 간격 적용). */
+const LS_SRS_MIG = "we_srs_mig_v2";
+(function srsMigrate6(){
+  try {
+    if(localStorage.getItem(LS_SRS_MIG)) return;
+    const map = [0, 1, 2, 4, 5]; // 구 stage → 신 stage (1일·3일·10일→1주일·30일·90일)
+    let n = 0;
+    SRS.forEach(it => {
+      if(!it.next) return; // 완주 항목은 그대로
+      const s = typeof it.stage === "number" ? it.stage : 0;
+      if(s >= 0 && s < map.length && map[s] !== s){ it.stage = map[s]; n++; }
+    });
+    if(n) saveSrs();
+    localStorage.setItem(LS_SRS_MIG, "1");
+  } catch(e){}
+})();
 function srsDue(){
   const end = new Date(); end.setHours(23, 59, 59, 999);
   return SRS.filter(it => it.next && it.next <= end.getTime());
@@ -4464,7 +4682,7 @@ function updateSrsBadge(){
 }
 function srsSectionHTML(){
   const due = srsDue();
-  const head = `<div class="srs-head"><b>🔔 오늘의 복습</b> — 잊을 만할 때 다시 만나야 오래 남아요: 1일 → 3일 → 10일 → 한 달 → 석 달 간격으로 다시 나타나요</div>`;
+  const head = `<div class="srs-head"><b>🔔 오늘의 복습</b> — 잊을 만할 때 다시 만나야 오래 남아요: 1일 → 3일 → 1주일 → 2주일 → 한 달 → 석 달 간격으로 다시 나타나요</div>`;
   if(!due.length) return `<div class="srs-box">${head}<div class="srs-empty">오늘 볼 항목이 없어요 — 복습 포인트를 만들면 다음 날부터 여기 나타나요.</div></div>`;
   return `<div class="srs-box">${head}${due.map(it => `<div class="srs-item" data-srs="${esc(it.id)}">
     <div class="rv-title">${esc(it.title)}<span class="srs-stage">${it.stage + 1}번째 만남</span></div>
@@ -4479,7 +4697,7 @@ function renderReview(){
   const sets = !REVIEW.length
     ? '<div class="qh-empty">아직 만든 복습 포인트가 없어요 — 위 버튼을 누르면 지금까지의 대화·연습 기록·저장 항목을 모아 복습 카드로 정리해 드려요.</div>'
     : REVIEW.map(set => `<div class="rv-set" data-rv="${esc(set.id)}">
-    <div class="rv-head"><b>${new Date(set.ts).toLocaleDateString("ko-KR")} ${new Date(set.ts).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}</b> · ${set.points.length}개<button class="sv-del" type="button" data-rv-del="${esc(set.id)}">삭제</button></div>
+    <div class="rv-head"><b>${new Date(set.ts).toLocaleDateString("ko-KR")} ${new Date(set.ts).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}</b> · ${set.points.length}개${set.manual ? ' <span class="rv-manual">✋ 직접 담음</span>' : ""}<button class="sv-del" type="button" data-rv-del="${esc(set.id)}">삭제</button></div>
     ${set.points.map((p, i) => `<div class="rv-point"><div class="rv-title">${i + 1}. ${esc(p.title)}</div>${p.why ? `<div class="rv-why">${esc(p.why)}</div>` : ""}${p.drill ? `<div class="rv-drill">✏️ ${esc(p.drill)}</div>` : ""}</div>`).join("")}
   </div>`).join("");
   body.innerHTML = srsSectionHTML() + sets;
@@ -4914,10 +5132,21 @@ document.getElementById("chat-send").addEventListener("click", sendMain);
 /* v2.7: 빠른 실행 버튼 — 모드 설정 + 즉시 출제 (사용자 확정: 한 클릭으로 연습 시작) */
 document.getElementById("qa-row").addEventListener("click", (e) => {
   const b = e.target.closest("[data-qa]");
-  if(!b || state.activeWord === GLOBAL_ID) return;
+  if(!b) return;
   if(ACTIVE.has(curChat())) return; // 답변 중엔 무시 (⏹로 먼저 중단)
+  const act0 = b.dataset.qa;
+  if(state.activeWord === GLOBAL_ID){ // v2.47: 총괄 튜터 전용 — 진단·계획·복습 시작
+    if(act0 === "diag") sendMainText("학습 진단 요청 — 내 기록 수치를 근거로 지금 상태와 다음 한 걸음을 알려 주세요.");
+    else if(act0 === "plan") sendMainText("이번 주 학습 계획 요청 — 요일별로 무엇을 몇 개씩 할지 구체적으로.");
+    else if(act0 === "drill"){
+      const due = srsDue().length;
+      sendMainText(due ? `오늘 할 복습 시작 요청 — 오늘 볼 항목 ${due}개 기준으로 순서와 방법을 알려 주세요.`
+        : "오늘 할 복습 시작 요청 — 오늘 예정된 복습이 없다면, 대신 지금 하면 좋을 연습을 알려 주세요.");
+    }
+    return;
+  }
   const w = curWord();
-  const act = b.dataset.qa;
+  const act = act0;
   if(act === "qa"){ // 작문 모드 해제 → 기본 질의응답
     setThreadCfg(state.activeWord, { mode: "" });
     renderChatLog();
