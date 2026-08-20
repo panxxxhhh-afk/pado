@@ -133,9 +133,11 @@
   .r-tab .x{opacity:.7;padding:0 2px;border-radius:4px;}
   .r-tab .x:hover{opacity:1;background:rgba(255,255,255,.25);}
   #btn-wave-list.active{border-color:var(--accent);color:var(--accent-deep);background:var(--accent-soft);}
-  .r-body{flex:1;overflow-y:auto;padding:14px 16px;min-height:0;}
+  /* v2.50: 파도 대화는 "제 길이만큼"(최대 58vh) — 짧으면 아래 탭이 바로 밑에 따라 붙는다. 아래 탭이 남은 높이를 가져가므로 위가 짓눌리지 않음 (사용자: "채팅창 바로 하단에 붙어서 자연스럽게") */
+  .r-body{flex:0 0 auto;display:flex;flex-direction:column;overflow-y:auto;padding:14px 16px;min-height:0;height:var(--right-chat-h, auto);max-height:var(--right-chat-cap, 58vh);}
+  .r-body > *{flex:none;} /* 기본은 "안 줄어듦" — 분석·목록 같은 긴 콘텐츠는 눌리지 말고 스크롤돼야 한다. 파도 패널만 아래에서 예외로 줄어듦 */
   /* v2.49: 우측 하단 = 중앙에서 옮겨 온 학습 콘텐츠, 탭으로 분류 */
-  #right-bottom{display:flex;flex-direction:column;min-height:0;height:var(--right-bottom-h, 42vh);border-top:1px solid var(--border);background:var(--card);}
+  #right-bottom{display:flex;flex-direction:column;min-height:0;flex:1 1 auto;border-top:1px solid var(--border);background:var(--card);}
   .rb-tabs{display:flex;gap:4px;padding:6px 10px 0;border-bottom:1px solid var(--border-soft);flex:none;}
   .rb-tab{border:1px solid var(--border);border-bottom:none;background:var(--card-soft);color:var(--text-soft);border-radius:9px 9px 0 0;padding:5px 12px;font-size:.76rem;font-weight:600;cursor:pointer;position:relative;top:1px;}
   .rb-tab:hover{color:var(--accent-deep);}
@@ -166,13 +168,17 @@
   .wl-empty{color:var(--text-mute);text-align:center;padding:30px 10px;font-size:.86rem;line-height:1.8;}
 
   /* 파도(서브 대화) 패널 — 대화 아래로 관련 단어 콘텐츠가 이어져 r-body 전체가 스크롤 */
-  .wave-pane{display:block;}
-  .wave-quote{background:var(--card-soft);border-left:3px solid var(--purple);border-radius:8px;padding:9px 13px;font-size:.85rem;color:var(--text-soft);margin-bottom:10px;max-height:110px;overflow-y:auto;}
+  /* v2.50: 세로로 눌려도 입력창은 끝까지 남는다 — 줄어드는 건 대화 로그뿐 (입력창이 잘려 스크롤해야 하던 문제) */
+  .wave-pane{display:flex;flex-direction:column;min-height:0;flex:0 1 auto;}
+  .wave-quote{background:var(--card-soft);border-left:3px solid var(--purple);border-radius:8px;padding:9px 13px;font-size:.85rem;color:var(--text-soft);margin-bottom:10px;max-height:110px;overflow-y:auto;flex:none;}
   .wave-quote .q-label{font-size:.72rem;color:var(--purple);font-weight:700;margin-bottom:2px;}
-  .wave-log{max-height:var(--wave-log-h, 38vh);overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:6px;}
-  .wave-pane .chat-input{border-top:1px solid var(--border-soft);padding:10px 0 0;}
-  .wave-words{margin-top:16px;}
-  .ww-label{font-size:.78rem;color:var(--purple);font-weight:700;margin-bottom:8px;}
+  .wave-log{max-height:var(--wave-log-h, 38vh);overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:6px;flex:0 1 auto;min-height:90px;}
+  .wave-pane .chat-input{border-top:1px solid var(--border-soft);padding:10px 0 0;flex:none;}
+  /* v2.50: 폰의 '파도' 탭은 대화가 화면을 다 쓰므로 학습 콘텐츠가 안 보인다 — 어디 있는지 한 줄로 알려 준다 (데스크톱은 바로 아래 탭이 보이므로 불필요) */
+  .wave-bridge{display:none;font-size:.72rem;color:var(--text-mute);padding:7px 2px 0;flex:none;}
+  .wave-words{margin-top:0;margin-bottom:18px;} /* v2.50: 파도 패널 인라인 → 🔗 관련 탭 맨 위로 이사 */
+  .ww-label{font-size:.78rem;color:var(--purple);font-weight:700;margin-bottom:2px;}
+  .ww-sub{font-size:.72rem;color:var(--text-mute);margin-bottom:8px;}
   .ww-word{margin-bottom:14px;}
   .ww-hero{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;background:var(--card-soft);border:1px solid var(--border-soft);border-radius:8px;padding:8px 12px;margin-bottom:8px;}
   .ww-base{font-weight:800;color:var(--text);font-size:1.05rem;}
@@ -327,7 +333,7 @@
   .msg.flash{animation:qflash 1.2s ease-out;}
 
   /* 파도 승격 (파도 → 📊 분석 탭 보관) */
-  .wave-actions{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+  .wave-actions{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;flex:none;}
   /* v2.40 기획 지적: 파도 패널의 셀렉트+버튼 줄도 중앙과 같은 공통 높이 — "버튼들" 전반의 정갈함 */
   .wave-actions .mini-sel,.wave-actions .wp-btn,.wave-actions button{height:30px;box-sizing:border-box;}
   .wp-btn{border:1px solid var(--border);background:var(--card);color:var(--text-soft);border-radius:8px;padding:0 11px;height:30px;display:inline-flex;align-items:center;font-size:.78rem;cursor:pointer;font-weight:600;box-sizing:border-box;}
@@ -650,6 +656,7 @@
     .w-item{flex:none;}
     .w-ko{display:none;}
     aside.right{border-left:none;border-top:1px solid var(--border);max-height:60vh;}
+    .r-body{max-height:var(--right-chat-cap, 32vh);} /* v2.50: 우측이 60vh로 접히는 좁은 창 — 대화가 다 먹으면 아래 탭이 1cm로 뭉개진다 */
   }
   /* v2.23: 모바일 하단 탭 골격 — 데스크톱에선 전부 숨김 (기본 display:none) */
   #m-tabbar, #m-more, #m-thread, #m-ask{display:none;}
@@ -697,6 +704,11 @@
     /* 파도 탭: 우측 페인이 전체 화면 */
     body[data-mtab="waves"] main.center, body[data-mtab="waves"] aside.words{display:none;}
     body[data-mtab="waves"] aside.right{flex:1;min-height:0;max-height:none;border-top:none;}
+    /* 파도 탭에선 대화가 주인공 — 한 화면 = 한 가지 일. 학습 콘텐츠 탭은 '단어' 탭 몫이므로 여기선 숨긴다
+       (좁은 폰에서 둘로 나누면 대화 로그가 90px까지 눌려 읽을 수가 없다) */
+    body[data-mtab="waves"] .r-body{flex:1 1 auto;height:auto;max-height:none;}
+    body[data-mtab="waves"] #right-bottom, body[data-mtab="waves"] #right-resizer{display:none;}
+    body[data-mtab="waves"] .wave-bridge{display:block;} /* 숨긴 학습 콘텐츠가 어디 있는지 알려 주는 다리 */
     /* 보관 탭 */
     body[data-mtab="more"] main.center, body[data-mtab="more"] aside.words, body[data-mtab="more"] aside.right{display:none;}
     body[data-mtab="more"] #m-more{display:flex;flex-direction:column;gap:10px;padding:18px 14px;flex:1;}
@@ -738,7 +750,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.49</span>
+    <span class="build">pAdo · v2.50</span>
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
       <option value="">🪜 단계 선택 안 함</option>
@@ -3299,7 +3311,7 @@ function waveWordsHTML(wv){
     const parts = richPartsHTML(b, true);
     return `<div class="ww-word"><div class="ww-hero"><span class="ww-base">${esc(b)}</span><span class="ww-metaphor">${esc(metaphor)}</span><span style="font-size:.76rem;color:var(--text-mute)">${esc(short)}</span></div>${parts || '<div style="font-size:.8rem;color:var(--text-mute);padding:0 4px 6px">이 단어의 웹서퍼 콘텐츠는 아직 대표 문장뿐 — 위 대화로 파 보세요.</div>'}</div>`;
   }).join("");
-  return `<div class="wave-words"><div class="ww-label">📚 떼어온 부분의 웹서퍼 단어</div>${blocks}</div>`;
+  return `<div class="wave-words"><div class="ww-label">📚 떼어온 부분의 웹서퍼 단어</div><div class="ww-sub">이 인용문에 들어 있는 단어들 — 뜻이 아니라 느낌으로</div>${blocks}</div>`;
 }
 
 /* ── 좌: 단어 리스트 ── */
@@ -3765,6 +3777,11 @@ const REL_LIVE = `<span class="rel-live"><span class="dot"></span>실시간</spa
 const REL_EMPTY = `<div class="rel-empty">이 대화와 직접 관련된 것이 아직 없어요 — 대화가 이어지면 여기에 실시간으로 나타나요.</div>`; // v2.8: 없으면 없다고 (사용자 요청)
 function renderRelated(liveText){
   const box = document.getElementById("related-box");
+  if(!box) return;
+  // v2.50: 🔗 관련은 한 자리를 두 맥락(주 대화 / 파도)이 나눠 쓴다 — 우측이 파도를 보고 있으면 그 파도가 임자다.
+  // **판단은 여기 한 곳에서만** 한다. 흩어 놓으면 renderAll·실시간 틱·탭 전환이 서로 덮어쓴다 (QA 렌즈 지적)
+  const wvNow = state.waves.find(x => x.id === state.activeRight);
+  if(wvNow){ box.innerHTML = waveRelatedHTML(wvNow, liveText); return; }
   const chat = curChat();
   const lastUser = [...chat].reverse().find(x => x.role === "user");
   const lastAi = [...chat].reverse().find(x => x.role === "assistant");
@@ -3789,18 +3806,23 @@ function waveRelatedHTML(wv, liveText){
     anchor: wv.sourceWord,
     userText: (wv.quote || "") + "\n" + ((lastUser && lastUser.content) || "")
   });
-  return `<section class="rel-box"><div class="rel-head">🌊 지금 주제와 관련된 것들 ${REL_LIVE}<span class="rel-sub">이 파도의 대화를 따라 그때그때 바뀌어요</span></div>${html || REL_EMPTY}</section>`;
+  // v2.50: 파도 대화 아래에 인라인으로 깔려 "중간에 낀 층"을 만들던 단어 깊이 콘텐츠를 여기(🔗 관련 탭 맨 위)로 옮겼다.
+  // 칩만 남기면 은유·활용·예문이 통째로 빠진다 — 인용문 속 단어는 느낌까지 그대로 (기획 렌즈 지적 반영)
+  return waveWordsHTML(wv)
+    + `<section class="rel-box"><div class="rel-head">🌊 지금 주제와 관련된 것들 ${REL_LIVE}<span class="rel-sub">이 파도의 대화를 따라 그때그때 바뀌어요</span></div>${html || REL_EMPTY}</section>`;
 }
 function renderWaveRelated(wv, liveText){
-  const el = document.getElementById("wave-related");
+  // v2.50: 파도 하단 자체 영역을 없애고 우측 하단 🔗 관련 탭 한 곳으로 — 파도를 보고 있으면 그 파도 주제를 보여준다
+  const el = document.getElementById("related-box");
   if(el) el.innerHTML = waveRelatedHTML(wv, liveText);
 }
 /* 스트리밍 중 관련 콘텐츠 실시간 갱신 — 지금 화면에 보이는 스레드만 (대화 로그는 건드리지 않음) */
 function liveRelatedTick(ownerKey, liveText){
   try {
-    if(ownerKey === state.activeWord){ renderRelated(liveText); return; }
-    const wv = state.waves.find(x => x.id === ownerKey);
-    if(wv && state.activeRight === ownerKey) renderWaveRelated(wv, liveText);
+    // 화면의 임자가 파도면 그 파도가 말할 때만 갱신하고, 아니면 주 대화가 말할 때만 갱신한다
+    const shown = state.waves.find(x => x.id === state.activeRight);
+    if(shown){ if(shown.id === ownerKey) renderWaveRelated(shown, liveText); return; }
+    if(ownerKey === state.activeWord) renderRelated(liveText);
   } catch(err){ console.warn("[rel-live]", err); }
 }
 document.getElementById("related-box").addEventListener("click", (e) => {
@@ -4004,7 +4026,7 @@ function renderRightBody(){
   }
   const wv = state.waves.find(x => x.id === state.activeRight);
   if(!wv){ state.activeRight = "analysis"; renderRight(); return; }
-  const ww = waveWordsHTML(wv);
+  // v2.50: 파도 하단의 관련 콘텐츠·단어 콘텐츠는 우측 하단 탭(📖 단어 / 🔗 관련 / 🎬 영상)으로 일원화 — 중복 제거
   body.innerHTML = `
     <div class="wave-pane">
       ${wv.quote ? `<div class="wave-quote"><div class="q-label">${wv.kind === "syntax" ? (String(wv.quote).trim().split(/\s+/).filter(Boolean).length < 2 ? "단어 분석 대상" : "구문 분석 대상") : "떼어온 부분"} (단어 "${esc(srcLabel(wv.sourceWord))}"에서)</div>${esc(wv.quote)}</div>` : ""}
@@ -4022,9 +4044,7 @@ function renderRightBody(){
         <textarea id="wave-input" rows="1" placeholder="이 부분에 대해 더 묻기... (Shift+Enter = 줄바꿈)">${esc(getDraft(wv.id))}</textarea>
         <button class="send-btn${ACTIVE.has(wv.msgs) ? " stop" : ""}" id="wave-send" type="button"${ACTIVE.has(wv.msgs) ? ' title="답변 중단"' : ""}>${ACTIVE.has(wv.msgs) ? "⏹" : "↑"}</button>
       </div>
-      <div class="v-resizer" title="드래그: 대화창 높이 조절 · 더블클릭: 초기화"><div class="vr-grip"></div></div>
-      <div id="wave-related">${waveRelatedHTML(wv)}</div>
-      ${ww}
+      <div class="wave-bridge">이 인용문 속 단어를 깊이 보려면 — 아래 <b>단어</b> 탭의 <b>🔗 관련</b>에 있어요</div>
     </div>`;
   const wlog = document.getElementById("wave-log");
   if(wlog) wlog.scrollTop = wlog.scrollHeight;
@@ -4033,13 +4053,14 @@ function renderRightBody(){
 }
 function renderRight(){
   renderRightTabs(); renderRightBody();
+  renderRelated(); // v2.50: 우측 탭을 바꾸면 🔗 관련도 함께 — 어느 맥락인지는 renderRelated가 판단한다
   // 활성 탭을 시야로 슬라이드 (가로 스크롤 유지)
   requestAnimationFrame(() => {
     const act = document.querySelector(".r-tab.active");
     if(act && act.scrollIntoView) act.scrollIntoView({ inline: "nearest", block: "nearest" });
   });
 }
-function renderAll(){ renderWordList(); renderChatLog(); renderWordContent(); renderRight(); renderRelated(); }
+function renderAll(){ renderWordList(); renderChatLog(); renderWordContent(); renderRight(); } // renderRight()가 🔗 관련까지 갱신한다 (v2.50: 중복 호출 제거)
 
 /* ── 파도/구문 분석 만들기 (드래그 → 선택 칩 2종: 🌊 파도 · 🔍 구문 분석) ── */
 const selChips = document.getElementById("sel-chips");
@@ -5865,7 +5886,29 @@ initSync();
   const rootStyle = document.documentElement.style;
   if(state.rightW) rootStyle.setProperty("--right-w", state.rightW + "px");
   if(state.waveLogH) rootStyle.setProperty("--wave-log-h", state.waveLogH + "px");
-  if(state.rightBottomH) rootStyle.setProperty("--right-bottom-h", state.rightBottomH + "px");
+  // v2.50: 조절 대상이 "아래 상자 높이"에서 "파도 대화 높이"로 바뀌었다 — 아래 탭은 남은 높이를 자동으로 채운다.
+  // 직접 조절한 높이는 기본 상한(58vh)을 이기되, **아래 탭 몫 최소 180px은 언제나 남긴다**.
+  // (그렇지 않으면 큰 창에서 늘려 둔 값이 작은 창에서 그대로 되살아나 아래 탭이 뭉개진다 — QA 렌즈 지적)
+  const RB_MIN = 180;
+  function applyChatH(h){
+    if(h){ rootStyle.setProperty("--right-chat-h", h + "px"); rootStyle.setProperty("--right-chat-cap", "none"); }
+    else { rootStyle.removeProperty("--right-chat-h"); rootStyle.removeProperty("--right-chat-cap"); }
+  }
+  function setChatH(px){ // 지금 창에 맞게 눌러 담아 적용 — 저장값(state.rightChatH)은 원본 그대로 둬서 창을 다시 넓히면 되살아난다
+    const aside = document.querySelector("aside.right");
+    const tabs = document.querySelector("aside.right .r-tabs");
+    const rz = document.getElementById("right-resizer");
+    // 대화가 쓸 수 있는 높이 = 우측 전체 − 파도 탭줄 − 경계선(위아래 여백 8px 포함). 이걸 빼먹으면 아래 탭 몫이 그만큼 모자란다
+    const room = (aside ? aside.getBoundingClientRect().height : window.innerHeight)
+      - (tabs ? tabs.getBoundingClientRect().height : 0)
+      - (rz ? rz.getBoundingClientRect().height + 8 : 0);
+    const h = Math.max(120, Math.min(Math.round(px), Math.max(160, Math.round(room - RB_MIN))));
+    applyChatH(h);
+    return h;
+  }
+  function reclampChatH(){ if(state.rightChatH) setChatH(state.rightChatH); }
+  reclampChatH();
+  window.addEventListener("resize", reclampChatH); // 창 크기가 바뀌면 다시 눌러 담는다
   let dragH = false, dragV = false, vStartY = 0, vStartH = 0;
   let dragB = false, bStartY = 0, bStartH = 0;
 
@@ -5878,7 +5921,7 @@ initSync();
     const v = e.target.closest(".v-resizer");
     if(!v) return;
     if(v.id === "right-resizer"){
-      const box = document.getElementById("right-bottom");
+      const box = document.querySelector("aside.right .r-body");
       dragB = true; bStartY = e.clientY;
       bStartH = box ? box.getBoundingClientRect().height : 300;
     } else {
@@ -5892,7 +5935,7 @@ initSync();
   document.querySelector("aside.right").addEventListener("dblclick", (e) => {
     const v = e.target.closest(".v-resizer");
     if(!v) return;
-    if(v.id === "right-resizer"){ rootStyle.removeProperty("--right-bottom-h"); state.rightBottomH = null; }
+    if(v.id === "right-resizer"){ applyChatH(null); state.rightChatH = null; }
     else { rootStyle.removeProperty("--wave-log-h"); state.waveLogH = null; }
     saveState();
   });
@@ -5908,10 +5951,9 @@ initSync();
       rootStyle.setProperty("--wave-log-h", h + "px");
       state.waveLogH = Math.round(h);
     } else if(dragB){
-      // 위로 끌면 아래 콘텐츠가 커진다 (경계선을 잡아 올리는 직관)
-      const h = Math.min(Math.max(bStartH - (e.clientY - bStartY), 120), Math.round(window.innerHeight * 0.78));
-      rootStyle.setProperty("--right-bottom-h", h + "px");
-      state.rightBottomH = Math.round(h);
+      // 경계선을 내리면 파도 대화가 커지고, 올리면 아래 콘텐츠가 커진다 (선을 잡아 옮기는 직관 그대로)
+      const h = Math.min(Math.max(bStartH + (e.clientY - bStartY), 120), Math.round(window.innerHeight * 0.78));
+      state.rightChatH = setChatH(h);
     }
   });
   document.addEventListener("mouseup", () => {
