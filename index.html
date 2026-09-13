@@ -169,10 +169,10 @@
 
   /* 파도(서브 대화) 패널 — 대화 아래로 관련 단어 콘텐츠가 이어져 r-body 전체가 스크롤 */
   /* v2.50: 세로로 눌려도 입력창은 끝까지 남는다 — 줄어드는 건 대화 로그뿐 (입력창이 잘려 스크롤해야 하던 문제) */
-  .wave-pane{display:flex;flex-direction:column;min-height:0;flex:0 1 auto;}
+  .wave-pane{display:flex;flex-direction:column;min-height:0;flex:1 1 auto;} /* v2.52: 경계선을 내려 칸을 키우면 패널도 같이 늘어난다 — 안 늘면 입력창 아래가 빈 채로 남는다 (사용자 신고) */
   .wave-quote{background:var(--card-soft);border-left:3px solid var(--purple);border-radius:8px;padding:9px 13px;font-size:.85rem;color:var(--text-soft);margin-bottom:10px;max-height:110px;overflow-y:auto;flex:none;}
   .wave-quote .q-label{font-size:.72rem;color:var(--purple);font-weight:700;margin-bottom:2px;}
-  .wave-log{max-height:var(--wave-log-h, 38vh);overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:6px;flex:0 1 auto;min-height:90px;}
+  .wave-log{overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:6px;flex:1 1 auto;min-height:90px;} /* v2.52: 38vh 상한 제거 — 로그가 칸의 남은 높이를 전부 쓴다(늘리면 늘고, 좁으면 줄어 스크롤). 칸 자체의 상한은 .r-body(58vh)가 맡는다 */
   .wave-pane .chat-input{border-top:1px solid var(--border-soft);padding:10px 0 0;flex:none;}
   /* v2.50: 폰의 '파도' 탭은 대화가 화면을 다 쓰므로 학습 콘텐츠가 안 보인다 — 어디 있는지 한 줄로 알려 준다 (데스크톱은 바로 아래 탭이 보이므로 불필요) */
   .wave-bridge{display:none;font-size:.72rem;color:var(--text-mute);padding:7px 2px 0;flex:none;}
@@ -504,7 +504,7 @@
   .fold-all-btn:hover{border-color:var(--accent);color:var(--accent-deep);}
 
   /* v2.7: 중앙 채팅 빠른 실행 버튼 — 단어 스레드에서 한 번에 연습 시작 */
-  .qa-row{display:flex;flex-wrap:wrap;gap:6px;padding:7px 14px;border-top:1px solid var(--border-soft);background:var(--card);flex:none;} /* v2.46: 입력창 위로 이동(border-top) + flex:none — 세로 flex에서 shrink로 잘려 로그에 깔리던 결함 수정 */
+  .qa-row{display:flex;flex-wrap:wrap;gap:6px;padding:6px 14px 10px;background:var(--card);flex:none;} /* v2.51: 입력창 아래로(클로드 배치) — 옵션이 밑에 깔리고 아래 여백이 바닥 붙음을 막는다. flex:none은 v2.46 잘림 수정 유지 */
   .qa-row:empty{display:none;}
   /* v2.40: 버튼 정갈 — 빠른 버튼·채팅 컨트롤 공통 높이(30px)로 들쭉날쭉 제거 (사용자: "정갈하지 못해, 간격도 마음대로") */
   .qa-btn{border:1px solid var(--border);background:var(--card);color:var(--text-soft);border-radius:8px;padding:0 12px;height:30px;display:inline-flex;align-items:center;font-size:.76rem;cursor:pointer;font-weight:500;box-sizing:border-box;}
@@ -514,6 +514,7 @@
   .key-open:hover{background:var(--accent-deep);border-color:var(--accent-deep);}
   .qa-btn:hover{border-color:var(--accent);color:var(--accent-deep);background:var(--card-soft);}
   .qa-btn.back{border-style:dashed;color:var(--text-mute);}
+  .qa-row .qa-sel{height:30px;box-sizing:border-box;font-size:.76rem;font-weight:500;padding:0 8px;} /* v2.52: ✍️ 작문 셀렉트 — 버튼과 같은 키·글자 크기 */
 
   /* v2.5: 💬 댓글 — 인용 블록 (드래그해서 콕 집어 질문) */
   .md blockquote{margin:4px 0 8px;padding:6px 12px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0;color:var(--text-soft);font-size:.92em;line-height:1.55;}
@@ -660,6 +661,7 @@
   }
   /* v2.23: 모바일 하단 탭 골격 — 데스크톱에선 전부 숨김 (기본 display:none) */
   #m-tabbar, #m-more, #m-thread, #m-ask{display:none;}
+  #ch-more{display:none;} /* v2.51: ⋯(컨트롤 접기)는 모바일 채팅 탭 전용 — 데스크톱은 컨트롤 상시 노출 */
 
   /* v2.16: 모바일(폰) 사용성 — 헤더 컴팩트, 리사이저 숨김, iOS 확대 방지 */
   @media (max-width:768px){
@@ -684,14 +686,20 @@
     /* 채팅 탭: 풀스크린 대화 + 하단 고정 입력창 + 스레드 셀렉터 */
     body[data-mtab="chat"] aside.words, body[data-mtab="chat"] aside.right{display:none;} /* v2.49: 학습 콘텐츠는 우측 안에 있으므로 우측만 숨기면 된다 */
     body[data-mtab="chat"] .panes{overflow:hidden;}
-    body[data-mtab="chat"] main.center{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:8px 10px 8px;}
+    body[data-mtab="chat"] main.center{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:5px 6px 4px;} /* v2.51: 여백 압축 */
     body[data-mtab="chat"] .chat-box{flex:1;min-height:0;display:flex;flex-direction:column;}
     body[data-mtab="chat"] .chat-log{flex:1 1 auto;height:auto !important;max-height:none !important;min-height:0;}
     body[data-mtab="chat"] #m-thread{display:inline-block;max-width:118px;}
     body[data-mtab="chat"] .chat-head .sub{display:none;} /* 셀렉터가 스레드명을 대신함 */
     /* v2.25: 채팅 탭 컨트롤 압축 — 4줄 → 2줄, 여백 최소화 (사용자: 버튼이 공간을 너무 차지) */
     body[data-mtab="chat"] .chat-head .t{display:none;} /* 스레드 셀렉터가 문맥을 말해줘서 타이틀 불필요 */
-    body[data-mtab="chat"] .chat-head{padding:6px 8px;gap:5px;} /* v2.40: 간격 통일 */
+    body[data-mtab="chat"] .chat-head{padding:5px 6px;gap:5px;} /* v2.40: 간격 통일, v2.51: 여백 압축 */
+    /* v2.51: 상단 = [스레드 셀렉터][⋯] 한 줄 — 단계·모드·질문·기록·초기화는 ⋯을 눌러야 나온다 (클로드 앱처럼 조용하게) */
+    body[data-mtab="chat"] #ch-more{display:inline-flex;align-items:center;justify-content:center;width:34px;margin-left:auto;font-size:.9rem;}
+    body[data-mtab="chat"] .chat-head.expanded #ch-more{margin-left:0;border-color:var(--accent);color:var(--accent-deep);}
+    body[data-mtab="chat"] .chat-head:not(.expanded) #chat-level,
+    body[data-mtab="chat"] .chat-head:not(.expanded) #chat-mode,
+    body[data-mtab="chat"] .chat-head:not(.expanded) .q-list-btn:not(#ch-more){display:none;}
     body[data-mtab="chat"] .chat-head .mini-sel{font-size:.72rem;padding:3px 3px;max-width:104px;height:28px;}
     body[data-mtab="chat"] .chat-head button{height:28px;} /* v2.40: 모바일 컨트롤 공통 높이 */
     body[data-mtab="chat"] .q-list-btn{padding:3px 8px;font-size:.7rem;margin-left:0;}
@@ -699,8 +707,18 @@
     body[data-mtab="chat"] #btn-chat-reset{margin-left:auto;}
     body[data-mtab="chat"] .qa-row{flex-wrap:nowrap;overflow-x:scroll;gap:5px;padding:4px 8px 5px;-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 22px),transparent);} /* 한 줄 가로 스크롤 + 우측 페이드 = "옆에 더 있다" 힌트 (기획 지적) */
     body[data-mtab="chat"] .qa-btn{white-space:nowrap;flex:none;padding:0 10px;height:28px;font-size:.72rem;} /* v2.40: 공통 높이 */
+    body[data-mtab="chat"] .qa-row .qa-sel{flex:none;height:28px;font-size:.72rem;padding:0 6px;max-width:120px;} /* v2.52 */
     .wave-actions .mini-sel,.wave-actions .wp-btn,.wave-actions button{height:28px;} /* v2.40: 파도 패널도 모바일 공통 높이 */
-    body[data-mtab="chat"] .chat-log{padding:10px 10px;gap:9px;}
+    body[data-mtab="chat"] .chat-log{padding:8px 6px;gap:8px;} /* v2.51: 여백 압축 */
+    body[data-mtab="chat"] .chat-input{padding:8px 2px 2px;}
+    body[data-mtab="chat"] .msg{max-width:96%;} /* 좁은 화면에선 말풍선이 폭을 더 쓰게 */
+    /* ── v2.51: 키보드 몰입 — 입력에 커서가 있는 동안은 대화와 입력만 (키보드가 화면 절반을 먹는 폰에서
+       헤더·탭바·컨트롤이 남은 절반까지 갉아먹던 문제. 클로드 앱과 같은 동작 — 입력을 떠나면 전부 복귀) ── */
+    body.kb-open header.top, body.kb-open #m-tabbar, body.kb-open #m-ask{display:none;}
+    body.kb-open .panes{padding-bottom:0;}
+    body.kb-open[data-mtab="chat"] .chat-head, body.kb-open #q-index{display:none;}
+    body.kb-open .wave-actions, body.kb-open .wa-hint, body.kb-open .wave-bridge{display:none;}
+    body.kb-open .wave-quote{max-height:52px;} /* 인용은 첫 줄만 살짝 — 문맥 확인용 */
     /* 파도 탭: 우측 페인이 전체 화면 */
     body[data-mtab="waves"] main.center, body[data-mtab="waves"] aside.words{display:none;}
     body[data-mtab="waves"] aside.right{flex:1;min-height:0;max-height:none;border-top:none;}
@@ -750,7 +768,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.50</span>
+    <span class="build">pAdo · v2.52</span>
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
       <option value="">🪜 단계 선택 안 함</option>
@@ -783,16 +801,16 @@
           <select class="mini-sel" id="m-thread" title="대화 상대 바꾸기 — 파도 Chat 또는 단어 스레드"></select><!-- v2.23: 모바일 채팅 탭 전용 스레드 셀렉터 -->
           <span class="sub" id="chat-sub"></span>
           <select class="mini-sel" id="chat-level" title="이 대화창만의 학습 단계 — 정하지 않으면 위쪽 전역 단계를 따라요"></select>
-          <select class="mini-sel" id="chat-mode" title="이 대화창의 모드 — 질의응답 또는 작문 연습"></select>
+          <select class="mini-sel" id="chat-mode" title="이 대화창의 모드 — 질의응답 · 작문 연습(한→영/영→한) · 🎓 튜터 · 🎭 상황극"></select>
           <div class="ch-actions"><!-- v2.32: 버튼 묶음 정렬 — 흩어져 줄바꿈되지 않게 우측 한 덩어리로 (모바일은 display:contents로 v2.25 배치 유지) -->
             <button class="q-list-btn" id="btn-q-list" type="button" title="이 스레드에서 내가 한 질문 목록 — 누르면 그 위치로 이동">≡ 질문 <span id="q-count">0</span></button>
-            <button class="q-list-btn" id="btn-practice" type="button" title="작문 연습 기록 — 점수 흐름과 반복해서 틀리는 부분을 한눈에">📈 기록</button>
+            <button class="q-list-btn" id="btn-practice" type="button" title="연습 기록(작문·상황극 대사 첨삭) — 점수 흐름과 반복해서 틀리는 부분을 한눈에">📈 기록</button>
             <button class="q-list-btn" id="btn-chat-reset" type="button" title="이 대화창의 대화 내용을 모두 비웁니다 — 저장(⭐)한 내용·쓰던 초안·단계 설정·연습 기록은 남아요">🧹 초기화</button>
+            <button class="q-list-btn" id="ch-more" type="button" title="더 보기 — 학습 단계·모드·질문 목록·기록·초기화">⋯</button><!-- v2.51: 모바일 전용 — 자주 안 쓰는 컨트롤을 접어 상단을 한 줄로 -->
           </div>
         </div>
         <div class="q-index" id="q-index" hidden></div>
         <div class="chat-log" id="chat-log"></div>
-        <div class="qa-row" id="qa-row"></div><!-- v2.46: 로그 아래·입력창 위 — 모바일에서 커서가 입력창에 간 순간 버튼이 엄지 거리 안 + 로그가 커져도 안 가려짐 -->
         <div class="img-prev" id="img-prev" hidden><!-- v2.35: 붙여넣은 이미지 첨부 미리보기 -->
           <img id="img-prev-img" alt="첨부한 이미지 미리보기">
           <span class="ip-hint">이미지 첨부됨 — 질문과 함께 전송돼요</span>
@@ -802,6 +820,7 @@
           <textarea id="chat-input" rows="1" placeholder="이 단어에 대해 무엇이든 물어보세요 (Shift+Enter = 줄바꿈)"></textarea>
           <button class="send-btn" id="chat-send" type="button">↑</button>
         </div>
+        <div class="qa-row" id="qa-row"></div><!-- v2.51: 입력창 아래로 — 클로드처럼 옵션이 입력창 밑에 깔리고, 입력창이 바닥에 붙지 않는다 (사용자 요청. v2.46의 "엄지 거리 안"은 아래에서도 성립) -->
       </section>
     </main>
 
@@ -846,7 +865,7 @@
       <button class="mm-item" type="button" data-mm="btn-saved">⭐ 저장 — 꼭 기억할 것들</button>
       <button class="mm-item" type="button" data-mm="btn-rules">⚖️ 영어 규칙 — 영어의 공식</button>
       <button class="mm-item" type="button" data-mm="btn-wave-list">≡ 파도 리스트 · 내역</button>
-      <button class="mm-item" type="button" data-mm="btn-practice">📈 작문 연습 기록</button>
+      <button class="mm-item" type="button" data-mm="btn-practice">📈 연습 기록(작문·상황극)</button>
       <button class="mm-item" type="button" data-mm="btn-qh">🗓 질문 내역 — 날짜별 복습</button>
       <button class="mm-item" type="button" data-mm="btn-review">🧠 복습 포인트 — AI가 정리한 복습 카드</button>
       <button class="mm-item" type="button" data-mm="btn-memo">📝 개발 메모</button>
@@ -2690,7 +2709,19 @@ function modeOptions(sel){
   return `<option value=""${!sel ? " selected" : ""}>💬 질의응답</option>` +
     `<option value="we"${sel === "we" ? " selected" : ""}>✍️ 작문 한→영</option>` +
     `<option value="ew"${sel === "ew" ? " selected" : ""}>✍️ 작문 영→한</option>` +
-    `<option value="tutor"${sel === "tutor" ? " selected" : ""}>🎓 튜터</option>`; // v2.38
+    `<option value="tutor"${sel === "tutor" ? " selected" : ""}>🎓 튜터</option>` + // v2.38
+    `<option value="role"${sel === "role" ? " selected" : ""}>🎭 상황극</option>`; // v2.52
+}
+/* v2.52: 빠른 버튼 줄의 ✍️ 작문 셀렉트 — 두 작문 버튼을 하나로 (사용자 요청). 데이터-주도: 방향을 늘리면 여기만 */
+const QA_WRITE_OPTS = [
+  { v: "we", label: "한→영", title: "한국어 문장을 보고 영어로 작문 — 첨삭·채점" },
+  { v: "ew", label: "영→한", title: "영어 문장을 보고 한국어로 옮기기 — 첨삭·채점" }
+];
+function qaWriteSelectHTML(mode){
+  const cur = QA_WRITE_OPTS.some(o => o.v === mode) ? mode : "";
+  return `<select class="mini-sel qa-sel" id="qa-write" title="작문 연습 방향을 고르면 이 대화가 그 연습으로 바뀌고 바로 문제 하나를 받아요${cur ? " — 맨 위 항목을 고르면 작문을 끄고 질의응답으로 돌아가요" : ""}">` +
+    `<option value=""${cur ? "" : " selected"}>${cur ? "✍️ 작문 끄기" : "✍️ 작문"}</option>` + // 작문 중엔 자리표시가 "끄기" — 다시 골랐을 때 화면과 상태가 어긋나지 않게 (기획 렌즈)
+    QA_WRITE_OPTS.map(o => `<option value="${o.v}"${o.v === cur ? " selected" : ""}>✍️ 작문 ${o.label}</option>`).join("") + `</select>`;
 }
 function curWord(){ if(state.activeWord === GLOBAL_ID) return GLOBAL_WORD; return WORDS.find(w => w.base === state.activeWord) || WORDS[0]; }
 /* v2.20: 총괄 스레드의 표시명 = "파도 Chat" — 내부 저장값(sourceWord·saved src)은 "총괄" 유지(레거시 데이터 호환) */
@@ -2801,6 +2832,22 @@ const MODE_TUTOR = `\n\n[튜터 모드] 이 대화창은 네(pAdo)가 수업을 
 - [구문 보기] "구문 보기 요청."이 오면: 필요한 단어 전부에 한국어 뜻을 짝지어(단어 | 뜻 표) **조립 순서와 다르게 섞어** 보여주고, "이 단어들을 어떤 순서로 이을까요?"로 조립을 학습자에게 넘긴다. 완성 문장은 여전히 주지 않는다 — 단어와 뜻이 다 보여도 조립이 남은 공부다.
 - [다음 버튼] "다음 문장 요청."이 오면 다음 문장으로 넘어간다: 진행 중이던 문장이 아직 미완성이면 정답 문장+구문 풀이를 두세 줄로 짧게 정리해 주고, 곧바로 새 한국어 문장을 제시한다 — 같은 단어 활용, 학습 단계 준수, 직전 문장과 결(상황·구조)이 다른 문장으로.
 ⚠️ 단계 우선 규칙: [학습 단계]가 바뀌면 다음 문장부터 그 단계에 맞춘다 — 대화 이력의 옛 난이도보다 현재 단계가 항상 우선.`;
+/* v2.52: 🎭 상황극 모드 — 학습자가 장면 속 인물이 되어 단서로 추리하며 말을 찾아내는 역할극 (사용자 설계:
+   "단어에 따른 상황극 주제가 생성되고, 사용자는 원하는 것을 선택하여 상황극 속에서 튜터의 가이드와 교육 지침에 따라 추리하며 언어를 학습") */
+const MODE_ROLE = `\n\n[상황극 모드] 이 대화창은 학습자가 상황극 속 인물이 되고, 네(pAdo)가 상대 인물이자 튜터로서 이끄는 역할극 학습 모드다. 목표는 뜻을 외우는 것이 아니라, 이 단어가 실제로 쓰이는 장면 안에서 학습자가 스스로 말을 찾아내(추리해) 몸에 익히는 것이다.
+- "상황극 주제 요청"이 오면: 이 대화창의 단어가 자연스럽게 여러 번 쓰이는 장면 3개를 번호로 제시한다. 각 장면은 한 줄 — 어디서·학습자는 누구·너는 누구·무엇을 해결해야 하는지(예: "① 카페 — 당신은 손님, 나는 점원. 주문한 것과 다른 음료가 나왔어요."). 학습 단계에 맞는 난이도로. 마지막에 "번호를 고르거나, 원하는 장면을 직접 적어 주세요."라고 한 줄만 덧붙인다. 아직 대사를 시작하지 않는다.
+- 장면이 정해지면: 장면을 한국어 2~3줄로 그려 주고(무대·관계·지금 상황), 곧바로 네 인물의 첫 대사를 영어 한두 문장으로 말한 뒤, 학습자가 영어로 답할 차례임을 한 줄로 알려 준다. 학습자가 무엇을 말해야 할지 한국어로 번역해 주지 않는다 — 상대의 말·표정·물건 같은 장면의 단서로 유추하게 한다.
+- 진행 규칙(한 턴 = 한 걸음):
+  ① 학습자의 영어가 통하면 인물로서 자연스럽게 받고 다음 단서를 던진다. 이 단어를 학습자가 제대로 썼으면 "🎯" 한 줄로 짚어 준다 — 왜 그 자리에 그 단어가 맞는지, 뜻이 아니라 결로.
+  ② 어색하거나 틀리면 인물의 대사는 그대로 이어가되, 그 아래 "🎓 튜터:" 한 줄로 ✗ → ✓ 와 이유를 붙인다. 학습자가 쓴 원문을 다시 보여줄 때는 반드시 별도 줄에 "당신: <원문>" 형식으로만 인용한다. 정답 대사를 통째로 대신 말해 주지 않는다 — 고칠 지점만.
+  ③ 학습자가 한국어로 답하거나 막히면: 번역해 주지 말고, 장면 안의 단서를 하나 더 주거나 "이럴 때 영어로는 어떤 느낌으로 말할까요?"처럼 추리를 돕는 질문을 한다. 같은 지점에서 두 번 막히면 보기 3개(맞는 것 1 + 한국인이 헷갈리기 쉬운 것 2)를 번호로 준다.
+  ④ 이 단어가 자연스럽게 나올 자리를 장면 안에 계속 만들어 학습자가 그 단어를 직접 써 보게 이끈다.
+- [힌트 버튼] "힌트 조금만 요청."이 오면 정답으로 곧장 가지 말고 직전보다 딱 한 걸음 가까운 힌트 하나만 준다(느낌 → 첫 글자 → 글자 수 → 보기 3개 순). [다른 주제] "다른 상황극 주제 요청."이 오면 앞서 낸 것과 겹치지 않는 장면 3개를 새로 낸다. [마무리] "상황극 마무리 요청."이 오면 장면을 자연스럽게 끝내고 정리한다: ① 이 장면에서 나온 표현 3개(영어 + 한 줄 느낌) ② 이 단어를 이 장면에서 어떻게 느꼈는지 한 줄 ③ 다음에 해 볼 장면 하나 제안.
+- 학습자의 영어 대사를 고쳐 줄 때(②)만 답변 맨 끝에 채점 기록을 정확히 이 형식의 한 줄로 붙인다 — 주제 제시·장면 설정·마무리에는 붙이지 않는다:
+[기록] {"score":0에서 100 사이 정수,"pass":통과면 true,"errors":[{"tag":"태그","note":"무엇이 틀렸는지 한 줄(한국어)"}],"fix":"자연스러운 대사"} [/기록]
+tag는 반드시 다음 중에서만 고른다: 관사, 시제, 전치사, 어순, 단복수, 주어-동사 일치, 어휘 선택, 철자, 조동사, 연결(접속), 의미 왜곡. 이 블록은 학습자에게 보이지 않고 학습 기록·점수 산정에 쓰인다.
+- 네 인물의 대사는 학습 단계에 맞게 짧고 또렷하게. 대사 뒤에 한국어 뜻을 괄호로 붙이지 않는다 — 어려운 말이 있으면 장면 단서로 풀 수 있게 한다. 원문에 없는 정보를 지어내지 않는다.
+⚠️ 단계 우선 규칙: [학습 단계]가 바뀌면 다음 턴부터 대사 난이도를 그 단계에 맞춘다 — 대화 이력의 옛 난이도보다 현재 단계가 항상 우선.`;
 
 function getSystemBase(){
   // 사용자가 ⚙️ 설정에서 지시문을 수정했으면 그것을, 아니면 기본 PHILO
@@ -2824,7 +2871,8 @@ const OVERLOAD_RULE = `분량 규칙: 질문에 필요한 만큼만 — 과잉 �
 const ENGINE_GUIDE = [
   ["단어 스레드", "좌측 목록에서 단어를 고르면 그 단어 전용 대화가 열린다. 아래에는 그 단어의 결·함정·패턴 콘텐츠가 함께 있다."],
   ["🎓 튜터", "그 단어로 문장을 제시하고 첫 덩어리부터 한 걸음씩 작문을 이끈다. 막히면 [💡 힌트 조금만][📚 단어 보기(영어 단어만 뒤죽박죽)][🔎 구문 보기(단어+뜻)][🔢 보기 3개][⏭ 다음 문장]."],
-  ["✍️ 작문 한→영 / 영→한", "AI가 문제만 내고 학습자가 직접 작문 → 첨삭·채점. 점수와 오류 태그가 기록에 쌓인다."],
+  ["✍️ 작문(한→영 / 영→한)", "빠른 버튼 줄의 ✍️ 작문에서 방향을 고르면 AI가 문제만 내고 학습자가 직접 작문 → 첨삭·채점. 점수와 오류 태그가 기록에 쌓인다."],
+  ["🎭 상황극", "그 단어가 쓰이는 장면 3개를 받아 하나를 고르면, 학습자가 장면 속 인물이 되어 영어로 대화한다. 튜터는 번역 대신 장면의 단서로 추리하게 이끌고, 틀린 대사만 짚어 준다. [🎲 다른 주제][💡 힌트 조금만][🏁 상황극 마무리]."],
   ["🔍 단어 분석 / 🧩 단어 퀴즈 / ✏️ 예문 만들기", "그 단어를 표준 형식으로 깊게 분석하거나, 단계에 맞는 퀴즈·예문을 즉시 받는다."],
   ["드래그 → 🌊 파도", "답변 중 궁금한 부분을 드래그하면 그 인용을 물고 우측에 별도 대화(파도)가 열린다. 본 대화를 밀어내지 않고 곁가지를 판다."],
   ["🧠 복습", "대화·연습·저장 기록을 모아 복습 포인트를 만든다. 만들어진 포인트는 1일·3일·1주일·2주일·한 달·석 달 간격으로 다시 나타난다(간격 반복)."],
@@ -2861,6 +2909,7 @@ function buildSystem(extra, cfg, ownerKey){
     if(cfg && cfg.mode === "we") base += MODE_WE;
     else if(cfg && cfg.mode === "ew") base += MODE_EW;
     else if(cfg && cfg.mode === "tutor") base += MODE_TUTOR; // v2.38
+    else if(cfg && cfg.mode === "role") base += MODE_ROLE; // v2.52
     const rules = localStorage.getItem(LS_RULES);
     if(rules && rules.trim()) base += `\n\n[전체 지침 — 총괄 대화에서 사용자와 합의된 것. 반드시 따를 것]\n${rules.trim()}`;
   } catch(e){}
@@ -2978,7 +3027,7 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
   thread.push(img ? { role: "user", content: text, ts: Date.now(), img } : { role: "user", content: text, ts: Date.now() });
   const ownerKey = cfgKey || state.activeWord; // 이 스레드의 소유 키 (전송 시점 고정)
   const cfg = threadCfg(ownerKey); // 대화창별 단계·모드
-  const practiceMode = cfg && (cfg.mode === "we" || cfg.mode === "ew") ? cfg.mode : ""; // v2.27: 작문 모드에서만 채점 블록 처리
+  const practiceMode = cfg && (cfg.mode === "we" || cfg.mode === "ew" || cfg.mode === "role") ? cfg.mode : ""; // v2.27: 작문 모드에서만 채점 블록 처리 (v2.52: 상황극의 대사 첨삭도 기록)
   const { msgs, trimmed } = trimForApi(thread); // API 페이로드는 답변 자리(aMsg)를 넣기 *전에* 확정 — 빈 assistant 턴이 실려 가면 안 됨
   /* v2.26: 답변 자리를 스레드에 미리 만들어 스트리밍 중에도 localStorage에 실린다.
      창 이탈·페이지 소멸로 스트림이 죽어도 받은 만큼 살아남는다 — partial 표식은 완료 시 제거,
@@ -3411,7 +3460,7 @@ function renderChatLog(){
     log.innerHTML = chat.map((m, i) => m.role === "user"
       ? `<div class="msg user" data-mi="${i}"><div class="md">${mdRender(m.content)}</div>${m.img ? imgHTML(m.img) : ""}</div>`
       : `<div class="msg ai${m.collapsed ? " collapsed" : ""}" data-mi="${i}"><button class="fold" data-fold="${i}" type="button" title="답변 접기/펼치기">${m.collapsed ? "▸" : "▾"}</button><div class="md">${mdRender(m.content)}</div>${m.grade ? gradeCardHTML(m.grade) : ""}</div>`).join("")
-      + ansRowHTML(threadCfg(state.activeWord), chat) + tutorRowHTML(threadCfg(state.activeWord), chat); // 작문=답안 버튼(v2.0) / 튜터=힌트 버튼(v2.39) 상주
+      + ansRowHTML(threadCfg(state.activeWord), chat) + tutorRowHTML(threadCfg(state.activeWord), chat) + roleRowHTML(threadCfg(state.activeWord), chat); // 작문=답안 버튼(v2.0) / 튜터=힌트 버튼(v2.39) / 상황극=주제·힌트·마무리(v2.52) 상주
   }
   log.scrollTop = log.scrollHeight;
   document.getElementById("chat-sub").textContent = state.activeWord === GLOBAL_ID
@@ -3428,12 +3477,12 @@ function renderChatLog(){
       const mode = threadCfg(state.activeWord).mode;
       qaRow.innerHTML = `
         <button class="qa-btn" data-qa="tutor" type="button" title="튜터가 먼저 말을 걸어요 — 문장을 제시하고 첫 단어부터 한 걸음씩 작문을 이끌어 줘요">🎓 튜터</button>
-        <button class="qa-btn" data-qa="we" type="button" title="이 대화를 작문 연습(한→영)으로 바꾸고 바로 문제 하나를 받아요">✍️ 작문 한→영</button>
-        <button class="qa-btn" data-qa="ew" type="button" title="이 대화를 번역 연습(영→한)으로 바꾸고 바로 문제 하나를 받아요">✍️ 작문 영→한</button>
+        ${qaWriteSelectHTML(mode)}
+        <button class="qa-btn" data-qa="role" type="button" title="이 단어가 쓰이는 장면 3개를 받고, 하나를 골라 장면 속 인물이 되어 영어로 대화해요 — 튜터는 번역 대신 단서로 추리하게 이끌어요">🎭 상황극</button>
         <button class="qa-btn" data-qa="analyze" type="button" title="이 단어를 표준 형식으로 깊게 분석">🔍 단어 분석</button>
         <button class="qa-btn" data-qa="quiz" type="button" title="지금 단계에 맞는 퀴즈 한 문제">🧩 단어 퀴즈</button>
         <button class="qa-btn" data-qa="examples" type="button" title="결이 서로 다른 예문 3개 만들기">✏️ 예문 만들기</button>` +
-        (mode ? `<button class="qa-btn back" data-qa="qa" type="button" title="작문·튜터 모드를 끄고 기본 질의응답으로 돌아가요">💬 질의응답으로</button>` : "");
+        (mode ? `<button class="qa-btn back" data-qa="qa" type="button" title="작문·튜터·상황극 모드를 끄고 기본 질의응답으로 돌아가요">💬 질의응답으로</button>` : "");
     }
   }
   // v2.3: 이 스레드의 입력 초안 복원 — 단어·탭을 오가도 쓰던 질문 유지 (클로드 코드처럼)
@@ -3589,6 +3638,12 @@ function tutorRowHTML(cfg, msgs){
   if(!msgs || !msgs.length || msgs[msgs.length - 1].role !== "assistant" || msgs[msgs.length - 1].partial) return ""; // 답변 완료 후에만
   return `<div class="ans-row"><button class="ans-btn" data-tu-hint type="button">💡 힌트 조금만</button><button class="ans-btn" data-tu-words type="button">📚 단어 보기</button><button class="ans-btn" data-tu-phrase type="button">🔎 구문 보기</button><button class="ans-btn" data-tu-opts type="button">🔢 보기 3개</button><button class="ans-btn" data-tu-next type="button">⏭ 다음 문장</button><span class="ans-hint">막히면 힌트, 다 풀었으면 다음 문장</span></div>`;
 }
+/* v2.52: 🎭 상황극 버튼 줄 — 주제 다시 받기·힌트·마무리를 타이핑 없이 (튜터 줄과 같은 패턴) */
+function roleRowHTML(cfg, msgs){
+  if(!cfg || cfg.mode !== "role") return "";
+  if(!msgs || !msgs.length || msgs[msgs.length - 1].role !== "assistant" || msgs[msgs.length - 1].partial) return ""; // 답변 완료 후에만
+  return `<div class="ans-row"><button class="ans-btn" data-rp-topics type="button">🎲 다른 주제</button><button class="ans-btn" data-rp-hint type="button">💡 힌트 조금만</button><button class="ans-btn" data-rp-end type="button">🏁 상황극 마무리</button><span class="ans-hint">번호를 고르거나 영어로 대사를 이어 가세요 — 막히면 힌트</span></div>`;
+}
 
 /* 질문 목록 — 우측 파도 탭 리스트의 중앙판. 긴 대화에서 내 질문 위치로 바로 점프 */
 let qIndexOpen = false;
@@ -3623,6 +3678,9 @@ document.getElementById("chat-log").addEventListener("click", (e) => {
   if(e.target.closest("[data-tu-phrase]")){ sendMainText("구문 보기 요청."); return; } // v2.43: 튜터 — 단어+뜻 짝
   if(e.target.closest("[data-tu-opts]")){ sendMainText("보기 3개 요청."); return; } // v2.39: 튜터 — 보기로 바로
   if(e.target.closest("[data-tu-next]")){ sendMainText("다음 문장 요청."); return; } // v2.40: 튜터 — 다음 문장으로
+  if(e.target.closest("[data-rp-topics]")){ sendMainText("다른 상황극 주제 요청."); return; } // v2.52: 상황극 — 장면 3개 새로
+  if(e.target.closest("[data-rp-hint]")){ sendMainText("힌트 조금만 요청."); return; } // v2.52: 상황극 — 한 걸음 힌트
+  if(e.target.closest("[data-rp-end]")){ sendMainText("상황극 마무리 요청."); return; } // v2.52: 상황극 — 정리
   const fu = e.target.closest("[data-fu]");
   if(fu){ // v2.34: 첨삭 후속 버튼(중앙) — 그 모범 문장을 인용한 파도를 우측에 만들어/재사용해 거기서 답변
     const host = fu.closest(".msg[data-mi]");
@@ -4556,10 +4614,10 @@ function renderPractice(){
     `<div class="pr-streak"><span class="g-tag">${esc(t)}</span>총 ${total[t]}회 <span class="pr-note">${esc(lastSeen[t].e.note || "")}</span></div>`).join("");
   const rows = PRACTICE.slice().reverse().slice(0, 30).map(r => {
     const d = new Date(r.t);
-    return `<details class="pr-row"><summary><span class="pr-score ${r.pass ? "ok" : "bad"}">${r.score}</span><b>${esc(r.w || r.key)}</b><span>${r.kind === "we" ? "✍️ 한→영" : "✍️ 영→한"}</span><span class="pr-note">${d.getMonth() + 1}/${d.getDate()}</span>${(r.errors || []).map(e => `<span class="g-tag">${esc(e.tag)}</span>`).join("")}</summary><div class="pr-detail">${r.q ? `<div>문제: ${esc(r.q)}</div>` : ""}<div>내 답: ${esc(r.a || "")}</div>${r.fix ? `<div>✓ ${esc(r.fix)}</div>` : ""}${(r.errors || []).map(e => `<div>• ${esc(e.tag)}: ${esc(e.note || "")}</div>`).join("")}</div></details>`;
+    return `<details class="pr-row"><summary><span class="pr-score ${r.pass ? "ok" : "bad"}">${r.score}</span><b>${esc(r.w || r.key)}</b><span>${r.kind === "we" ? "✍️ 한→영" : r.kind === "role" ? "🎭 상황극" : "✍️ 영→한"}</span><span class="pr-note">${d.getMonth() + 1}/${d.getDate()}</span>${(r.errors || []).map(e => `<span class="g-tag">${esc(e.tag)}</span>`).join("")}</summary><div class="pr-detail">${r.q ? `<div>문제: ${esc(r.q)}</div>` : ""}<div>내 답: ${esc(r.a || "")}</div>${r.fix ? `<div>✓ ${esc(r.fix)}</div>` : ""}${(r.errors || []).map(e => `<div>• ${esc(e.tag)}: ${esc(e.note || "")}</div>`).join("")}</div></details>`;
   }).join("");
   body.innerHTML = learnReportHTML() + `
-    <div class="pr-h">📈 작문 연습 기록</div>
+    <div class="pr-h">📈 연습 기록 — 작문·상황극 대사 첨삭</div>
     <div class="pr-sum">
       <div class="pr-stat"><b>${n}</b><span>채점 받은 횟수</span></div>
       <div class="pr-stat"><b>${avg}점</b><span>평균 점수</span></div>
@@ -5220,22 +5278,41 @@ document.getElementById("qa-row").addEventListener("click", (e) => {
     sendMainText(`"${w.base}" 단어 튜터 수업 시작 요청${lvl ? ` — ${lvl} 단계 기준` : ""}.`);
     return;
   }
-  if(act === "we"){
-    setThreadCfg(state.activeWord, { mode: "we" });
-    renderChatLog(); // 모드 셀렉트·복귀 버튼 즉시 반영
-    sendMainText(`"${w.base}" 단어를 활용한 ${lvl ? lvl + " 단계 " : ""}작문 문제 1개 요청.`); // v2.37: 버튼 발화는 "~요청" 명사형 — 명령 멘트("내줘") 제거 (사용자 요청)
-    return;
-  }
-  if(act === "ew"){
-    setThreadCfg(state.activeWord, { mode: "ew" });
+  if(act === "role"){ // v2.52: 상황극 — 모드 설정 + 장면 3개 요청 발화
+    setThreadCfg(state.activeWord, { mode: "role" });
     renderChatLog();
-    sendMainText(`"${w.base}" 단어가 들어간 ${lvl ? lvl + " 단계 " : ""}번역 문제 1개 요청.`); // 정답 보류는 MODE_EW가 항구 보장 (기획 렌즈 — 비문·1회성 지시 해소)
+    sendMainText(`"${w.base}" 단어 상황극 주제 요청${lvl ? ` — ${lvl} 단계 기준` : ""}.`);
     return;
   }
   if(act === "analyze"){ sendMainText("이 단어 분석 요청.", WORD_FORMAT + `\n\n[분석 대상 — 이 스레드의 단어. 드래그가 아니라 버튼으로 요청됨. 이 요청에 한해 위 표준 형식이 앞의 "통째로 반복하지 말라"는 지시보다 우선한다 — 형식대로 온전히 분석하라]\n"""${w.base}"""`); return; } // QA 권고: 지침 긴장 해소 (실제 시스템 문구 인용으로 정합 — v2.8)
   if(act === "quiz"){ sendMainText(`"${w.base}" 단어 퀴즈 1문제 요청 — ${lvl ? lvl + " 단계" : "지금 내 단계"} 기준. (정답과 해설은 내가 답한 뒤에)`); return; }
   if(act === "examples"){ sendMainText(`"${w.base}" 단어가 들어간, 결이 서로 다른 예문 3개 요청 — 각각 어떤 상황·어떤 느낌인지 한 줄씩.`); return; } // v2.37 기획·QA: 유일하게 남았던 명령형 발화 전환
 });
+/* v2.52: ✍️ 작문 셀렉트 — 방향을 고르면 그 연습으로 전환 + 즉시 출제 (두 버튼을 하나로, 사용자 요청). 위임: 셀렉트는 재렌더마다 새로 생긴다 */
+function startWriteMode(m){
+  const w = curWord();
+  const lvl = effLevel(state.activeWord);
+  setThreadCfg(state.activeWord, { mode: m });
+  renderChatLog(); // 모드 셀렉트·복귀 버튼 즉시 반영
+  if(m === "we") sendMainText(`"${w.base}" 단어를 활용한 ${lvl ? lvl + " 단계 " : ""}작문 문제 1개 요청.`); // v2.37: 버튼 발화는 "~요청" 명사형
+  else sendMainText(`"${w.base}" 단어가 들어간 ${lvl ? lvl + " 단계 " : ""}번역 문제 1개 요청.`); // 정답 보류는 MODE_EW가 항구 보장
+}
+document.getElementById("qa-row").addEventListener("change", (e) => {
+  const s = e.target.closest("#qa-write");
+  if(!s || state.activeWord === GLOBAL_ID) return;
+  const m = s.value;
+  if(!QA_WRITE_OPTS.some(o => o.v === m)){ // "✍️ 작문 끄기"(작문 중) = 질의응답 복귀 / 자리표시(작문 아님)면 그대로
+    if(QA_WRITE_OPTS.some(o => o.v === threadCfg(state.activeWord).mode) && !ACTIVE.has(curChat())){ setThreadCfg(state.activeWord, { mode: "" }); renderChatLog(); }
+    return;
+  }
+  if(ACTIVE.has(curChat())){ s.value = threadCfg(state.activeWord).mode || ""; return; } // 답변 중엔 무시 (⏹로 먼저 중단)
+  startWriteMode(m);
+});
+/* v2.52: 빠른 버튼·전송 버튼을 눌러도 입력창 커서가 남는다 — 폰에서 키보드가 내려갔다 올라오며 화면이 튀는 것(몰입 모드 깜빡임)을 막고,
+   보낸 뒤 바로 이어서 칠 수 있다(클로드 앱 동작). 셀렉트는 제외 — 기본 동작을 막으면 목록이 안 열린다 (QA·기획 렌즈) */
+document.getElementById("qa-row").addEventListener("mousedown", (e) => { if(e.target.closest("button")) e.preventDefault(); });
+document.getElementById("chat-send").addEventListener("mousedown", (e) => e.preventDefault());
+document.querySelector("aside.right").addEventListener("mousedown", (e) => { if(e.target.closest("#wave-send")) e.preventDefault(); });
 document.getElementById("chat-input").addEventListener("keydown", (e) => {
   if(e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); sendMain(); } // isComposing: 한글 조합 확정 Enter 오발송 방지
 });
@@ -5403,6 +5480,38 @@ document.getElementById("m-ask").addEventListener("click", () => {
   const ta = document.getElementById("chat-input");
   if(ta) ta.focus();
 });
+/* v2.51: ⋯ — 모바일 채팅 상단의 부가 컨트롤(단계·모드·질문·기록·초기화) 접기/펼치기 */
+document.getElementById("ch-more").addEventListener("click", () => {
+  document.querySelector(".chat-head").classList.toggle("expanded");
+});
+/* v2.51: 키보드 몰입 — 입력창에 커서가 있는 동안 헤더·탭바·부가 줄을 치워 대화가 화면을 갖게 (모바일 전용).
+   커서가 떠나면(입력창 밖 탭 = 키보드 내리기) 전부 복귀. 안드로이드 뒤로가기처럼 키보드만 내려간 경우는
+   visualViewport가 다시 커진 것으로 감지해 복귀. */
+(function initKbImmersive(){
+  let t = null;
+  const typing = () => { const a = document.activeElement; return !!(a && a.tagName === "TEXTAREA" && !a.closest(".modal")); };
+  const apply = (on) => {
+    if(document.body.classList.contains("kb-open") === !!on) return;
+    document.body.classList.toggle("kb-open", !!on);
+    // 높이가 확 바뀌므로 보던 대화의 바닥을 유지
+    const log = document.getElementById(document.body.dataset.mtab === "waves" ? "wave-log" : "chat-log");
+    if(log) requestAnimationFrame(() => { log.scrollTop = log.scrollHeight; });
+  };
+  document.addEventListener("focusin", (e) => {
+    if(!isMobileView()) return;
+    if(e.target.tagName === "TEXTAREA" && !e.target.closest(".modal")){ clearTimeout(t); apply(true); }
+  });
+  document.addEventListener("focusout", () => {
+    clearTimeout(t);
+    t = setTimeout(() => { if(!typing()) apply(false); }, 180); // 버튼 탭으로 잠깐 포커스가 튕기는 경우를 넘긴다
+  });
+  if(window.visualViewport){
+    window.visualViewport.addEventListener("resize", () => {
+      if(!isMobileView() || !document.body.classList.contains("kb-open")) return;
+      if(window.visualViewport.height >= window.innerHeight - 80) apply(false); // 키보드가 내려갔는데 커서만 남은 경우
+    });
+  }
+})();
 // 보관 탭: 항목은 기존 헤더 버튼의 프록시 — 로직 중복 없이 같은 모달·기능을 연다
 document.getElementById("m-more").addEventListener("click", (e) => {
   const it = e.target.closest("[data-mm]");
