@@ -768,7 +768,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.52</span>
+    <span class="build">pAdo · v2.53</span>
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
       <option value="">🪜 단계 선택 안 함</option>
@@ -941,6 +941,8 @@
   <label>AI 역할 지시문 (시스템 프롬프트) <button type="button" id="set-system-reset" style="float:right;border:1px solid var(--border);background:var(--card-soft);color:var(--text-soft);border-radius:6px;padding:1px 8px;font-size:.72rem;cursor:pointer;">기본값 복원</button></label>
   <textarea id="set-system" rows="8" spellcheck="false"></textarea>
   <div class="hint">이 앱의 AI가 "영어 튜터"처럼 행동하는 이유가 <b>바로 이 지시문</b>입니다 — 매 질문마다 함께 전송돼요. 자유롭게 수정하세요. 비우고 저장하면 기본값으로 돌아갑니다.</div>
+  <label style="margin-top:14px;display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="set-memo" style="width:auto;margin:0"> 🧠 대화 요약 기억</label>
+  <div class="hint">대화가 길어져 창 밖으로 밀린 부분을 pAdo가 뒤에서 조용히 요약해 두고 매 질문에 함께 보내요 — "초반은 기억에서 지워졌어요"가 줄어듭니다. 요약할 때 API 호출이 한 번 더 나가요(비용 조금). 푼 문제 기록은 이 설정과 무관하게 항상 남아요.</div>
   <label style="margin-top:14px">📦 기기 이사 — PC ↔ 모바일 통째 옮기기</label>
   <div class="hint">API 키·학습 기록(오늘의 복습)·대화·설정 <b>전부</b>를 코드 하나로 묶어요. 옮기는 법: <b>①</b> 지금 쓰던 기기에서 [이사 코드 만들기] → [복사] <b>②</b> 메일이나 메신저의 "나에게 보내기"로 다른 기기에 전달 <b>③</b> 그 기기에서 코드를 복사해 이 칸에 붙여넣고 [가져오기]. <b>⚠️ 코드 안에 API 키가 들어있어요 — 다른 사람에게는 절대 보내지 마세요.</b></div>
   <textarea id="move-code" rows="3" spellcheck="false" placeholder="[이사 코드 만들기]를 누르면 여기에 코드가 나와요 — 다른 기기에서 만든 코드를 붙여넣는 곳이기도 해요"></textarea>
@@ -2696,6 +2698,7 @@ function setThreadCfg(key, patch){
   const c = Object.assign({}, state.threadCfg[key] || {}, patch);
   if(!c.level) delete c.level;
   if(!c.mode) delete c.mode;
+  if(!c.exam || c.mode !== "exam") delete c.exam; // v2.53: 시험 유형은 시험 모드일 때만 의미
   if(Object.keys(c).length) state.threadCfg[key] = c; else delete state.threadCfg[key];
   saveState();
 }
@@ -2710,7 +2713,23 @@ function modeOptions(sel){
     `<option value="we"${sel === "we" ? " selected" : ""}>✍️ 작문 한→영</option>` +
     `<option value="ew"${sel === "ew" ? " selected" : ""}>✍️ 작문 영→한</option>` +
     `<option value="tutor"${sel === "tutor" ? " selected" : ""}>🎓 튜터</option>` + // v2.38
-    `<option value="role"${sel === "role" ? " selected" : ""}>🎭 상황극</option>`; // v2.52
+    `<option value="role"${sel === "role" ? " selected" : ""}>🎭 상황극</option>` + // v2.52
+    `<option value="exam"${sel === "exam" ? " selected" : ""}>📝 인출 시험</option>`; // v2.53
+}
+/* v2.53: 📝 인출 시험 유형 — 데이터-주도. 출제 재료는 앱이 저장한 연습 기록(PRACTICE)이라 대화 창 밖으로 밀려도 빠지지 않는다 */
+const EXAM_TYPES = [
+  { v: "ko2en", label: "한→영 작문", desc: "기록의 한국어 문장(또는 모범 답의 뜻)을 주고 영어로 쓰게 한다. 영어 정답·힌트는 주지 않는다." },
+  { v: "en2ko", label: "영→한 번역", desc: "기록의 영어 문장(모범 답)을 주고 자연스러운 한국어로 옮기게 한다. 한국어 풀이·힌트는 주지 않는다." },
+  { v: "cloze", label: "빈칸 채우기", desc: "기록의 영어 문장에서 이 단어(또는 틀렸던 조각 — 관사·전치사·시제 자리)를 ____로 비우고 채우게 한다. 보기는 주지 않는다." },
+  { v: "pick", label: "결 고르기(3지선다)", desc: "기록의 문장 자리에 맞는 표현 1개 + 한국인이 헷갈리기 쉬운 오답 2개를 번호로 주고 고르게 한다. 고른 뒤 왜 그런지(뜻이 아니라 결로) 설명한다." },
+  { v: "wrong", label: "틀린 것만 다시(지난 기록)", desc: "기록에서 틀렸던 것만 다시 낸다 — '미통과' 기록의 문제, 그리고 통과한 시험 기록이라도 '틀린 곳'·'모범'에 적힌 개별 문항. 같은 유형(원래 한→영이면 한→영)으로. 맞혔던 문항은 내지 않는다." }
+];
+function qaExamSelectHTML(cfg){
+  const on = cfg && cfg.mode === "exam";
+  const cur = on ? (cfg.exam || "") : "";
+  return `<select class="mini-sel qa-sel" id="qa-exam" title="지금까지 푼 문제를 재료로 시험을 봐요 — 대화가 길어져도 앱이 기록해 둔 것에서 출제해요${on ? " · 맨 위 항목을 고르면 시험을 끝내고 질의응답으로 돌아가요" : ""}">` +
+    `<option value=""${cur ? "" : " selected"}>${on ? "📝 시험 끝내기" : "📝 인출 시험"}</option>` +
+    EXAM_TYPES.map(o => `<option value="${o.v}"${o.v === cur ? " selected" : ""}>📝 시험 · ${o.label}</option>`).join("") + `</select>`;
 }
 /* v2.52: 빠른 버튼 줄의 ✍️ 작문 셀렉트 — 두 작문 버튼을 하나로 (사용자 요청). 데이터-주도: 방향을 늘리면 여기만 */
 const QA_WRITE_OPTS = [
@@ -2820,6 +2839,8 @@ tag는 반드시 다음 중에서만 고른다: 의미 왜곡, 누락, 과잉 �
 /* v2.38: 🎓 튜터 모드 — 튜터가 먼저 말을 걸고 한 걸음씩 리드하는 작문 튜토리얼 (사용자 설계) */
 const MODE_TUTOR = `\n\n[튜터 모드] 이 대화창은 네(pAdo)가 수업을 이끄는 튜터 모드다 — 질문을 기다리지 말고 네가 리드한다.
 - 수업 시작 요청이 오면: 한 줄로 반갑게 인사하고 곧바로 첫 문장을 제시한다. 이 대화창의 단어를 활용하는 한국어 문장 1개를 학습 단계에 맞춰 만든다(예: "그 영화는 내가 지금까지 본 최고의 영화예요."). 정답 영어를 절대 먼저 주지 않는다.
+- 🚫 문장을 내는 턴(첫 문장·다음 문장)에는 **한국어 문장 + 첫 질문 한 줄**만 둔다. 다음은 그 턴에 절대 넣지 않는다: 영어 단어·구·조각, "재료"·"단어 목록", 영어 뼈대(예: "I don't know + what …"), 어순 힌트, 앞 문장의 영어 인용. 앞 문장과 이어 줄 때도 "방금 배운 것과 뼈대가 같아요"처럼 한국어 한 줄까지만 — 영어 조각을 보여 주는 순간 학습자가 추리할 것이 사라진다(사용자 피드백: "참고 힌트가 과해 눈이 자꾸 가서 추리 과정이 애매해진다").
+- 힌트는 학습자가 막히거나(모르겠다고 하거나 같은 지점에서 2번 틀림) [💡 힌트]·[📚 단어 보기]·[🔎 구문 보기]·[🔢 보기 3개]를 눌렀을 때만, 그것도 사다리의 한 칸씩. 전체 구조·재료 정리는 문장을 완성한 뒤에만 보여 준다.
 - 한 걸음씩 튜토리얼로 이끈다 — 한 턴에 한 걸음만, 짧게 묻고 학습자가 답하게 한다:
   ① "영어로 옮길 때 첫 번째 덩어리는 뭘까요?"처럼 다음 한 조각만 유추하게 한다.
   ② 학습자가 한 덩어리(구문)를 완성하면: 왜 그렇게 조립되는지(품사 순서·조립 규칙 — [문장 해부]의 규칙을 재사용)를 2~3줄로 설명하고, 도움이 될 요령이 있으면 "💡 꿀팁:" 한 줄로 붙인다.
@@ -2830,7 +2851,7 @@ const MODE_TUTOR = `\n\n[튜터 모드] 이 대화창은 네(pAdo)가 수업을 
 - [힌트 버튼] "힌트 조금만 요청."이 오면: 정답으로 곧장 가지 말고 **직전 힌트보다 딱 한 걸음만 가까운** 힌트 하나를 준다. 힌트 사다리: ① 뜻·역할 귀띔("~라는 느낌의 단어예요") → ② 첫 글자("r로 시작해요") → ③ 글자 수·발음 근사 → ④ 보기 3개. 이미 준 힌트는 반복하지 않고 다음 칸으로 간다. "보기 3개 요청."이 오면 사다리를 건너뛰고 곧장 보기 3개(정답 1 + 헷갈리기 쉬운 오답 2)를 준다.
 - [단어 보기] "단어 보기 요청."이 오면: 지금 문장에 필요한 **영어 단어만, 뜻 없이**, 조립 순서와 다르게 뒤죽박죽 섞어 보여준다(예: night · the · slept · baby · through). 한국어 뜻·힌트·표를 붙이지 않는다 — 어떤 단어가 어떤 뜻인지 떠올리는 것부터가 학습자의 몫이다. 제시 후 "이 단어들을 어떤 순서로 이을까요?"만 묻는다.
 - [구문 보기] "구문 보기 요청."이 오면: 필요한 단어 전부에 한국어 뜻을 짝지어(단어 | 뜻 표) **조립 순서와 다르게 섞어** 보여주고, "이 단어들을 어떤 순서로 이을까요?"로 조립을 학습자에게 넘긴다. 완성 문장은 여전히 주지 않는다 — 단어와 뜻이 다 보여도 조립이 남은 공부다.
-- [다음 버튼] "다음 문장 요청."이 오면 다음 문장으로 넘어간다: 진행 중이던 문장이 아직 미완성이면 정답 문장+구문 풀이를 두세 줄로 짧게 정리해 주고, 곧바로 새 한국어 문장을 제시한다 — 같은 단어 활용, 학습 단계 준수, 직전 문장과 결(상황·구조)이 다른 문장으로.
+- [다음 버튼] "다음 문장 요청."이 오면 다음 문장으로 넘어간다: 진행 중이던 문장이 아직 미완성이면 정답 문장+구문 풀이를 두세 줄로 짧게 정리해 주고, 곧바로 새 한국어 문장을 제시한다 — 같은 단어 활용, 학습 단계 준수, 직전 문장과 결(상황·구조)이 다른 문장으로. 새 문장은 위 🚫 규칙대로 한국어 문장 + 첫 질문만(재료·뼈대·영어 조각 없이).
 ⚠️ 단계 우선 규칙: [학습 단계]가 바뀌면 다음 문장부터 그 단계에 맞춘다 — 대화 이력의 옛 난이도보다 현재 단계가 항상 우선.`;
 /* v2.52: 🎭 상황극 모드 — 학습자가 장면 속 인물이 되어 단서로 추리하며 말을 찾아내는 역할극 (사용자 설계:
    "단어에 따른 상황극 주제가 생성되고, 사용자는 원하는 것을 선택하여 상황극 속에서 튜터의 가이드와 교육 지침에 따라 추리하며 언어를 학습") */
@@ -2848,6 +2869,17 @@ const MODE_ROLE = `\n\n[상황극 모드] 이 대화창은 학습자가 상황�
 tag는 반드시 다음 중에서만 고른다: 관사, 시제, 전치사, 어순, 단복수, 주어-동사 일치, 어휘 선택, 철자, 조동사, 연결(접속), 의미 왜곡. 이 블록은 학습자에게 보이지 않고 학습 기록·점수 산정에 쓰인다.
 - 네 인물의 대사는 학습 단계에 맞게 짧고 또렷하게. 대사 뒤에 한국어 뜻을 괄호로 붙이지 않는다 — 어려운 말이 있으면 장면 단서로 풀 수 있게 한다. 원문에 없는 정보를 지어내지 않는다.
 ⚠️ 단계 우선 규칙: [학습 단계]가 바뀌면 다음 턴부터 대사 난이도를 그 단계에 맞춘다 — 대화 이력의 옛 난이도보다 현재 단계가 항상 우선.`;
+/* v2.53: 📝 인출 시험 모드 — 공부한 것을 다시 꺼내 채점하는 과정 (사용자 요청). 재료는 [푼 문제 기록](앱 저장)이라 모델의 기억에 의존하지 않는다 */
+const MODE_EXAM = `\n\n[인출 시험 모드] 이 대화창은 학습자가 공부한 것을 머릿속에서 다시 꺼내 보는 시험 모드다. 채점 기준은 작문 모드와 같되, 힌트를 주지 않는다 — 인출 자체가 학습이다.
+- 출제 재료는 시스템에 실린 [푼 문제 기록]뿐이다. 거기 없는 문장을 지어내 내지 않는다. 기록이 비어 있으면 "아직 시험 볼 기록이 없어요"라고 말하고, 지금 바로 할 수 있는 연습(🎓 튜터·✍️ 작문·🎭 상황극)을 한 줄로 권한다.
+- "인출 시험 요청"이 오면: 기록에서 [시험 유형]에 맞게 5문제(기록이 적으면 있는 만큼)를 번호로 낸다. 먼저 푼 것부터 골고루, 미통과였던 것을 우선한다. 문제마다 힌트·정답·풀이를 절대 함께 주지 않는다. 마지막에 "번호별로 답을 적어 주세요 — 한 번에 다 써도, 하나씩 보내도 좋아요."라고 한 줄만.
+- 답이 오면 문항별로 채점한다: ✓/✗ + 한 줄 이유(뜻이 아니라 결로 — 왜 그 자리에 그 표현인지). 학습자가 쓴 원문을 다시 보여줄 때는 별도 줄에 "당신: <원문>" 형식으로만 인용한다. 마지막에 "총점 N/M"과 아깝게 틀린 지점 한 줄.
+- 채점 답변 맨 끝에만 채점 기록을 정확히 이 형식의 한 줄로 붙인다 — 출제·다음 문제·마무리에는 붙이지 않는다:
+[기록] {"score":0에서 100 사이 정수(맞힌 비율),"pass":70 이상이면 true,"errors":[{"tag":"태그","note":"몇 번 문제에서 무엇이 틀렸는지 한 줄"}],"fix":"틀린 문항의 모범 답을 번호와 함께 한 줄씩"} [/기록]
+tag는 반드시 다음 중에서만 고른다: 관사, 시제, 전치사, 어순, 단복수, 주어-동사 일치, 어휘 선택, 철자, 조동사, 연결(접속), 의미 왜곡, 누락, 과잉 해석, 어색한 직역, 뉘앙스. 이 블록은 학습자에게 보이지 않고 학습 기록·점수 산정에 쓰인다.
+- [다음] "다음 문제 요청."이 오면 아직 내지 않은 기록에서 다음 5문제를 낸다(다 냈으면 그렇다고 말하고 "틀린 것만 다시"를 권한다). [틀린 것만] "틀린 것만 다시 요청."이 오면 이번 시험에서 ✗였던 문항만 다시 낸다. [마무리] "시험 마무리 요청."이 오면 이번 시험 전체를 정리한다: ① 맞힌 수/전체 ② 반복해서 틀린 결 1~2개(태그와 예) ③ 다음에 볼 시험 유형 하나 제안.
+- 번역은 보수적으로 — 원문에 없는 정보를 더하지 않는다.
+⚠️ 단계 우선 규칙: [학습 단계]가 바뀌어도 시험 문제는 기록 그대로 낸다(기록이 곧 난이도). 설명의 어휘만 단계에 맞춘다.`;
 
 function getSystemBase(){
   // 사용자가 ⚙️ 설정에서 지시문을 수정했으면 그것을, 아니면 기본 PHILO
@@ -2872,6 +2904,7 @@ const ENGINE_GUIDE = [
   ["단어 스레드", "좌측 목록에서 단어를 고르면 그 단어 전용 대화가 열린다. 아래에는 그 단어의 결·함정·패턴 콘텐츠가 함께 있다."],
   ["🎓 튜터", "그 단어로 문장을 제시하고 첫 덩어리부터 한 걸음씩 작문을 이끈다. 막히면 [💡 힌트 조금만][📚 단어 보기(영어 단어만 뒤죽박죽)][🔎 구문 보기(단어+뜻)][🔢 보기 3개][⏭ 다음 문장]."],
   ["✍️ 작문(한→영 / 영→한)", "빠른 버튼 줄의 ✍️ 작문에서 방향을 고르면 AI가 문제만 내고 학습자가 직접 작문 → 첨삭·채점. 점수와 오류 태그가 기록에 쌓인다."],
+  ["📝 인출 시험", "빠른 버튼 줄의 📝 인출 시험에서 유형(한→영 작문 / 영→한 번역 / 빈칸 채우기 / 결 고르기 / 틀린 것만 다시)을 고르면, 앱이 저장해 둔 '푼 문제 기록'에서 출제해 채점한다. 대화가 길어져 밀려난 문제도 빠지지 않는다. 단어 대화창은 그 단어의 기록, 파도 Chat은 전체 기록. [⏭ 다음 문제][🔁 이번 시험 틀린 것만][🏁 시험 끝내기]. 유형 '틀린 것만 다시(지난 기록)'은 예전 기록 전체에서 틀렸던 문항만."],
   ["🎭 상황극", "그 단어가 쓰이는 장면 3개를 받아 하나를 고르면, 학습자가 장면 속 인물이 되어 영어로 대화한다. 튜터는 번역 대신 장면의 단서로 추리하게 이끌고, 틀린 대사만 짚어 준다. [🎲 다른 주제][💡 힌트 조금만][🏁 상황극 마무리]."],
   ["🔍 단어 분석 / 🧩 단어 퀴즈 / ✏️ 예문 만들기", "그 단어를 표준 형식으로 깊게 분석하거나, 단계에 맞는 퀴즈·예문을 즉시 받는다."],
   ["드래그 → 🌊 파도", "답변 중 궁금한 부분을 드래그하면 그 인용을 물고 우측에 별도 대화(파도)가 열린다. 본 대화를 밀어내지 않고 곁가지를 판다."],
@@ -2910,6 +2943,10 @@ function buildSystem(extra, cfg, ownerKey){
     else if(cfg && cfg.mode === "ew") base += MODE_EW;
     else if(cfg && cfg.mode === "tutor") base += MODE_TUTOR; // v2.38
     else if(cfg && cfg.mode === "role") base += MODE_ROLE; // v2.52
+    else if(cfg && cfg.mode === "exam"){ // v2.53
+      const et = EXAM_TYPES.find(o => o.v === cfg.exam) || EXAM_TYPES[0];
+      base += MODE_EXAM + `\n[시험 유형 — ${et.label}] ${et.desc}`;
+    }
     const rules = localStorage.getItem(LS_RULES);
     if(rules && rules.trim()) base += `\n\n[전체 지침 — 총괄 대화에서 사용자와 합의된 것. 반드시 따를 것]\n${rules.trim()}`;
   } catch(e){}
@@ -2941,13 +2978,13 @@ function buildSystem(extra, cfg, ownerKey){
   return base + (extra ? "\n" + extra : "");
 }
 
-async function* streamClaude({ system, messages, signal, light }){
+async function* streamClaude({ system, messages, signal, light, maxTokens }){
   const key = String(localStorage.getItem(LS_KEY) || "").replace(/[\s​-‍﻿]+/g, ""); // v2.41: 이미 공백 섞여 저장된 키도 방어 (구버전에서 저장된 키 백필)
   if(!key) throw new Error("NO_KEY");
   const model = localStorage.getItem(LS_MODEL) || "claude-opus-4-8";
   // light(v2.11 미니 사전): 한 줄 답만 필요 — 토큰 상한 축소 + 확장 사고 생략으로 지연·비용 최소화
   const body = light
-    ? { model, max_tokens: 300, stream: true, system, messages }
+    ? { model, max_tokens: maxTokens || 300, stream: true, system, messages } // v2.53: 요약 기억 등 중간 크기 호출도 light 경로(확장 사고 없음)로
     : { model, max_tokens: 16000, stream: true, thinking: { type: "adaptive" }, system, messages };
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -3022,12 +3059,62 @@ function setSendBtn(logEl, streaming, ownerKey){
   b.classList.toggle("stop", streaming);
   b.title = streaming ? "답변 중단" : "";
 }
+/* ── v2.53: 두 겹 기억 ──
+   ① 구조 기억 — 푼 문제 기록(PRACTICE)은 앱이 저장한 원자료. 시험·"지금까지/전부/복습" 류 요청엔 시스템에 실어 보낸다 → 대화 창 밖으로 밀려도 빠지지 않는다.
+   ② 요약 기억 — 창(HISTORY_MAX_MSGS) 밖으로 밀린 턴을 뒤에서 조용히 요약해 두고(state.memo[key]) 매 요청에 [이전 대화 기억]으로 싣는다.
+   (사용자 신고: "시험을 달라 했는데 초반 기억이 지워졌다고 답함") */
+const LS_MEMO_ON = "we_memo_on"; // "0"이면 끔 (기본 켬) — 요약 1회당 API 호출이 하나 더 나간다
+const MEMO_STEP = 6, MEMO_MAX_CHARS = 1500, RECORDS_MAX = 60, RECORDS_MAX_CHARS = 8000;
+function memoOn(){ try { return localStorage.getItem(LS_MEMO_ON) !== "0"; } catch(e){ return true; } }
+function memoOf(key){ return (state.memo && state.memo[key]) || { upto: 0, text: "" }; }
+function memoNote(key, trimmed){
+  if(!trimmed) return "";
+  const m = memoOf(key);
+  if(memoOn() && m.text) return `\n\n[이전 대화 기억 — 창 밖으로 밀린 부분을 앱이 요약해 둔 것]\n${m.text}\n(요약에 없는 세부는 기억에 없다고 솔직히 말하고, 필요하면 그 부분을 다시 보여 달라고 요청하라. 아래 '푼 문제 기록'이 있으면 그것이 더 정확한 원자료다.)`;
+  return "\n[대화 트림] 대화가 길어져 오래된 턴은 이 요청에 포함되지 않았다. 사용자가 오래전 내용을 언급하면, 기억에 없다고 솔직히 말하고 해당 부분을 다시 보여 달라고 요청하라.";
+}
+function recordsNote(key, text, cfg){
+  const want = (cfg && cfg.mode === "exam") || /지금까지|전부 |모두 |모아|다시 (풀|채점|보)|복습|시험 ?(줘|을|볼|보|봐|문제|결과|기록|낼)|틀렸던|풀었던|틀린 (것|문제)/.test(String(text || "")); // "시험 영어로 뭐예요?"처럼 단어를 묻는 질문은 제외 (QA)
+  if(!want) return "";
+  const all = key === GLOBAL_ID ? PRACTICE.slice() : PRACTICE.filter(r => r.key === key);
+  if(!all.length) return `\n\n[푼 문제 기록 — 0건] ${key === GLOBAL_ID ? "이 학습자가" : "이 대화창에서"} 채점까지 간 문제가 아직 없다. 기록에 없는 문제를 있는 것처럼 말하지 마라.`;
+  const kindLabel = { we: "한→영", ew: "영→한", role: "상황극", exam: "시험" };
+  const recent = all.slice(-RECORDS_MAX);
+  const one = (v, n) => String(v || "").replace(/\s+/g, " ").slice(0, n);
+  let lines = recent.map((r, i) => { const ex = r.kind === "exam"; // 시험 기록은 문항 여러 개 묶음 — 더 길게 실어 문항 단위로 걸러낼 수 있게
+    return `${i + 1}. [${kindLabel[r.kind] || r.kind}${key === GLOBAL_ID ? ` · ${r.w || r.key}` : ""} · ${r.pass ? "통과" : "미통과"} ${r.score}점] 문제: ${one(r.q, ex ? 500 : 160)} | 내 답: ${one(r.a, ex ? 300 : 120)} | 모범: ${one(r.fix || "-", ex ? 400 : 160)}${(r.errors || []).length ? ` | 틀린 곳: ${r.errors.map(e => `${e.tag}(${one(e.note, 60)})`).join("; ")}` : ""}`; });
+  let out = lines.join("\n");
+  while(out.length > RECORDS_MAX_CHARS && lines.length > 5){ lines.shift(); out = lines.join("\n"); }
+  const skipped = all.length - lines.length;
+  return `\n\n[푼 문제 기록 — ${lines.length}건${skipped ? ` (그 밖 ${skipped}건은 오래돼 생략)` : ""} · 앱이 저장한 원자료라 대화 창 밖으로 밀려도 여기 있다. 시험·복습·되짚기는 이것을 근거로]\n${out}`;
+}
+const _memoBusy = new Set();
+async function memoRefresh(thread, key){
+  if(!memoOn() || !key || _memoBusy.has(key)) return;
+  const cut = thread.length - HISTORY_MAX_MSGS; // 이 지점 앞은 다음 요청부터 창 밖
+  const m = memoOf(key);
+  if(cut - m.upto < MEMO_STEP) return; // 밀려난 게 몇 턴 안 되면 아직
+  const slice = thread.slice(m.upto, cut).filter(x => !x.partial && x.content);
+  if(!slice.length) return;
+  _memoBusy.add(key);
+  try {
+    const user = `이전 요약:\n${m.text || "(없음)"}\n\n새로 밀려난 대화:\n` + slice.map(x => `${x.role === "user" ? "학습자" : "pAdo"}: ${String(x.content).replace(/\s+/g, " ").slice(0, 700)}`).join("\n");
+    let out = "";
+    for await (const chunk of streamClaude({
+      system: `[대화 요약 요청] 아래 "이전 요약"과 "새로 밀려난 대화"를 합쳐 한국어 ${MEMO_MAX_CHARS}자 이내의 목록으로 요약하라. 사실만 — 없는 내용을 더하지 않는다. 우선순위: ① 학습자가 틀렸던 것과 고친 표현(영어 원문 유지) ② 출제된 문제와 학습자의 답 ③ 배운 표현·규칙 ④ 약속·진행 중이던 것. 요약문만 출력한다.`,
+      messages: [{ role: "user", content: user }], light: true, maxTokens: 900
+    })) out += chunk;
+    out = out.trim();
+    if(out){ state.memo = state.memo || {}; state.memo[key] = { upto: cut, text: out.slice(0, Math.round(MEMO_MAX_CHARS * 1.3)) }; saveState(); }
+  } catch(e){ console.warn("[memo]", e); } // 키 없음·오류는 조용히 — 다음 완료 때 다시 시도
+  finally { _memoBusy.delete(key); }
+}
 async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfgKey }){
   // ts = 질문 내역(날짜별) 재료 (v2.30). img = 붙여넣은 이미지 첨부 (v2.35) — content는 항상 문자열 유지(기존 소비자 보호), API 변환은 trimForApi가
   thread.push(img ? { role: "user", content: text, ts: Date.now(), img } : { role: "user", content: text, ts: Date.now() });
   const ownerKey = cfgKey || state.activeWord; // 이 스레드의 소유 키 (전송 시점 고정)
   const cfg = threadCfg(ownerKey); // 대화창별 단계·모드
-  const practiceMode = cfg && (cfg.mode === "we" || cfg.mode === "ew" || cfg.mode === "role") ? cfg.mode : ""; // v2.27: 작문 모드에서만 채점 블록 처리 (v2.52: 상황극의 대사 첨삭도 기록)
+  const practiceMode = cfg && (cfg.mode === "we" || cfg.mode === "ew" || cfg.mode === "role" || cfg.mode === "exam") ? cfg.mode : ""; // v2.53: 시험 채점도 기록 // v2.27: 작문 모드에서만 채점 블록 처리 (v2.52: 상황극의 대사 첨삭도 기록)
   const { msgs, trimmed } = trimForApi(thread); // API 페이로드는 답변 자리(aMsg)를 넣기 *전에* 확정 — 빈 assistant 턴이 실려 가면 안 됨
   /* v2.26: 답변 자리를 스레드에 미리 만들어 스트리밍 중에도 localStorage에 실린다.
      창 이탈·페이지 소멸로 스트림이 죽어도 받은 만큼 살아남는다 — partial 표식은 완료 시 제거,
@@ -3064,7 +3151,7 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
   let acc = "", committed = false; // committed: assistant 턴이 실제로 기록됐는가 (실패 롤백과 구분)
   let lastLive = 0; // v2.4: 관련 콘텐츠 실시간 갱신 스로틀
   liveRelatedTick(ownerKey, text); // 질문을 보내는 즉시 관련 콘텐츠부터 반응
-  const trimNote = trimmed ? "\n[대화 트림] 대화가 길어져 오래된 턴은 이 요청에 포함되지 않았다. 사용자가 오래전 내용을 언급하면, 기억에 없다고 솔직히 말하고 해당 부분을 다시 보여 달라고 요청하라." : "";
+  const trimNote = recordsNote(ownerKey, text, cfg) + memoNote(ownerKey, trimmed); // v2.53: 두 겹 기억 (기록 → 요약)
   const rollback = () => { thread.splice(aIdx - 1, 2); saveState(); }; // 답변 자리 + 질문 턴 제거
   try {
     for await (const chunk of streamClaude({ system: buildSystem((systemExtra || "") + trimNote, cfg, ownerKey), messages: msgs, signal: ctrl.signal })){
@@ -3092,7 +3179,7 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
         const prev = thread[aIdx - 2]; // 직전 AI 턴 = 출제된 문제
         PRACTICE.push({
           t: Date.now(), key: ownerKey, w: practiceLabel(ownerKey), kind: practiceMode,
-          q: prev && prev.role === "assistant" ? String(prev.content).slice(0, 300) : "",
+          q: prev && prev.role === "assistant" ? String(prev.content).slice(0, practiceMode === "exam" ? 1200 : 300) : "", // v2.53: 시험은 문항 묶음 — 더 길게
           a: String(text).slice(0, 300) || (img ? "[이미지로 제출]" : ""), // v2.35 QA: 이미지 답안도 기록에 맥락이 남게
           score: g.score, pass: g.pass, errors: g.errors, fix: g.fix
         });
@@ -3101,6 +3188,7 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
     }
     committed = true;
     saveState();
+    memoRefresh(thread, ownerKey); // v2.53: 밀려난 턴을 뒤에서 조용히 요약 (답변 속도에 영향 없음)
   } catch(err){
     // v2.42: 오류 말풍선도 liveTarget으로 — 전송 직후 재렌더가 끼면 mdEl이 분리된 노드가 되어
     // 안내(키 없음·중단·오류)가 보이지 않는 간헐 결함(하네스에서 관찰). 스트리밍 경로와 같은 재조회 원칙.
@@ -3460,7 +3548,7 @@ function renderChatLog(){
     log.innerHTML = chat.map((m, i) => m.role === "user"
       ? `<div class="msg user" data-mi="${i}"><div class="md">${mdRender(m.content)}</div>${m.img ? imgHTML(m.img) : ""}</div>`
       : `<div class="msg ai${m.collapsed ? " collapsed" : ""}" data-mi="${i}"><button class="fold" data-fold="${i}" type="button" title="답변 접기/펼치기">${m.collapsed ? "▸" : "▾"}</button><div class="md">${mdRender(m.content)}</div>${m.grade ? gradeCardHTML(m.grade) : ""}</div>`).join("")
-      + ansRowHTML(threadCfg(state.activeWord), chat) + tutorRowHTML(threadCfg(state.activeWord), chat) + roleRowHTML(threadCfg(state.activeWord), chat); // 작문=답안 버튼(v2.0) / 튜터=힌트 버튼(v2.39) / 상황극=주제·힌트·마무리(v2.52) 상주
+      + ansRowHTML(threadCfg(state.activeWord), chat) + tutorRowHTML(threadCfg(state.activeWord), chat) + roleRowHTML(threadCfg(state.activeWord), chat) + examRowHTML(threadCfg(state.activeWord), chat); // 작문=답안 버튼(v2.0) / 튜터=힌트 버튼(v2.39) / 상황극=주제·힌트·마무리(v2.52) 상주
   }
   log.scrollTop = log.scrollHeight;
   document.getElementById("chat-sub").textContent = state.activeWord === GLOBAL_ID
@@ -3472,17 +3560,20 @@ function renderChatLog(){
     if(state.activeWord === GLOBAL_ID) qaRow.innerHTML = `
         <button class="qa-btn" data-qa="diag" type="button" title="내 기록(약점·복습 정착률·리듬)을 읽고 지금 상태와 다음 한 걸음을 코칭해 줘요">📊 학습 진단 받기</button>
         <button class="qa-btn" data-qa="plan" type="button" title="이번 주에 무엇을 며칠에 걸쳐 할지 구체적인 계획을 짜 줘요">🗓 이번 주 계획</button>
-        <button class="qa-btn" data-qa="drill" type="button" title="오늘 복습할 항목부터 바로 시작해요 — 밀린 것이 있으면 그것부터">🔁 오늘 할 복습</button>`;
+        <button class="qa-btn" data-qa="drill" type="button" title="오늘 복습할 항목부터 바로 시작해요 — 밀린 것이 있으면 그것부터">🔁 오늘 할 복습</button>
+        ${qaExamSelectHTML(threadCfg(GLOBAL_ID))}` + // v2.53: 전체 기록으로 시험
+        (threadCfg(GLOBAL_ID).mode ? `<button class="qa-btn back" data-qa="qa" type="button" title="시험 모드를 끄고 총괄 튜터 대화로 돌아가요">💬 질의응답으로</button>` : "");
     else {
       const mode = threadCfg(state.activeWord).mode;
       qaRow.innerHTML = `
         <button class="qa-btn" data-qa="tutor" type="button" title="튜터가 먼저 말을 걸어요 — 문장을 제시하고 첫 단어부터 한 걸음씩 작문을 이끌어 줘요">🎓 튜터</button>
         ${qaWriteSelectHTML(mode)}
         <button class="qa-btn" data-qa="role" type="button" title="이 단어가 쓰이는 장면 3개를 받고, 하나를 골라 장면 속 인물이 되어 영어로 대화해요 — 튜터는 번역 대신 단서로 추리하게 이끌어요">🎭 상황극</button>
+        ${qaExamSelectHTML(threadCfg(state.activeWord))}
         <button class="qa-btn" data-qa="analyze" type="button" title="이 단어를 표준 형식으로 깊게 분석">🔍 단어 분석</button>
         <button class="qa-btn" data-qa="quiz" type="button" title="지금 단계에 맞는 퀴즈 한 문제">🧩 단어 퀴즈</button>
         <button class="qa-btn" data-qa="examples" type="button" title="결이 서로 다른 예문 3개 만들기">✏️ 예문 만들기</button>` +
-        (mode ? `<button class="qa-btn back" data-qa="qa" type="button" title="작문·튜터·상황극 모드를 끄고 기본 질의응답으로 돌아가요">💬 질의응답으로</button>` : "");
+        (mode ? `<button class="qa-btn back" data-qa="qa" type="button" title="작문·튜터·상황극·시험 모드를 끄고 기본 질의응답으로 돌아가요">💬 질의응답으로</button>` : "");
     }
   }
   // v2.3: 이 스레드의 입력 초안 복원 — 단어·탭을 오가도 쓰던 질문 유지 (클로드 코드처럼)
@@ -3505,6 +3596,10 @@ function renderChatLog(){
   md.innerHTML = modeOptions("");
   lv.addEventListener("change", () => setThreadCfg(state.activeWord, { level: lv.value }));
   md.addEventListener("change", () => {
+    if(md.value === "exam"){ // v2.53: 상단에서 시험을 고르면 빠른 줄과 같은 경로 — 유형(기본 한→영)까지 정해 출제 요청 (QA: 유형 없이 모드만 켜지면 "끝내기"로 보이는 불일치)
+      if(ACTIVE.has(curChat())){ md.value = threadCfg(state.activeWord).mode || ""; return; }
+      startExam("ko2en"); return;
+    }
     setThreadCfg(state.activeWord, { mode: md.value });
     if(!ACTIVE.has(curChat())) renderChatLog(); // 작문 답안 버튼 즉시 반영 (스트리밍 중엔 건드리지 않음)
   });
@@ -3638,6 +3733,12 @@ function tutorRowHTML(cfg, msgs){
   if(!msgs || !msgs.length || msgs[msgs.length - 1].role !== "assistant" || msgs[msgs.length - 1].partial) return ""; // 답변 완료 후에만
   return `<div class="ans-row"><button class="ans-btn" data-tu-hint type="button">💡 힌트 조금만</button><button class="ans-btn" data-tu-words type="button">📚 단어 보기</button><button class="ans-btn" data-tu-phrase type="button">🔎 구문 보기</button><button class="ans-btn" data-tu-opts type="button">🔢 보기 3개</button><button class="ans-btn" data-tu-next type="button">⏭ 다음 문장</button><span class="ans-hint">막히면 힌트, 다 풀었으면 다음 문장</span></div>`;
 }
+/* v2.53: 📝 인출 시험 버튼 줄 — 다음 문제·틀린 것만·마무리 */
+function examRowHTML(cfg, msgs){
+  if(!cfg || cfg.mode !== "exam") return "";
+  if(!msgs || !msgs.length || msgs[msgs.length - 1].role !== "assistant" || msgs[msgs.length - 1].partial) return "";
+  return `<div class="ans-row"><button class="ans-btn" data-ex-next type="button">⏭ 다음 문제</button><button class="ans-btn" data-ex-wrong type="button">🔁 이번 시험 틀린 것만</button><button class="ans-btn" data-ex-end type="button">🏁 시험 끝내기</button><span class="ans-hint">번호별로 답을 적어 보내면 채점해요 — 힌트는 없어요, 머릿속에서 꺼내는 게 핵심</span></div>`;
+}
 /* v2.52: 🎭 상황극 버튼 줄 — 주제 다시 받기·힌트·마무리를 타이핑 없이 (튜터 줄과 같은 패턴) */
 function roleRowHTML(cfg, msgs){
   if(!cfg || cfg.mode !== "role") return "";
@@ -3681,6 +3782,9 @@ document.getElementById("chat-log").addEventListener("click", (e) => {
   if(e.target.closest("[data-rp-topics]")){ sendMainText("다른 상황극 주제 요청."); return; } // v2.52: 상황극 — 장면 3개 새로
   if(e.target.closest("[data-rp-hint]")){ sendMainText("힌트 조금만 요청."); return; } // v2.52: 상황극 — 한 걸음 힌트
   if(e.target.closest("[data-rp-end]")){ sendMainText("상황극 마무리 요청."); return; } // v2.52: 상황극 — 정리
+  if(e.target.closest("[data-ex-next]")){ sendMainText("다음 문제 요청."); return; } // v2.53: 시험
+  if(e.target.closest("[data-ex-wrong]")){ sendMainText("틀린 것만 다시 요청."); return; }
+  if(e.target.closest("[data-ex-end]")){ sendMainText("시험 마무리 요청."); return; }
   const fu = e.target.closest("[data-fu]");
   if(fu){ // v2.34: 첨삭 후속 버튼(중앙) — 그 모범 문장을 인용한 파도를 우측에 만들어/재사용해 거기서 답변
     const host = fu.closest(".msg[data-mi]");
@@ -4614,7 +4718,7 @@ function renderPractice(){
     `<div class="pr-streak"><span class="g-tag">${esc(t)}</span>총 ${total[t]}회 <span class="pr-note">${esc(lastSeen[t].e.note || "")}</span></div>`).join("");
   const rows = PRACTICE.slice().reverse().slice(0, 30).map(r => {
     const d = new Date(r.t);
-    return `<details class="pr-row"><summary><span class="pr-score ${r.pass ? "ok" : "bad"}">${r.score}</span><b>${esc(r.w || r.key)}</b><span>${r.kind === "we" ? "✍️ 한→영" : r.kind === "role" ? "🎭 상황극" : "✍️ 영→한"}</span><span class="pr-note">${d.getMonth() + 1}/${d.getDate()}</span>${(r.errors || []).map(e => `<span class="g-tag">${esc(e.tag)}</span>`).join("")}</summary><div class="pr-detail">${r.q ? `<div>문제: ${esc(r.q)}</div>` : ""}<div>내 답: ${esc(r.a || "")}</div>${r.fix ? `<div>✓ ${esc(r.fix)}</div>` : ""}${(r.errors || []).map(e => `<div>• ${esc(e.tag)}: ${esc(e.note || "")}</div>`).join("")}</div></details>`;
+    return `<details class="pr-row"><summary><span class="pr-score ${r.pass ? "ok" : "bad"}">${r.score}</span><b>${esc(r.w || r.key)}</b><span>${r.kind === "we" ? "✍️ 한→영" : r.kind === "role" ? "🎭 상황극" : r.kind === "exam" ? "📝 시험" : "✍️ 영→한"}</span><span class="pr-note">${d.getMonth() + 1}/${d.getDate()}</span>${(r.errors || []).map(e => `<span class="g-tag">${esc(e.tag)}</span>`).join("")}</summary><div class="pr-detail">${r.q ? `<div>문제: ${esc(r.q)}</div>` : ""}<div>내 답: ${esc(r.a || "")}</div>${r.fix ? `<div>✓ ${esc(r.fix)}</div>` : ""}${(r.errors || []).map(e => `<div>• ${esc(e.tag)}: ${esc(e.note || "")}</div>`).join("")}</div></details>`;
   }).join("");
   body.innerHTML = learnReportHTML() + `
     <div class="pr-h">📈 연습 기록 — 작문·상황극 대사 첨삭</div>
@@ -4937,6 +5041,7 @@ document.querySelector("aside.right").addEventListener("click", (e) => {
   if(purgeBtn){
     if(!confirm("이 파도를 내역에서 완전히 삭제할까요? 되돌릴 수 없어요.")) return;
     state.waveTrash = (state.waveTrash || []).filter(t => t.wv.id !== purgeBtn.dataset.wavePurge);
+    if(state.memo) delete state.memo[purgeBtn.dataset.wavePurge]; // v2.53: 요약 기억 고아 정리
     saveState(); renderRight();
     return;
   }
@@ -4948,6 +5053,7 @@ document.querySelector("aside.right").addEventListener("click", (e) => {
     if(!rwv.msgs.length){ weToast("이미 비어 있어요"); return; }
     if(!confirm("이 파도의 대화를 모두 지울까요? 떼어온 부분(인용)과 설정은 남아요.")) return;
     rwv.msgs = [];
+    if(state.memo) delete state.memo[rwv.id]; // v2.53: 요약 기억도 함께
     saveState(); renderRight();
     return;
   }
@@ -5254,6 +5360,11 @@ document.getElementById("qa-row").addEventListener("click", (e) => {
   if(!b) return;
   if(ACTIVE.has(curChat())) return; // 답변 중엔 무시 (⏹로 먼저 중단)
   const act0 = b.dataset.qa;
+  if(act0 === "qa"){ // 모드 해제 → 기본 질의응답 (v2.53: 총괄의 시험 모드도 같은 버튼으로 끈다)
+    setThreadCfg(state.activeWord, { mode: "", exam: "" });
+    renderChatLog();
+    return;
+  }
   if(state.activeWord === GLOBAL_ID){ // v2.47: 총괄 튜터 전용 — 진단·계획·복습 시작
     if(act0 === "diag") sendMainText("학습 진단 요청 — 내 기록 수치를 근거로 지금 상태와 다음 한 걸음을 알려 주세요.");
     else if(act0 === "plan") sendMainText("이번 주 학습 계획 요청 — 요일별로 무엇을 몇 개씩 할지 구체적으로.");
@@ -5266,11 +5377,6 @@ document.getElementById("qa-row").addEventListener("click", (e) => {
   }
   const w = curWord();
   const act = act0;
-  if(act === "qa"){ // 작문 모드 해제 → 기본 질의응답
-    setThreadCfg(state.activeWord, { mode: "" });
-    renderChatLog();
-    return;
-  }
   const lvl = effLevel(state.activeWord); // v2.9: 발화에 현재 단계를 직접 실음 — 대화 이력의 옛 난이도 관성 차단 (사용자 신고: 중급으로 바꿔도 초급 출제)
   if(act === "tutor"){ // v2.38: 튜터가 먼저 말을 걸도록 — 모드 설정 + 시작 요청 발화
     setThreadCfg(state.activeWord, { mode: "tutor" });
@@ -5297,7 +5403,26 @@ function startWriteMode(m){
   if(m === "we") sendMainText(`"${w.base}" 단어를 활용한 ${lvl ? lvl + " 단계 " : ""}작문 문제 1개 요청.`); // v2.37: 버튼 발화는 "~요청" 명사형
   else sendMainText(`"${w.base}" 단어가 들어간 ${lvl ? lvl + " 단계 " : ""}번역 문제 1개 요청.`); // 정답 보류는 MODE_EW가 항구 보장
 }
+/* v2.53: 📝 인출 시험 시작 — 모드 설정 + 유형 저장 + 요청 발화. 재료(푼 문제 기록)는 sendToThread가 시스템에 싣는다 */
+function startExam(type){
+  const et = EXAM_TYPES.find(o => o.v === type); if(!et) return;
+  const key = state.activeWord;
+  setThreadCfg(key, { mode: "exam", exam: type });
+  renderChatLog();
+  const lvl = effLevel(key);
+  sendMainText(key === GLOBAL_ID
+    ? `지금까지 배운 것 전체 인출 시험 요청 — 유형: ${et.label}${lvl ? `, ${lvl} 단계 기준` : ""}. (앱에 기록된 문제에서만 출제)`
+    : `"${curWord().base}" 인출 시험 요청 — 유형: ${et.label}${lvl ? `, ${lvl} 단계 기준` : ""}. (이 단어로 푼 기록에서만 출제)`);
+}
 document.getElementById("qa-row").addEventListener("change", (e) => {
+  const ex = e.target.closest("#qa-exam");
+  if(ex){
+    const v = ex.value;
+    if(ACTIVE.has(curChat())){ const c = threadCfg(state.activeWord); ex.value = c.mode === "exam" ? (c.exam || "") : ""; return; } // 답변 중엔 무시
+    if(!v){ if(threadCfg(state.activeWord).mode === "exam"){ setThreadCfg(state.activeWord, { mode: "", exam: "" }); renderChatLog(); } return; } // "시험 끝내기"
+    startExam(v);
+    return;
+  }
   const s = e.target.closest("#qa-write");
   if(!s || state.activeWord === GLOBAL_ID) return;
   const m = s.value;
@@ -5325,6 +5450,7 @@ function openSettings(){
   document.getElementById("set-system").value = localStorage.getItem(LS_SYSTEM) || PHILO;
   document.getElementById("sync-url").value = localStorage.getItem("we_sync_url") || ""; // v2.45
   document.getElementById("sync-secret").value = localStorage.getItem("we_sync_secret") || "";
+  document.getElementById("set-memo").checked = memoOn(); // v2.53
   modalBg.classList.add("show"); modal.classList.add("show");
 }
 function closeSettings(){ modalBg.classList.remove("show"); modal.classList.remove("show"); }
@@ -5780,6 +5906,7 @@ document.getElementById("btn-chat-reset").addEventListener("click", () => { // v
   if(!chat.length){ weToast("이미 비어 있어요"); return; }
   if(!confirm("이 대화창의 대화를 모두 지울까요? 저장(⭐)한 내용·쓰던 초안·단계 설정은 남아요.")) return;
   state.chats[state.activeWord] = [];
+  if(state.memo) delete state.memo[state.activeWord]; // v2.53: 요약 기억도 함께 비운다 — "모두 지웠다"는 확인과 AI가 보는 것이 어긋나지 않게 (QA)
   saveState(); renderAll();
 });
 document.getElementById("memo-close").addEventListener("click", closeMemo);
@@ -5794,6 +5921,7 @@ document.getElementById("set-save").addEventListener("click", () => {
   try {
     if(k) localStorage.setItem(LS_KEY, k); else localStorage.removeItem(LS_KEY);
     localStorage.setItem(LS_MODEL, document.getElementById("set-model").value);
+    localStorage.setItem(LS_MEMO_ON, document.getElementById("set-memo").checked ? "1" : "0"); // v2.53
     // 지시문: 비었거나 기본값과 동일하면 저장 안 함(기본 PHILO 사용) — 커스텀만 보관
     if(!sys.trim() || sys === PHILO) localStorage.removeItem(LS_SYSTEM);
     else localStorage.setItem(LS_SYSTEM, sys);
