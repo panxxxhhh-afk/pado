@@ -798,7 +798,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.54</span>
+    <span class="build">pAdo · v2.55</span>
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
       <option value="">🪜 단계 선택 안 함</option>
@@ -5685,6 +5685,26 @@ function ttsExtract(text){
   });
   return runs.join(". ").trim();
 }
+/* v2.55: 🔊는 완성 문장에만 — "대표적인 완성형 문장만 읽도록, 아무거나 막 읽어서 방해 돼"(사용자).
+   완성 문장 = 대문자(또는 따옴표·괄호 뒤 대문자)로 시작 + 영어 단어 2개 이상 + . ? ! … 로 끝남. 한국어 설명 사이의 영어 조각("stay up", "check that again")은 읽지 않는다.
+   완성 문장은 전부 읽는다(설명 문단에 모범 문장이 뒤에 와도 묵음이 되지 않게 — 기획 렌즈). 약어(Mr.·e.g.)·소수점(3.5)의 점은 문장 끝이 아니다(QA 렌즈). */
+const TTS_DOT = "\u2024"; // 문장 끝이 아닌 점을 잠시 바꿔 두는 자리표시(원 점 하나 리더)
+function ttsSentences(text){
+  const out = [];
+  String(text || "").split(/[가-힣ㄱ-ㅎㅏ-ㅣ]+/).forEach((seg) => {
+    let s = seg.replace(/…/g, ".") // 유니코드 말줄임표도 문장 끝
+      .replace(/\b(Mr|Mrs|Ms|Dr|Prof|Sr|Jr|St|vs|etc)\./g, "$1" + TTS_DOT) // 약어의 점 ("No."는 독립 문장으로 흔해 제외 — QA)
+      .replace(/\b([ei])\.([ge])\./g, "$1" + TTS_DOT + "$2" + TTS_DOT) // e.g. / i.e.
+      .replace(/(\d)\.(\d)/g, "$1" + TTS_DOT + "$2"); // 소수점
+    s = s.replace(/^[^A-Za-z"“'(]+/, "").replace(/[^A-Za-z0-9.!?'’"”)\u2024]+$/, "");
+    (s.match(/(?:["“'(]\s*)?[A-Z][^.!?]*[.!?]+["”')]?/g) || []).forEach((x) => {
+      const t = x.split(TTS_DOT).join(".").replace(/\s+/g, " ").trim();
+      const words = (t.match(/[A-Za-z][A-Za-z'’-]*/g) || []).length;
+      if(words >= 2) out.push(t);
+    });
+  });
+  return out.join(" ");
+}
 let _ttsUtter = null; // 크롬: 참조가 GC되면 재생이 중간에 끊기는 알려진 버그 — 참조 유지
 function speakEn(text, btn){
   try {
@@ -5720,11 +5740,11 @@ function ttsDecorate(){
       const rawT = el.textContent || "";
       if(/^\s*당신\s*[:：]/.test(rawT) || /[✗❌]/.test(rawT)){ el.dataset.tts = ""; return; }
       if(el.querySelector(TTS_LEAF)){ el.dataset.tts = ""; return; } // 중첩 후보가 있으면 잎에만
-      const t = ttsExtract(el.textContent);
+      const t = ttsSentences(el.textContent); // v2.55: 완성 문장만 — 조각·한국어는 읽지 않는다
       if(!t){ el.dataset.tts = ""; return; }
       el.dataset.tts = t;
       const b = document.createElement("button");
-      b.type = "button"; b.className = "tts-btn"; b.title = "영어 발음 듣기 — 이 기기에 설치된 목소리로 재생돼요"; b.textContent = "🔊";
+      b.type = "button"; b.className = "tts-btn"; b.title = "영어 문장 듣기 — 완성된 문장만 읽어요 (이 기기에 설치된 목소리로)"; b.textContent = "🔊";
       el.appendChild(b);
     });
   });
