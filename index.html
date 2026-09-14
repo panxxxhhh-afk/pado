@@ -598,6 +598,36 @@
   .srs-acts button{border:1px solid var(--border);border-radius:8px;background:var(--card-soft);padding:4px 10px;font-size:.75rem;cursor:pointer;color:var(--text);}
   .srs-acts button:hover{border-color:var(--accent);}
   .srs-empty{font-size:.78rem;color:var(--text-mute);padding:4px 0;}
+  /* v2.54: 복습 전면 개편 — 3탭 + 카드 한 장씩(먼저 떠올리고 → 답 보기 → 평가) */
+  .rv-tabs{display:flex;gap:4px;margin:2px 0 10px;border-bottom:1px solid var(--border-soft);}
+  .rv-tab{border:1px solid var(--border);border-bottom:none;background:var(--card-soft);color:var(--text-soft);border-radius:9px 9px 0 0;padding:6px 13px;font-size:.8rem;font-weight:600;cursor:pointer;position:relative;top:1px;}
+  .rv-tab.active{background:var(--card);color:var(--accent-deep);}
+  .rv-prog{display:flex;align-items:center;gap:8px;font-size:.76rem;color:var(--text-mute);margin-bottom:8px;flex-wrap:wrap;}
+  .rv-prog b{color:var(--accent-deep);}
+  .rv-bar{flex:1 1 80px;height:5px;border-radius:3px;background:var(--card-soft);overflow:hidden;min-width:60px;}
+  .rv-bar i{display:block;height:100%;background:var(--accent);}
+  .rv-card{border:1px solid var(--accent);border-radius:12px;padding:14px 16px;background:var(--card);margin-bottom:10px;}
+  .rv-q{font-size:.95rem;line-height:1.7;white-space:pre-line;}
+  .rv-q .rv-blank{display:inline-block;min-width:3.2em;border-bottom:2px solid var(--accent);margin:0 2px;}
+  .rv-kind{font-size:.68rem;color:var(--text-mute);margin-bottom:6px;}
+  .rv-flip{margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .rv-flip .g-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .rv-hintline{font-size:.72rem;color:var(--text-mute);}
+  .rv-back{border-top:1px dashed var(--border-soft);margin-top:12px;padding-top:10px;}
+  .rv-rate{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;}
+  .rv-rate button{border:1px solid var(--border);border-radius:9px;background:var(--card-soft);padding:7px 12px;font-size:.8rem;cursor:pointer;color:var(--text);flex:1 1 auto;}
+  .rv-rate button:hover{border-color:var(--accent);}
+  .rv-done{border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--card-soft);text-align:center;line-height:1.8;}
+  .rv-row{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-top:1px dashed var(--border-soft);}
+  .rv-row .rv-title{flex:1 1 auto;}
+  .rv-row .rv-meta{font-size:.7rem;color:var(--text-mute);margin-top:2px;display:flex;gap:6px;flex-wrap:wrap;}
+  .rv-row .rv-acts{display:flex;gap:4px;flex:none;}
+  .rv-row .rv-acts button{border:1px solid var(--border);border-radius:8px;background:var(--card);padding:3px 8px;font-size:.72rem;cursor:pointer;color:var(--text-soft);}
+  .rv-row .rv-acts button:hover{border-color:var(--accent);color:var(--accent-deep);}
+  .rv-search{width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:.82rem;margin-bottom:8px;background:var(--card);color:var(--text);}
+  .rv-sub{font-size:.76rem;color:var(--text-mute);line-height:1.6;margin-bottom:8px;}
+  .rv-you{font-size:.9rem;line-height:1.6;border-left:3px solid var(--border);padding-left:10px;color:var(--text);}
+  .rv-tag{font-size:.8rem;color:var(--text-mute);margin-top:8px;}
   #btn-review .srs-due{background:var(--accent);color:#fff;border-radius:999px;padding:0 6px;font-size:.68rem;margin-left:2px;}
   .stub-note{border:1px dashed var(--border);border-radius:10px;padding:10px 14px;font-size:.8rem;color:var(--text-mute);background:var(--card-soft);margin-top:4px;line-height:1.6;} /* v2.42: 깊이 콘텐츠 준비 중 안내 */
   .qh-date{font-weight:700;font-size:.85rem;margin:12px 0 6px;color:var(--accent-deep);}
@@ -768,7 +798,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.53</span>
+    <span class="build">pAdo · v2.54</span>
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
       <option value="">🪜 단계 선택 안 함</option>
@@ -782,7 +812,7 @@
       <option value="SAT">SAT</option>
     </select>
     <button class="top-btn" id="btn-qh" type="button" title="내가 던진 모든 질문을 날짜별로 모아 복습 — 누르면 그 대화로 이동">🗓 질문 내역</button>
-    <button class="top-btn" id="btn-review" type="button" title="학습 채팅·연습 기록·저장 항목을 모아 AI가 복습 카드로 정리 — 별도 보관">🧠 복습</button>
+    <button class="top-btn" id="btn-review" type="button" title="오늘 볼 복습 카드 — 드래그로 담은 부분·작문·시험에서 틀린 곳이 1일·3일·1주일·2주일·한 달·석 달 간격으로 다시 나와요">🧠 복습</button>
     <button class="top-btn" id="btn-saved" type="button" title="공부하다 꼭 기억할 부분을 모아둔 곳 — 드래그 메뉴의 ⭐ 저장으로 담아요">⭐ 저장 <span id="saved-count">0</span></button>
     <button class="top-btn" id="btn-rules" type="button" title="영어의 공식 — 흔들리지 않는 조립 규칙, 휘는 곳까지">⚖️ 영어 규칙</button>
     <button class="top-btn" id="btn-memo" type="button" title="아이디어 메모 — 텍스트+그림, 자동 저장">📝 개발 메모</button>
@@ -867,7 +897,7 @@
       <button class="mm-item" type="button" data-mm="btn-wave-list">≡ 파도 리스트 · 내역</button>
       <button class="mm-item" type="button" data-mm="btn-practice">📈 연습 기록(작문·상황극)</button>
       <button class="mm-item" type="button" data-mm="btn-qh">🗓 질문 내역 — 날짜별 복습</button>
-      <button class="mm-item" type="button" data-mm="btn-review">🧠 복습 포인트 — AI가 정리한 복습 카드</button>
+      <button class="mm-item" type="button" data-mm="btn-review">🧠 복습 — 오늘 볼 카드·전체·내역</button>
       <button class="mm-item" type="button" data-mm="btn-memo">📝 개발 메모</button>
       <button class="mm-item" type="button" data-mm="btn-settings">⚙️ 설정 (API 키 · 모델)</button>
       <a class="mm-item" href="index.html">🏠 웹서퍼(단어 사전)로</a>
@@ -887,9 +917,10 @@
 <div id="sel-chips">
   <div id="sel-gloss" hidden></div>
   <button id="wave-chip" class="sel-chip" type="button" title="드래그한 부분을 우측 파도(서브 대화)로 떼어가기">🌊 파도</button>
-  <button id="comment-chip" class="sel-chip" type="button" title="드래그한 부분을 인용해 이 자리 대화창에서 바로 질문 — 옆으로 떼어가는 파도와 달리 그 자리에서 콕 집어 묻기">💬 댓글</button>
+  <button id="comment-chip-center" class="sel-chip" type="button" title="드래그한 부분을 인용해 중앙 대화창에서 바로 질문 — 그 자리에서 콕 집어 묻기">💬 댓글 (중앙)</button>
+  <button id="comment-chip-wave" class="sel-chip" type="button" title="드래그한 부분을 인용해 우측 파도 대화에서 질문 — 열린 파도가 있으면 그 파도, 없으면 새 파도를 만들어서">💬 댓글 (우측)</button>
   <button id="meaning-chip-center" class="sel-chip" type="button" title="드래그한 부분의 뜻을 중앙 대화창에서 해석">📖 뜻 해석 (중앙)</button>
-  <button id="meaning-chip-wave" class="sel-chip" type="button" title="드래그한 부분의 뜻을 우측 서퍼(파도 대화)에서 해석 — 파도 안에서 드래그했으면 그 파도, 아니면 새 파도를 만들어서">📖 뜻 해석 (서퍼)</button>
+  <button id="meaning-chip-wave" class="sel-chip" type="button" title="드래그한 부분의 뜻을 우측 파도 대화에서 해석 — 파도 안에서 드래그했으면 그 파도, 아니면 새 파도를 만들어서">📖 뜻 해석 (우측)</button>
   <button id="syntax-chip" class="sel-chip" type="button" title="드래그한 부분을 우측에서 바로 분석 — 한 단어면 단어 분석, 문장이면 구문 분석"><span>🔍</span> <span id="syntax-chip-label">구문 분석</span></button>
   <button id="srs-chip" class="sel-chip" type="button" title="드래그한 부분을 복습 포인트로 담기 — 🧠 복습에 기록되고, 1일·3일·1주일·2주일·한 달·석 달 간격으로 다시 나타나요">🧠 복습 포인트</button>
   <button id="save-chip" class="sel-chip" type="button" title="꼭 기억할 부분으로 저장 — 상단 ⭐ 저장에서 모아 복습">⭐ 저장</button>
@@ -903,9 +934,8 @@
   <div style="display:flex;justify-content:flex-end;margin-top:6px"><button class="g-btn" id="rules-close" type="button">닫기</button></div>
 </div>
 <div class="modal" id="review-modal">
-  <h2>🧠 복습 포인트</h2>
-  <div class="sv-hint">지금까지의 학습 채팅·작문 연습 기록·⭐ 저장 항목을 모아, 무엇을 다시 봐야 하는지 AI가 복습 카드로 정리해요. 만든 카드는 이 브라우저에 계속 남습니다.</div>
-  <button class="g-btn" id="review-make" type="button">✨ 복습 포인트 만들기</button>
+  <h2>🧠 복습</h2>
+  <div class="rv-tabs" id="rv-tabs"><button class="rv-tab active" data-rvtab="today" type="button">🔔 오늘</button><button class="rv-tab" data-rvtab="all" type="button">📚 전체</button><button class="rv-tab" data-rvtab="log" type="button">🗂 내역</button></div>
   <div id="review-body"></div>
   <div style="display:flex;justify-content:flex-end;margin-top:6px"><button class="g-btn" id="review-close" type="button">닫기</button></div>
 </div>
@@ -2908,7 +2938,7 @@ const ENGINE_GUIDE = [
   ["🎭 상황극", "그 단어가 쓰이는 장면 3개를 받아 하나를 고르면, 학습자가 장면 속 인물이 되어 영어로 대화한다. 튜터는 번역 대신 장면의 단서로 추리하게 이끌고, 틀린 대사만 짚어 준다. [🎲 다른 주제][💡 힌트 조금만][🏁 상황극 마무리]."],
   ["🔍 단어 분석 / 🧩 단어 퀴즈 / ✏️ 예문 만들기", "그 단어를 표준 형식으로 깊게 분석하거나, 단계에 맞는 퀴즈·예문을 즉시 받는다."],
   ["드래그 → 🌊 파도", "답변 중 궁금한 부분을 드래그하면 그 인용을 물고 우측에 별도 대화(파도)가 열린다. 본 대화를 밀어내지 않고 곁가지를 판다."],
-  ["🧠 복습", "대화·연습·저장 기록을 모아 복습 포인트를 만든다. 만들어진 포인트는 1일·3일·1주일·2주일·한 달·석 달 간격으로 다시 나타난다(간격 반복)."],
+  ["🧠 복습", "카드 한 장씩 먼저 떠올리고 → 답 보기 → 기억났어요·헷갈렸어요·몰랐어요로 평가. 드래그로 담은 부분(원래 문맥의 빈칸 문제)·작문/상황극/시험에서 틀린 곳(자동)·기록 종합(✨)이 카드가 되고, 1일·3일·1주일·2주일·한 달·석 달 간격으로 다시 나타난다. 📚 전체에서 검색·지금 복습·삭제."],
   ["📊 학습 진단 · 연습 기록", "약점 태그, 점수 흐름, 복습 정착률·회상 성공률, 학습 리듬, 폭과 깊이를 계산해 '다음 한 걸음'을 제시한다."],
   ["⭐ 저장 / ≡ 질문", "꼭 기억할 답변을 저장하거나, 지금까지 던진 질문을 날짜별로 되짚는다."],
   ["🪜 학습 단계", "입문~SAT 8단계. 전역으로도, 대화창별로도 정할 수 있고 모든 설명 난이도가 여기에 맞춰진다."],
@@ -3184,6 +3214,19 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
           score: g.score, pass: g.pass, errors: g.errors, fix: g.fix
         });
         savePractice();
+        // v2.54: 틀린 곳은 자동으로 복습 포인트에 — 작문·상황극·시험의 오답이 곧 내일의 복습 카드 (최대 3개, 같은 제목은 한 번만)
+        if(Array.isArray(g.errors) && g.errors.length && practiceMode !== "exam"){ // 시험은 문항 묶음이라 모범답이 섞인다 — 시험엔 "틀린 것만 다시" 루프가 따로 있다 (기획)
+          const kl = { we: "작문(한→영)", ew: "번역(영→한)", role: "상황극" }[practiceMode] || "연습";
+          const mine = String(text || "").replace(/\s+/g, " ").trim().slice(0, 300); // 내가 쓴 문장 = 카드 앞면 (무엇이 틀렸는지는 뒷면)
+          const added = srsAdd(g.errors.slice(0, 3).map(e => ({
+            title: `${String(e.tag || "").slice(0, 20)}: ${String(e.note || "").replace(/\s+/g, " ").slice(0, 90)}`,
+            key: `grade|${String(e.tag || "").slice(0, 20)}|${mine.toLowerCase()}`,
+            ctx: mine,
+            why: `${kl} 채점에서 틀린 곳 — ${practiceLabel(ownerKey)}`,
+            drill: g.fix ? `모범: ${String(g.fix).replace(/\s+/g, " ").slice(0, 180)}` : ""
+          })), Date.now(), { kind: "grade", src: practiceLabel(ownerKey) });
+          if(added) weToast(`✏️ 틀린 곳 ${added}개를 🧠 복습에 담았어요 — 내일부터 카드로 나와요`);
+        }
       }
     }
     committed = true;
@@ -4350,7 +4393,7 @@ function selectionChipHandler(e, origin){
       if(sv) sv.hidden = chipOrigin === "saved"; // v2.14: 저장함 안에서 또 저장은 무의미 — 숨김
       selChips.style.display = "flex";
       selChips.style.left = Math.min(e.clientX, window.innerWidth - 150) + "px";
-      selChips.style.top = Math.min(Math.max(8, e.clientY + 12), window.innerHeight - 296) + "px"; // 칩 7종 + 미니 사전 높이만큼 클램프 (v2.17, v2.48: 복습 포인트 추가로 한 줄 늘어남)
+      selChips.style.top = Math.min(Math.max(8, e.clientY + 12), window.innerHeight - 332) + "px"; // 칩 8종 + 미니 사전 높이만큼 클램프 (v2.17, v2.48 복습 포인트, v2.54 댓글 중앙/우측 분리)
     } else { selChips.style.display = "none"; }
   }, 10);
 }
@@ -4420,31 +4463,18 @@ document.getElementById("wave-chip").addEventListener("click", () => createWaveF
 document.getElementById("syntax-chip").addEventListener("click", () => createWaveFromSelection("syntax"));
 /* 💬 댓글 (v2.5): 드래그한 부분을 인용(>)으로 입력창에 붙여 그 자리에서 바로 질문 — 클로드 코드의 인용 질문처럼.
    파도(옆으로 떼어가 따로 탐구)와 달리, 지금 보던 대화 흐름 안에서 콕 집어 묻는 용도. */
-document.getElementById("comment-chip").addEventListener("click", () => {
-  selChips.style.display = "none";
-  if(!chipText) return;
+/* 💬 댓글 (중앙/우측) — v2.54: 드래그 위치로 자동 결정하던 것을 뜻 해석처럼 사용자가 직접 고른다 (사용자 요청) */
+function commentQuoted(){
   let q = chipText.trim();
   if(q.length > 500) q = q.slice(0, 500) + "…"; // 인용은 맥락 표시용 — 지나치게 길면 자름
-  const quoted = q.split(/\r?\n/).map(l => "> " + l).join("\n") + "\n\n";
+  return q.split(/\r?\n/).map(l => "> " + l).join("\n") + "\n\n";
+}
+document.getElementById("comment-chip-center").addEventListener("click", () => {
+  selChips.style.display = "none";
+  if(!chipText) return;
+  const quoted = commentQuoted();
   const sel = window.getSelection(); if(sel) sel.removeAllRanges();
-  if(chipOrigin === "saved"){ // v2.14: 복습 중 댓글 인용도 총괄 채팅 입력창으로
-    savedToGlobal();
-    const gInp = document.getElementById("chat-input");
-    if(gInp){ gInp.value = quoted + gInp.value; setDraft(GLOBAL_ID, gInp.value); autoGrow(gInp); gInp.focus(); gInp.setSelectionRange(gInp.value.length, gInp.value.length); }
-    return;
-  }
-  if(chipOrigin === "right"){
-    let wv = state.waves.find(x => x.id === state.activeRight);
-    if(!wv){ // 열린 파도가 없으면(분석·리스트 탭) 새 파도를 만들어 그 안에서 묻기 (뜻 해석과 같은 규칙)
-      createWaveFromSelection("wave");
-      wv = state.waves[state.waves.length - 1];
-    }
-    const inp = document.getElementById("wave-input");
-    if(inp && wv){ inp.value = quoted + inp.value; setDraft(wv.id, inp.value); autoGrow(inp); }
-    mGoTab("waves"); // v2.23
-    focusWaveInput(); // 커서를 끝으로 — 인용 아래에 바로 질문 타이핑
-    return;
-  }
+  if(chipOrigin === "saved") savedToGlobal(); // v2.14: 복습·저장함에서의 중앙 = 총괄 채팅
   const inp = document.getElementById("chat-input");
   if(inp){
     inp.value = quoted + inp.value;
@@ -4455,6 +4485,22 @@ document.getElementById("comment-chip").addEventListener("click", () => {
   }
   mGoTab("chat"); // v2.23: 모바일 단어 탭에서 댓글 → 채팅 탭으로 (인용이 보이게)
   document.getElementById("center").scrollTop = 0; // 중앙 입력창이 보이게 위로
+});
+document.getElementById("comment-chip-wave").addEventListener("click", () => {
+  selChips.style.display = "none";
+  if(!chipText) return;
+  const quoted = commentQuoted();
+  const sel = window.getSelection(); if(sel) sel.removeAllRanges();
+  // 파도 안에서 드래그했으면 그 파도에, 아니면(중앙·저장함·분석/리스트 탭) 새 파도를 만들어 그 안에서 (뜻 해석과 같은 규칙)
+  let wv = chipOrigin === "right" ? state.waves.find(x => x.id === state.activeRight) : null;
+  if(!wv){
+    createWaveFromSelection("wave"); // 저장함·복습 출처면 모달 닫기 포함 (v2.14)
+    wv = state.waves[state.waves.length - 1];
+  }
+  const inp = document.getElementById("wave-input");
+  if(inp && wv){ inp.value = quoted + inp.value; setDraft(wv.id, inp.value); autoGrow(inp); }
+  mGoTab("waves"); // v2.23
+  focusWaveInput(); // 커서를 끝으로 — 인용 아래에 바로 질문 타이핑
 });
 /* 📖 뜻 해석 (중앙/파도) — v2.17: 어디서 해석할지 사용자가 직접 고른다 (드래그 위치로 자동 결정하던 것을 명시화) */
 /* v2.28: 둘러싼 문장을 함께 실어 "문장을 이해한 다음" 뜻을 찾게 — 짧은 선택(단어·구)일 때만 (문장 통째 선택엔 불필요) */
@@ -4523,7 +4569,7 @@ function addReviewPoint(text, src, ctx){
   const around = String(ctx || "").trim();
   const why = `${src || "대화"}에서 직접 담은 부분이에요.`
     + (around && around !== title ? `\n원래 문맥: "${around.slice(0, 160)}"` : "");
-  const point = { title, why, drill: "" };
+  const point = { title, why, drill: "", ctx: around, src: src || "대화" }; // v2.54: 문맥·출처는 카드가 "빈칸 문제"를 만드는 재료
   // ① 복습 기록(세트)에 남긴다 — 같은 날 담은 것은 한 세트로 모임
   const today = new Date().toDateString();
   let set = REVIEW.find(s => s.manual && new Date(s.ts).toDateString() === today);
@@ -4531,8 +4577,8 @@ function addReviewPoint(text, src, ctx){
   set.points.push(point);
   saveReview();
   // ② 간격 반복 루프에 태운다 — 내일부터 1일·3일·1주일·2주일·한 달·석 달
-  srsAdd([point]);
-  return { ok: true, msg: "🧠 복습 포인트에 담았어요 — 내일부터 간격을 두고 다시 나와요" };
+  srsAdd([point], null, { kind: "manual", src: src || "대화" });
+  return { ok: true, msg: "🧠 복습에 담았어요 — 첫 복습은 내일, 그다음 3일·1주일·2주일·한 달·석 달" };
 }
 document.getElementById("srs-chip").addEventListener("click", () => {
   selChips.style.display = "none";
@@ -4541,7 +4587,7 @@ document.getElementById("srs-chip").addEventListener("click", () => {
   if(!text) return;
   const r = addReviewPoint(text, savedSrcLabel(), chipCtx);
   if(r.msg) weToast(r.msg);
-  if(document.getElementById("review-modal").classList.contains("show")) renderReview(); // 복습 모달에서 담았으면 즉시 반영
+  if(document.getElementById("review-modal").classList.contains("show")) renderReview(); // 복습 모달에서 담았으면 즉시 반영 (오늘 탭이면 "오늘 담은 N개" 안내가 늘어난다)
 });
 document.getElementById("save-chip").addEventListener("click", () => {
   selChips.style.display = "none";
@@ -4819,6 +4865,7 @@ async function makeReview(){
   makeReview._busy = true;
   const btn = document.getElementById("review-make");
   if(btn){ btn.disabled = true; btn.textContent = "✨ 만드는 중… (10~30초)"; }
+  _rvTab = "log"; // 만든 결과는 내역 탭에 나타난다
   const instr = `[복습 포인트 생성] 아래는 이 학습자의 최근 학습 기록이다. 이를 근거로 복습 포인트 5~8개를 만들어라.
 반드시 JSON으로만 답하라 — 마크다운 코드펜스·설명·인사 금지. 형식:
 {"points":[{"title":"<무엇을 복습할지 한 줄(한국어)>","why":"<왜 — 어떤 기록에서 나온 약점인지 근거(한국어)>","drill":"<지금 바로 해볼 한 줄 미니 연습(예: 영어로 말해보기: 나는 그 고양이를 봤다 — I saw the cat.)>"}]}
@@ -4834,7 +4881,7 @@ ${mat}`;
     if(!pts.length) throw new Error("복습 포인트가 비어 있어요. 다시 시도해 주세요.");
     REVIEW.unshift({ id: "rv" + Date.now(), ts: Date.now(), points: pts.slice(0, 10).map(p => ({ title: String(p.title).slice(0, 120), why: String(p.why || "").slice(0, 240), drill: String(p.drill || "").slice(0, 240) })) });
     saveReview();
-    srsAdd(REVIEW[0].points, REVIEW[0].ts); // v2.37: 새 복습 포인트는 간격 반복 큐에도 — 내일부터 재출현
+    srsAdd(REVIEW[0].points, REVIEW[0].ts, { kind: "ai", src: "기록 종합" }); // v2.37: 새 복습 포인트는 간격 반복 큐에도 — 내일부터 재출현
     renderReview();
   } catch(err){
     console.error("[review]", err);
@@ -4843,7 +4890,7 @@ ${mat}`;
   } finally {
     makeReview._busy = false;
     const b2 = document.getElementById("review-make");
-    if(b2){ b2.disabled = false; b2.textContent = "✨ 복습 포인트 만들기"; }
+    if(b2){ b2.disabled = false; b2.textContent = "✨ 기록으로 복습 포인트 만들기"; }
   }
 }
 /* ── v2.37: 간격 반복 학습(SRS) — 복습 포인트가 1·3·7·14·30·90일 간격으로 다시 나타난다 ──
@@ -4859,19 +4906,22 @@ let SRS = [];
 try { SRS = JSON.parse(localStorage.getItem(LS_SRS) || "[]") || []; } catch(e){ SRS = []; }
 function saveSrs(){ try { while(SRS.length > 200) SRS.pop(); localStorage.setItem(LS_SRS, JSON.stringify(SRS)); } catch(e){} }
 let _srsSeq = SRS.reduce((m, it) => { const n = parseInt(String(it.id).split("_")[1], 10); return isNaN(n) ? m : Math.max(m, n + 1); }, 0); // v2.37 QA: id 유일성 — 호출별 지역 카운터는 같은 ms 다중 세트 백필에서 충돌(sr<ms>_0 중복 → 클릭이 엉뚱한 항목 갱신)
-function srsAdd(points, ts){
+function srsAdd(points, ts, meta){ // v2.54: meta = { kind: "manual"|"ai"|"grade", src } — 카드가 "무엇을 어떻게 물을지" 정하는 근거
   let added = 0;
   (points || []).forEach(p => {
     const t = String((p && p.title) || "").trim();
-    if(!t || SRS.some(it => it.title === t)) return; // 같은 제목은 한 번만 — 재출현은 간격이 담당
+    const k = String((p && p.key) || t);
+    if(!t || SRS.some(it => (it.key || it.title) === k)) return; // 같은 카드는 한 번만(채점 카드는 태그+내 문장 기준) — 재출현은 간격이 담당
     added++;
-    SRS.unshift({ id: "sr" + Date.now() + "_" + (_srsSeq++), title: t.slice(0, 120), why: String(p.why || "").slice(0, 240), drill: String(p.drill || "").slice(0, 240), ts: ts || Date.now(), stage: 0, next: (ts || Date.now()) + SRS_INTERVALS[0] * DAY_MS, hist: [] });
+    SRS.unshift({ id: "sr" + Date.now() + "_" + (_srsSeq++), title: t.slice(0, 120), why: String(p.why || "").slice(0, 240), drill: String(p.drill || "").slice(0, 240),
+      key: p.key ? String(p.key).slice(0, 200) : undefined, ctx: String(p.ctx || "").slice(0, 300), src: String((p.src || (meta && meta.src)) || "").slice(0, 60), kind: (meta && meta.kind) || (p.drill ? "ai" : "manual"),
+      ts: ts || Date.now(), stage: 0, next: (ts || Date.now()) + SRS_INTERVALS[0] * DAY_MS, hist: [] });
   });
   if(added){ saveSrs(); updateSrsBadge(); }
   return added;
 }
 function srsBackfill(){ // 절대 규칙 #5: 새 스키마 = 기존 데이터 백필 — 이미 만든 복습 세트를 만든 날짜 기준으로 등록
-  REVIEW.slice().reverse().forEach(set => srsAdd(set.points, set.ts)); // 오래된 세트부터 — 최신 포인트가 큐 앞에 오게
+  REVIEW.slice().reverse().forEach(set => srsAdd(set.points, set.ts, { kind: set.manual ? "manual" : "ai", src: set.manual ? "대화" : "기록 종합" })); // 오래된 세트부터 — 최신 포인트가 큐 앞에 오게
 }
 (function(){ let has = null; try { has = localStorage.getItem(LS_SRS); } catch(e){ return; } if(has === null) srsBackfill(); })();
 /* v2.47 마이그레이션(절대 규칙 #5): 구 5단[1,3,10,30,90] → 신 6단[1,3,7,14,30,90].
@@ -4893,6 +4943,18 @@ const LS_SRS_MIG = "we_srs_mig_v2";
     localStorage.setItem(LS_SRS_MIG, "1");
   } catch(e){}
 })();
+/* v2.54 백필(절대 규칙 #5): 키 없는 채점 카드(kind=grade)에 key를 채운다 — 중복 판정이 key로 바뀌었으므로 구 카드도 같은 기준으로 */
+function srsKeyBackfill(){
+  let n = 0;
+  SRS.forEach(it => {
+    if(it.kind !== "grade" || it.key) return;
+    const tag = String(it.title || "").split(":")[0].trim();
+    it.key = `grade|${tag}|${String(it.ctx || "").replace(/\s+/g, " ").trim().toLowerCase()}`; n++;
+  });
+  if(n) saveSrs();
+  return n;
+}
+srsKeyBackfill();
 function srsDue(){
   const end = new Date(); end.setHours(23, 59, 59, 999);
   return SRS.filter(it => it.next && it.next <= end.getTime());
@@ -4903,43 +4965,167 @@ function updateSrsBadge(){
   const n = srsDue().length;
   b.innerHTML = n ? `🧠 복습 <b class="srs-due">${n}</b>` : "🧠 복습";
 }
-function srsSectionHTML(){
-  const due = srsDue();
-  const head = `<div class="srs-head"><b>🔔 오늘의 복습</b> — 잊을 만할 때 다시 만나야 오래 남아요: 1일 → 3일 → 1주일 → 2주일 → 한 달 → 석 달 간격으로 다시 나타나요</div>`;
-  if(!due.length) return `<div class="srs-box">${head}<div class="srs-empty">오늘 볼 항목이 없어요 — 복습 포인트를 만들면 다음 날부터 여기 나타나요.</div></div>`;
-  return `<div class="srs-box">${head}${due.map(it => `<div class="srs-item" data-srs="${esc(it.id)}">
-    <div class="rv-title">${esc(it.title)}<span class="srs-stage">${it.stage + 1}번째 만남</span></div>
-    ${it.why ? `<div class="rv-why">${esc(it.why)}</div>` : ""}
-    ${it.drill ? `<div class="rv-drill">✏️ ${esc(it.drill)}</div>` : ""}
-    <div class="srs-acts"><button type="button" data-srs-ok="${esc(it.id)}">✅ 외웠어요</button><button type="button" data-srs-again="${esc(it.id)}">🔁 내일 다시</button></div>
-  </div>`).join("")}</div>`;
+/* ── v2.54: 복습 전면 개편 (사용자: "복습 포인트 기능 고장난 것 같아. 전면 개편해") ──
+   큐(SRS)가 유일한 진실. 모달 = 🔔 오늘(카드 한 장씩: 먼저 떠올리고 → 답 보기 → 기억났어요·헷갈렸어요·몰랐어요) / 📚 전체(목록·검색·지금 복습·삭제) / 🗂 내역(만든 기록 + ✨ 만들기).
+   담은 직후엔 "오늘 담은 N개 — 첫 복습은 내일"로 어디 갔는지 보이게. 카드 앞면은 종류별로 다르게 묻는다:
+   - 드래그로 담은 것(manual): 원래 문맥에서 그 부분을 빈칸으로 → "빈칸에 들어갈 말은?"
+   - 채점 오답(grade): 틀린 곳(제목)을 보여 주고 → 뒷면에 모범 답
+   - 기록 종합(ai): 미니 연습(drill)을 앞면에 → 뒷면에 무엇을·왜 */
+let _rvTab = "today";
+let _rvSession = null; // { ids, idx, flipped, ok, hazy, no }
+let _rvQuery = "";
+function srsCtxOf(it){ // v2.48 이전 항목은 why 안에 문맥이 들어 있다 — 거기서 꺼낸다
+  if(it.ctx) return it.ctx;
+  const m = String(it.why || "").match(/원래 문맥: "([\s\S]*)"$/);
+  return m ? m[1] : "";
 }
-function renderReview(){
-  const body = document.getElementById("review-body");
-  if(!body) return;
+function srsKindOf(it){ return it.kind || (it.drill ? "ai" : "manual"); }
+function srsCard(it){
+  const kind = srsKindOf(it);
+  const ctx = srsCtxOf(it);
+  if(kind === "manual" && ctx && it.title && ctx.length > it.title.length + 4){
+    const blank = rvBlankHTML(ctx, it.title);
+    if(blank) return { kind, label: "빈칸에 들어갈 말은?", front: blank, back: `<div class="rv-title">${esc(it.title)}</div>${it.why ? `<div class="rv-why">${esc(String(it.why).replace(/\n원래 문맥: "[\s\S]*"$/, ""))}</div>` : ""}` };
+  }
+  if(kind === "grade"){ // 앞면 = 내가 쓴 문장 + 어느 자리인지(태그)만 — "무엇이 틀렸는지"는 뒷면 (기획: 앞면이 답을 미리 말하면 떠올릴 게 없다)
+    const tag = String(it.title).split(":")[0].trim();
+    const note = String(it.title).slice(tag.length + 1).trim();
+    if(ctx) return { kind, label: "어디가 어색했을까요? 고쳐서 말해 보세요", front: `<div class="rv-you">당신: ${esc(ctx)}</div><div class="rv-tag">🔎 <b>${esc(tag)}</b> 자리를 다시 봐요</div>`, back: `${note ? `<div class="rv-why">✗ ${esc(note)}</div>` : ""}${it.drill ? `<div class="rv-drill">${esc(it.drill)}</div>` : ""}${it.why ? `<div class="rv-why">${esc(it.why)}</div>` : ""}` };
+    return { kind, label: "이 지점, 무엇이 틀렸었는지 떠올려 보세요", front: `<div class="rv-tag">🔎 <b>${esc(tag)}</b></div>`, back: `<div class="rv-title">${esc(it.title)}</div>${it.drill ? `<div class="rv-drill">${esc(it.drill)}</div>` : ""}${it.why ? `<div class="rv-why">${esc(it.why)}</div>` : ""}` };
+  }
+  if(it.drill) return { kind, label: "먼저 해 보세요", front: esc(it.drill), back: `<div class="rv-title">${esc(it.title)}</div>${it.why ? `<div class="rv-why">${esc(it.why)}</div>` : ""}` };
+  return { kind, label: "이걸 기억하나요?", front: esc(it.title), back: it.why ? `<div class="rv-why">${esc(it.why)}</div>` : `<div class="rv-why">담아 둔 부분이에요 — 떠올려 봤다면 아래에서 평가해 주세요.</div>` };
+}
+function rvBlankHTML(ctx, title){ // 단어 경계에서 첫 매치 1회만 빈칸으로 — "on"이 "month" 안을 자르지 않게 (QA). 못 찾으면 null
+  const t = String(title || "").trim(); if(!t) return null;
+  const re = new RegExp(`(^|[^A-Za-z0-9])(${t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})(?![A-Za-z0-9])`, "i");
+  const m = ctx.match(re); if(!m) return null;
+  const i = m.index + m[1].length;
+  return esc(ctx.slice(0, i)) + '<span class="rv-blank"></span>' + esc(ctx.slice(i + m[2].length));
+}
+function rvStageLabel(it){
+  if(it.next === null || it.stage >= SRS_INTERVALS.length) return "🎉 완주";
+  const d = Math.ceil((it.next - Date.now()) / DAY_MS);
+  return `${it.stage + 1}번째 만남 · ${d <= 0 ? "오늘" : `${d}일 뒤`}`;
+}
+function rvKindLabel(it){ return { manual: "✋ 직접 담음", grade: "✏️ 채점 오답", ai: "✨ 기록 종합" }[srsKindOf(it)] || ""; }
+function rvStartSession(){
+  const due = srsDue();
+  _rvSession = { ids: due.map(x => x.id), idx: 0, flipped: false, ok: 0, hazy: 0, no: 0 };
+}
+function rvTodayHTML(){
+  if(!_rvSession) rvStartSession();
+  const S = _rvSession;
+  const total = S.ids.length;
+  const todayStr = new Date().toDateString();
+  const addedToday = SRS.filter(it => new Date(it.ts).toDateString() === todayStr && it.stage === 0 && !(it.hist || []).length); // 구 항목은 hist가 없을 수 있다 (QA)
+  if(!total){
+    const upcoming = SRS.filter(it => it.next).sort((a, b) => a.next - b.next)[0];
+    const live = SRS.filter(it => it.next).length;
+    if(!SRS.length) return `<div class="srs-box"><div class="srs-head"><b>🔔 오늘의 복습</b></div><div class="srs-empty">아직 복습 포인트가 없어요.<br>· 대화에서 궁금한 부분을 드래그 → <b>🧠 복습 포인트</b><br>· 작문·상황극·시험에서 <b>틀린 곳은 자동으로</b> 담겨요<br>· 아래 <b>🗂 내역</b> 탭에서 기록으로 만들 수도 있어요</div></div>`;
+    return `<div class="srs-box"><div class="srs-head"><b>🔔 오늘의 복습</b> — 오늘 볼 카드는 없어요</div>
+      ${addedToday.length ? `<div class="srs-empty">오늘 담은 <b>${addedToday.length}개</b> — 첫 복습은 <b>내일</b>이에요. (잊을 만할 때 다시 만나야 오래 남아요: 1일 → 3일 → 1주일 → 2주일 → 한 달 → 석 달)</div>` : ""}
+      ${upcoming ? `<div class="srs-empty">다음 복습: <b>${esc(upcoming.title)}</b> — ${rvStageLabel(upcoming)}${live > 1 ? ` (살아 있는 카드 ${live}개)` : ""}</div>` : `<div class="srs-empty">모든 카드가 석 달까지 완주했어요 🎉</div>`}
+      <div class="rv-flip"><button class="g-btn" type="button" data-rvtab-go="all">📚 전체 보기</button>${upcoming ? `<button class="g-btn" type="button" data-srs-now="${esc(upcoming.id)}">지금 미리 복습</button>` : ""}</div></div>`;
+  }
+  if(S.idx >= total){
+    return `<div class="rv-done">오늘 복습 끝 🎉<br><b>기억났어요 ${S.ok}</b> · 헷갈렸어요 ${S.hazy} · 몰랐어요 ${S.no}<br><span class="rv-hintline">${[S.hazy ? `헷갈렸던 ${S.hazy}개는 같은 간격으로 한 번 더` : "", S.no ? `몰랐던 ${S.no}개는 내일 다시` : ""].filter(Boolean).join(" · ") || "전부 다음 간격으로 넘어갔어요"}</span></div>`;
+  }
+  const it = SRS.find(x => x.id === S.ids[S.idx]);
+  if(!it){ S.idx++; return rvTodayHTML(); }
+  const card = srsCard(it);
+  return `<div class="rv-prog">오늘의 복습 <b>${S.idx + 1}</b>/${total}<div class="rv-bar"><i style="width:${Math.round(S.idx / total * 100)}%"></i></div><span>${rvStageLabel(it)}</span>${it.src ? `<span>· ${esc(it.src)}</span>` : ""}</div>
+    <div class="rv-card" data-srs="${esc(it.id)}">
+      <div class="rv-kind">${rvKindLabel(it)} · ${esc(card.label)}</div>
+      <div class="rv-q">${card.front}</div>
+      ${S.flipped
+        ? `<div class="rv-back">${card.back}</div>
+           <div class="rv-rate"><button type="button" data-srs-ok="${esc(it.id)}">😀 기억났어요</button><button type="button" data-srs-hazy="${esc(it.id)}">🤔 헷갈렸어요</button><button type="button" data-srs-again="${esc(it.id)}">😵 몰랐어요</button></div>`
+        : `<div class="rv-flip"><button class="g-btn primary" type="button" data-rv-flip>답 보기</button><span class="rv-hintline">먼저 머릿속에서 꺼내 본 뒤에 눌러요 — 그게 복습이에요</span></div>`}
+    </div>`;
+}
+function rvAllHTML(){
+  const q = _rvQuery.trim().toLowerCase();
+  const list = SRS.slice().sort((a, b) => (a.next === null) - (b.next === null) || (a.next || 0) - (b.next || 0))
+    .filter(it => !q || (it.title + " " + (it.why || "") + " " + (it.src || "")).toLowerCase().includes(q));
+  const live = SRS.filter(it => it.next).length, done = SRS.length - live;
+  return `<div class="rv-sub">살아 있는 카드 <b>${live}</b>개 · 완주 ${done}개 — 간격: 1일 → 3일 → 1주일 → 2주일 → 한 달 → 석 달</div>
+    <input class="rv-search" id="rv-search" type="search" placeholder="카드 찾기 — 제목·출처" value="${esc(_rvQuery)}">
+    ${!SRS.length ? `<div class="srs-empty">아직 복습 포인트가 없어요 — 드래그 → 🧠 복습 포인트, 또는 틀린 곳이 자동으로 담겨요.</div>`
+      : !list.length ? `<div class="srs-empty">찾는 카드가 없어요.</div>`
+      : list.map(it => `<div class="rv-row" data-srs="${esc(it.id)}">
+        <div class="rv-title">${esc(it.title)}<div class="rv-meta"><span>${rvStageLabel(it)}</span><span>${rvKindLabel(it)}</span>${it.src ? `<span>· ${esc(it.src)}</span>` : ""}</div></div>
+        <div class="rv-acts">${it.next && it.next > Date.now() ? `<button type="button" data-srs-now="${esc(it.id)}" title="오늘 큐로 당겨 지금 복습">지금 복습</button>` : ""}<button type="button" data-srs-del="${esc(it.id)}" title="이 카드를 큐에서 지움">삭제</button></div>
+      </div>`).join("")}`;
+}
+function rvLogHTML(){
   const sets = !REVIEW.length
     ? '<div class="qh-empty">아직 만든 복습 포인트가 없어요 — 위 버튼을 누르면 지금까지의 대화·연습 기록·저장 항목을 모아 복습 카드로 정리해 드려요.</div>'
     : REVIEW.map(set => `<div class="rv-set" data-rv="${esc(set.id)}">
     <div class="rv-head"><b>${new Date(set.ts).toLocaleDateString("ko-KR")} ${new Date(set.ts).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}</b> · ${set.points.length}개${set.manual ? ' <span class="rv-manual">✋ 직접 담음</span>' : ""}<button class="sv-del" type="button" data-rv-del="${esc(set.id)}">삭제</button></div>
     ${set.points.map((p, i) => `<div class="rv-point"><div class="rv-title">${i + 1}. ${esc(p.title)}</div>${p.why ? `<div class="rv-why">${esc(p.why)}</div>` : ""}${p.drill ? `<div class="rv-drill">✏️ ${esc(p.drill)}</div>` : ""}</div>`).join("")}
   </div>`).join("");
-  body.innerHTML = srsSectionHTML() + sets;
+  return `<div class="rv-sub">지금까지의 대화·작문 연습 기록·⭐ 저장 항목을 모아 AI가 복습 카드로 정리해요. 만든 카드는 🔔 오늘·📚 전체의 큐에도 함께 들어가요.</div>
+    <button class="g-btn" id="review-make" type="button"${makeReview._busy ? " disabled" : ""}>${makeReview._busy ? "✨ 만드는 중… (10~30초)" : "✨ 기록으로 복습 포인트 만들기"}</button>
+    <div style="height:10px"></div>${sets}`;
+}
+function renderReview(){
+  const body = document.getElementById("review-body");
+  if(!body) return;
+  document.querySelectorAll("#rv-tabs .rv-tab").forEach(b => b.classList.toggle("active", b.dataset.rvtab === _rvTab));
+  body.innerHTML = _rvTab === "all" ? rvAllHTML() : _rvTab === "log" ? rvLogHTML() : rvTodayHTML();
+}
+document.getElementById("rv-tabs").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-rvtab]"); if(!b) return;
+  _rvTab = b.dataset.rvtab; renderReview();
+});
+document.getElementById("review-body").addEventListener("input", (e) => {
+  if(e.target.id !== "rv-search") return;
+  _rvQuery = e.target.value; const pos = e.target.selectionStart;
+  renderReview();
+  const s2 = document.getElementById("rv-search"); if(s2){ s2.focus(); try { s2.setSelectionRange(pos, pos); } catch(err){} }
+});
+function srsRate(it, r){ // ok=다음 간격 / hazy=같은 간격 한 번 더 / no=처음부터(라이트너)
+  (it.hist = it.hist || []).push({ ts: Date.now(), ok: r === "ok", r }); // 점수제·평가 인용용 이력 (ok=회상 성공)
+  if(r === "ok"){
+    it.stage += 1;
+    if(it.stage >= SRS_INTERVALS.length){ it.next = null; weToast("🎉 완주 — 석 달 뒤까지 다 기억했어요. 장기 기억에 안착!"); }
+    else { it.next = Date.now() + SRS_INTERVALS[it.stage] * DAY_MS; weToast(`좋아요 — 다음은 ${SRS_LABELS[it.stage]} 뒤에 다시 나와요`); }
+  } else if(r === "hazy"){
+    const st = Math.min(it.stage, SRS_INTERVALS.length - 1);
+    it.next = Date.now() + SRS_INTERVALS[st] * DAY_MS;
+    weToast(`헷갈렸으면 같은 간격으로 한 번 더 — ${SRS_LABELS[st]} 뒤에`);
+  } else {
+    it.stage = 0; it.next = Date.now() + DAY_MS;
+    weToast("괜찮아요 — 내일 다시 만나요");
+  }
 }
 document.getElementById("review-body").addEventListener("click", (e) => {
-  const ok = e.target.closest("[data-srs-ok]"), ag = e.target.closest("[data-srs-again]");
-  if(ok || ag){ // v2.37: 오늘의 복습 — 성공=간격 전진, 실패=처음부터
-    const it = SRS.find(x => x.id === (ok ? ok.dataset.srsOk : ag.dataset.srsAgain));
+  const go = e.target.closest("[data-rvtab-go]");
+  if(go){ _rvTab = go.dataset.rvtabGo; renderReview(); return; }
+  if(e.target.closest("[data-rv-flip]")){ if(_rvSession) _rvSession.flipped = true; renderReview(); return; }
+  const ok = e.target.closest("[data-srs-ok]"), hz = e.target.closest("[data-srs-hazy]"), ag = e.target.closest("[data-srs-again]");
+  if(ok || hz || ag){
+    const id = ok ? ok.dataset.srsOk : hz ? hz.dataset.srsHazy : ag.dataset.srsAgain;
+    const it = SRS.find(x => x.id === id);
     if(!it) return;
-    (it.hist = it.hist || []).push({ ts: Date.now(), ok: !!ok }); // 점수제·평가 인용용 이력
-    if(ok){
-      it.stage += 1;
-      if(it.stage >= SRS_INTERVALS.length){ it.next = null; weToast("🎉 완주 — 석 달 뒤까지 다 기억했어요. 장기 기억에 안착!"); }
-      else { it.next = Date.now() + SRS_INTERVALS[it.stage] * DAY_MS; weToast(`좋아요 — 다음은 ${SRS_LABELS[it.stage]} 뒤에 다시 나와요`); }
-    } else {
-      it.stage = 0; it.next = Date.now() + DAY_MS;
-      weToast("괜찮아요 — 내일 다시 만나요");
-    }
+    const r = ok ? "ok" : hz ? "hazy" : "no";
+    srsRate(it, r);
+    if(_rvSession){ _rvSession[r]++; _rvSession.idx++; _rvSession.flipped = false; }
     saveSrs(); updateSrsBadge(); renderReview();
+    return;
+  }
+  const now = e.target.closest("[data-srs-now]");
+  if(now){ // 📚 전체 → 오늘 큐로 당김
+    const it = SRS.find(x => x.id === now.dataset.srsNow);
+    if(it){ it.next = Date.now() - 1; saveSrs(); updateSrsBadge(); rvStartSession(); _rvTab = "today"; renderReview(); }
+    return;
+  }
+  const rm = e.target.closest("[data-srs-del]");
+  if(rm){
+    if(!confirm("이 복습 카드를 지울까요? (지우면 다시 나오지 않아요)")) return;
+    SRS = SRS.filter(x => x.id !== rm.dataset.srsDel);
+    saveSrs(); updateSrsBadge(); if(_rvSession) _rvSession.ids = _rvSession.ids.filter(id => id !== rm.dataset.srsDel); renderReview();
     return;
   }
   const del = e.target.closest("[data-rv-del]");
@@ -4958,11 +5144,11 @@ document.getElementById("review-body").addEventListener("click", (e) => {
   weToast(`🔔 오늘의 복습 ${n}개가 기다리고 있어요 — 🧠 복습에서 확인`);
 })();
 updateSrsBadge();
-function openReview(){ renderReview(); document.getElementById("review-modal").classList.add("show"); modalBg.classList.add("show"); }
+function openReview(){ rvStartSession(); _rvTab = "today"; renderReview(); document.getElementById("review-modal").classList.add("show"); modalBg.classList.add("show"); }
 function closeReview(){ document.getElementById("review-modal").classList.remove("show"); modalBg.classList.remove("show"); }
 document.getElementById("btn-review").addEventListener("click", openReview);
 document.getElementById("review-close").addEventListener("click", closeReview);
-document.getElementById("review-make").addEventListener("click", makeReview);
+document.getElementById("review-body").addEventListener("click", (e) => { if(e.target.closest("#review-make")) makeReview(); }); // 내역 탭 안에서 렌더되므로 위임
 document.getElementById("review-modal").addEventListener("mouseup", (e) => selectionChipHandler(e, "saved")); // 복습 카드에서 드래그 → 질문은 파도 Chat으로 (저장함과 같은 규칙)
 document.getElementById("practice-close").addEventListener("click", closePractice);
 document.getElementById("saved-modal").addEventListener("click", (e) => { // 위임 1회 — 재렌더에도 살아있음
@@ -5521,7 +5707,7 @@ function speakEn(text, btn){
   } catch(e){}
 }
 const TTS_SCOPES = ["#word-content", "#chat-log", ".r-body", "#related-box", "#saved-body", "#rules-body", "#review-body"]; // .r-body = 파도 로그·인용·하단 관련·분석 탭까지, review = 복습 카드 (v2.33)
-const TTS_LEAF = "p, li, td, blockquote, .sent-en, .en, .up-ex, .cj-d-ex, .opp-ex, .rel-en, .sv-text, .fm-o, .wave-quote, .sa-sentence, .sa-sim-en, .rv-drill"; // fm-o = 영어 규칙의 '맞는 예'만 (틀린 예 ✗는 읽어 주지 않음), sa-* = 분석 탭 원문·유사 문장, rv-drill = 복습 미니 연습 (v2.33)
+const TTS_LEAF = "p, li, td, blockquote, .sent-en, .en, .up-ex, .cj-d-ex, .opp-ex, .rel-en, .sv-text, .fm-o, .wave-quote, .sa-sentence, .sa-sim-en, .rv-drill, .rv-q"; // fm-o = 영어 규칙의 '맞는 예'만 (틀린 예 ✗는 읽어 주지 않음), sa-* = 분석 탭 원문·유사 문장, rv-drill = 복습 미니 연습 (v2.33)
 function ttsDecorate(){
   TTS_SCOPES.forEach((sel) => {
     const scope = document.querySelector(sel);
