@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>pAdo — websurfer AI</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"><!-- v2.58: 한국어 본문용 Pretendard(없으면 시스템 글꼴) -->
 <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="1" y="1" width="30" height="30" rx="9" fill="%235d5fef"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="white"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="2" stroke-linecap="round"/></svg>'>
 <style>
   /* websurfer 팔레트 계승 */
@@ -15,7 +16,7 @@
     --green:#28c76f; --red:#ea5455; --orange:#ff9f43; --purple:#9c5ffe;
     --shadow-sm:0 2px 6px rgba(45,49,66,.05); --shadow-md:0 6px 24px rgba(45,49,66,.08);
     --radius:10px;
-    --font:'Pretendard',-apple-system,BlinkMacSystemFont,'Inter','Apple SD Gothic Neo',sans-serif;
+    --font:'Pretendard Variable','Pretendard',-apple-system,BlinkMacSystemFont,'Inter','Apple SD Gothic Neo',sans-serif;
     --font-mono:ui-monospace,SFMono-Regular,'SF Mono',Menlo,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -810,6 +811,138 @@
   @media (min-width:769px) and (max-width:1000px){ .w-usage{position:static;width:auto;flex:none;margin:0;padding:0 10px;height:30px;white-space:nowrap;border-radius:999px;} .w-usage-sub{margin-left:4px;} }
   @media (max-width:768px){ .qi-info{display:none;} .q-index{max-height:min(48vh,420px);} .wh-card{padding:12px 12px;}
     body[data-mtab="words"] .w-usage{position:static;width:auto;flex:none;margin:0;padding:0 10px;height:30px;white-space:nowrap;border-radius:999px;order:-1;} body[data-mtab="words"] .w-usage-sub{margin-left:4px;} } /* order: 옛 모바일 칩 줄(engine.html)에선 맨 앞 — 세로 목록(engine-m)엔 영향 없음 */
+  /* ══ v2.58 디자인 패스 — "디자이너가 만든 것처럼": 차분한 중립색 + 한 가지 강조색, 알약형 컨트롤, 그림자로 층 구분, Pretendard. 치수 변경은 ≥1001px에만(모바일 예산 보존) ══ */
+  :root{ --bg:#f4f5fa; --card:#ffffff; --card-soft:#f6f7fb; --text:#1f2333; --text-soft:#4b5163; --text-mute:#8c92a8; --border:#e4e7ef; --border-soft:#eceef5;
+    --accent:#5b5ef4; --accent-soft:#ecedff; --accent-deep:#4341d8; --shadow-sm:0 1px 2px rgba(31,35,51,.04),0 2px 12px rgba(31,35,51,.05); --shadow-md:0 12px 32px rgba(31,35,51,.10); --radius:12px; }
+  body{-webkit-font-smoothing:antialiased;}
+  /* 품사 알약 — 목록·스텁 히어로 공용 (품사별 파스텔) */
+  .w-pos{display:inline-block;font-size:.6rem;font-weight:700;line-height:1.55;padding:0 6px;border-radius:999px;background:var(--border-soft);color:var(--text-soft);white-space:nowrap;flex:none;letter-spacing:0;}
+  .w-pos.pos-v{background:#e8efff;color:#2f57d8;} .w-pos.pos-n{background:#e5f6ec;color:#1f7a4d;} .w-pos.pos-adj{background:#fff0df;color:#b05d00;} .w-pos.pos-adv{background:#f1e9ff;color:#6b3fd1;}
+  .w-pos.pos-prep{background:#dff5f7;color:#0f7a86;} .w-pos.pos-pron{background:#fbe7f1;color:#b01a63;} .w-pos.pos-aux{background:#fff6d5;color:#8a6100;} .w-pos.pos-int{background:#ffe8e8;color:#c0392b;}
+  .w-pos.pos-conj,.w-pos.pos-art,.w-pos.pos-det,.w-pos.pos-num{background:#eef0f5;color:#4b5163;}
+  .w-base .w-pos{margin-left:5px;vertical-align:1px;}
+  .w-item.stub .w-base{color:var(--text-soft);font-weight:600;}
+  /* 품사 필터 줄 — 검색 밑·목록 위 */
+  .w-filter{display:flex;align-items:center;gap:8px;padding:0 4px 6px;}
+  .w-pos-sel{flex:1;min-width:0;height:32px;border-radius:10px;border:1px solid transparent;background:var(--card-soft) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%238c92a8' stroke-width='1.6' stroke-linecap='round'/></svg>") no-repeat right 10px center;padding:0 28px 0 10px;font:inherit;font-size:.78rem;font-weight:600;color:var(--text-soft);appearance:none;-webkit-appearance:none;cursor:pointer;}
+  .w-pos-sel:hover{background-color:var(--accent-soft);color:var(--accent-deep);}
+  .w-pos-sel:focus{outline:none;border-color:var(--accent);background-color:var(--card);box-shadow:0 0 0 3px var(--accent-soft);}
+  .w-count{font-size:.7rem;color:var(--text-mute);white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .w-pos-hint{font-size:.72rem;color:var(--text-soft);line-height:1.5;padding:0 6px 6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;} .w-pos-hint[hidden]{display:none;} /* 최대 2줄(폰 서랍 폭에서 설명이 잘리지 않게) */
+  .w-pos{cursor:pointer;}
+  .w-search input{border-radius:10px;background:var(--card-soft);border-color:transparent;transition:background .15s,box-shadow .15s;}
+  .w-search input:focus{background:var(--card);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .w-usage{border-radius:12px;background:var(--card-soft);border-color:transparent;}
+  /* 스텁 단어 히어로 */
+  .word-hero.stub .wh-pos{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0 10px;} .word-hero.stub .wh-pos .w-pos{font-size:.7rem;padding:1px 9px;}
+  /* 답변 진행 표시 — 본문 대신 제자리에서만 갱신 (흔들림 없음) */
+  .typing{display:inline-flex;align-items:center;gap:8px;color:var(--text-mute);font-size:.86rem;padding:1px 0;}
+  .typing-dots{display:inline-flex;gap:3px;align-items:center;}
+  .typing-dots i{width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:.3;animation:pado-dot 1.2s infinite ease-in-out;}
+  .typing-dots i:nth-child(2){animation-delay:.2s;} .typing-dots i:nth-child(3){animation-delay:.4s;}
+  @keyframes pado-dot{0%,80%,100%{opacity:.25;transform:translateY(0);}40%{opacity:1;transform:translateY(-3px);}}
+  .typing-n{font-size:.74rem;color:var(--text-mute);min-width:3.6em;font-variant-numeric:tabular-nums;}
+  @media (prefers-reduced-motion:reduce){ .typing-dots i{animation:none;opacity:.7;} }
+  /* 👥 계정 (설정창) */
+  .acct-status{font-size:.82rem;margin:8px 0 6px;color:var(--text-soft);line-height:1.6;}
+  .acct-row{display:flex;gap:8px;} .acct-row input{flex:1;min-width:0;margin-top:0;}
+  .modal .row.acct-btns{justify-content:flex-start;margin-top:8px;}
+  #acct-signup-code{margin-top:8px;}
+  #acct-admin summary{margin-top:14px;}
+  /* 말풍선·컨트롤 색 (공통) */
+  .msg.user{background:linear-gradient(135deg,#5b5ef4 0%,#6f70f8 100%);box-shadow:0 6px 16px rgba(91,94,244,.20);}
+  .msg.ai{background:var(--card);border-color:var(--border-soft);box-shadow:var(--shadow-sm);}
+  .msg.notice{background:var(--card-soft);border-color:var(--border);}
+  .send-btn{box-shadow:0 6px 16px rgba(91,94,244,.26);}
+  .q-list-btn,.mini-sel,.qa-btn,.qa-sel,.g-btn,.r-tab,.top-btn,.wp-btn{border-radius:10px;} /* 버튼은 10px 통일(v2.10 '버튼 통일' 계승) — 알약(999px)은 태그·칩(.w-pos·.dm·.mp-chip)에만 */
+  .q-list-btn,.qa-btn,.g-btn,.top-btn{background:var(--card-soft);border-color:transparent;font-weight:600;transition:background .15s,color .15s;}
+  .q-list-btn:hover,.qa-btn:hover,.g-btn:hover,.top-btn:hover{background:var(--accent-soft);color:var(--accent-deep);border-color:transparent;}
+  .q-list-btn.active{background:var(--accent-soft);color:var(--accent-deep);border-color:transparent;}
+  .g-btn.primary,.modal .row button.primary{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 6px 16px rgba(91,94,244,.22);}
+  .g-btn.primary:hover,.modal .row button.primary:hover{background:var(--accent-deep);color:#fff;}
+  .modal{border-radius:22px;box-shadow:0 24px 80px rgba(31,35,51,.26);}
+  .modal h2{font-size:1.12rem;font-weight:800;letter-spacing:-.01em;}
+  .modal label{font-weight:600;color:var(--text-soft);}
+  .modal input,.modal select,.modal textarea{border-radius:12px;background:var(--card-soft);border-color:transparent;}
+  .modal input:focus,.modal select:focus,.modal textarea:focus{background:var(--card);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .modal .row button{border-radius:12px;font-weight:600;}
+  .word-hero,.rich-part,.sent-card,.imp-card,.rel-box,.sa-part{border-color:transparent;box-shadow:var(--shadow-sm);}
+  header.top .build{border-radius:999px;}
+  #we-toast{border-radius:12px;box-shadow:var(--shadow-md);}
+  /* ── 데스크톱 치수 (≥1001px) ── */
+  @media (min-width:1001px){
+    header.top{padding:8px 16px;gap:8px;}
+    .top-btn{padding:6px 12px;font-size:.8rem;}
+    header.top select{border-radius:999px;border:1px solid transparent;background:var(--card-soft);padding:5px 10px;font-weight:600;color:var(--text-soft);}
+    .panes{grid-template-columns:252px minmax(300px,1fr) 8px minmax(340px, var(--right-w, 44%));}
+    aside.words{padding:12px 10px;border-right:1px solid var(--border-soft);}
+    .w-item{padding:7px 10px;border-radius:10px;gap:8px;transition:background .12s;}
+    .w-item.global{padding:9px 10px;margin-bottom:2px;}
+    .w-item:hover{background:var(--card-soft);}
+    .w-item.active{background:var(--accent-soft);border-color:transparent;box-shadow:inset 3px 0 0 var(--accent);}
+    .w-num{flex:0 0 26px;height:auto;border:0;background:transparent;font-family:var(--font-mono);font-size:.64rem;color:var(--text-mute);justify-content:flex-end;padding-right:2px;}
+    .w-item.active .w-num{background:transparent;border-color:transparent;color:var(--accent-deep);}
+    .w-base{font-size:.92rem;letter-spacing:-.01em;white-space:nowrap;} /* 알약이 줄바꿈되지 않게 — 긴 뜻은 .w-ko가 줄임표 */
+    .w-ko{font-size:.72rem;}
+    .w-search{padding:0 2px 6px;} .w-search input{padding:8px 12px;}
+    main.center{padding:12px 14px;}
+    .chat-box{border-color:transparent;border-radius:16px;}
+    .chat-head{padding:10px 14px;gap:6px;} .chat-head .t{font-weight:700;} .chat-head .sub{color:var(--text-mute);}
+    .chat-log{padding:16px 18px;gap:14px;}
+    .msg.user{border-radius:18px 18px 6px 18px;padding:10px 16px;}
+    .msg.ai{border-radius:6px 18px 18px 18px;padding:12px 16px;padding-right:36px;}
+    .chat-input{padding:10px 14px 8px;gap:10px;}
+    .chat-input textarea{border-radius:14px;background:var(--card-soft);border-color:transparent;padding:11px 14px;transition:background .15s,box-shadow .15s;}
+    .chat-input textarea:focus{background:var(--card);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+    .send-btn{border-radius:14px;min-width:46px;}
+    .qa-row{padding:8px 14px 12px;gap:6px;}
+    .r-tabs{padding:8px 10px;} .r-tab{background:var(--card-soft);border-color:transparent;} .r-tab.active{background:var(--accent);color:#fff;}
+    .rb-tabs{padding:8px 10px 0;gap:4px;} .rb-tab{border-radius:10px 10px 0 0;}
+    .word-hero,.rich-part,.sent-card,.imp-card,.rel-box,.sa-part{border-radius:16px;}
+    .modal{padding:24px 26px;}
+    .modal input,.modal select{padding:10px 13px;} .modal .row button{padding:9px 16px;}
+    .wave-pane .chat-input textarea{border-radius:14px;}
+  }
+  /* 모바일·태블릿 필터 줄 위치 (세로 목록: 서랍 / 가로 칩 줄: 콤팩트) */
+  @media (max-width:768px){ .w-filter{padding:0 10px 6px;} }
+  @media (max-width:1000px){ body[data-mtab="words"] .w-filter,body:not([data-mtab]) .w-filter{flex:none;} }
+  /* ══ v2.58 디자인 심사 반영(제품·모바일·접근성 3렌즈) — 대비(AA)·위계 3등급·탭 문법 통일·목록 2줄 골격·초점 링·색 절제 ══ */
+  :root{ --text-mute:#6a7088; --card-soft:#f1f3f9; } /* 보조 텍스트 대비 3.1→4.9:1, 채움 알약 경계 1.04→1.1:1 */
+  .msg.ai.streaming::after{content:none !important;animation:none !important;} /* 옛 깜빡이 커서 ▍ 제거 — 진행 표시(점 3개)가 대체 */
+  @keyframes pado-dot{0%,80%,100%{opacity:.4;transform:translateY(0);}40%{opacity:1;transform:translateY(-3px);}}
+  .msg.user{background:linear-gradient(135deg,#5457ee 0%,#5b5ef4 100%);box-shadow:0 2px 6px rgba(91,94,244,.16);} /* 흰 글자 대비 5.3→4.8:1(AA) · 헤일로 절반 */
+  .send-btn{box-shadow:0 3px 10px rgba(91,94,244,.22);}
+  .chat-log{background:#f7f8fc;} .msg.ai{border-color:#e6e8f0;} /* 흰 위 흰 카드 → 로그 바탕을 살짝 눌러 경계 */
+  .w-pos{font-size:.68rem;font-weight:600;padding:0 7px;line-height:1.55;} .w-pos.pos-adj{color:#9a4f00;} .w-pos.pos-prep{color:#0b6873;} /* 10.9px·600, 형용사 5.4·전치사 5.7:1 */
+  .w-item .w-pos{background:var(--border-soft);} /* 목록 500행에선 중립 바탕(무지개 방지) — 색은 글자에만, 파스텔 바탕은 히어로·필터에서 */
+  .w-item.stub .w-base{color:var(--text);font-weight:600;} .w-item.stub .w-ko::before{content:"◌ ";color:var(--text-mute);} /* 스텁 표식은 색이 아니라 기호로 */
+  .w-ko{color:var(--text-soft);}
+  .w-search{position:sticky;top:0;z-index:3;background:var(--card);} .w-filter{position:sticky;top:44px;z-index:2;background:var(--card);} /* 500단어에서 검색·필터가 스크롤에 묻히지 않게 — 전 폭 의도(폰 ☰ 서랍의 세로 목록·태블릿 칩 줄에서도 필요). 서랍은 fixed라 자체 stacking context → #m-top·시트와 안 겹침(QA) */
+  .w-pos-sel{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%236a7088' stroke-width='1.6' stroke-linecap='round'/></svg>");}
+  .w-pos-sel:focus,.w-search input:focus,.chat-input textarea:focus,.modal input:focus,.modal select:focus,.modal textarea:focus{box-shadow:0 0 0 1px var(--accent),0 0 0 4px var(--accent-soft);} /* 초점 링 2px 이상·3:1 */
+  #level-select,.mini-sel,.qa-sel{background:var(--card-soft);border-color:transparent;border-radius:10px;font-weight:600;color:var(--text-soft);} /* 셀렉트 4종도 버튼 언어로(특이성: id 포함) */
+  #level-select:hover,.mini-sel:hover,.qa-sel:hover{background:var(--accent-soft);color:var(--accent-deep);border-color:transparent;}
+  .wp-btn{background:var(--card-soft);border-color:transparent;font-weight:600;} .wp-btn:hover{background:var(--accent-soft);color:var(--accent-deep);}
+  .r-tab{background:var(--card-soft);border-color:transparent;} .r-tab.active{background:var(--accent-soft);border-color:transparent;color:var(--accent-deep);} /* solid 보라는 전송·내 말풍선에만 — 활성 탭은 tint */
+  .rb-tab{background:transparent;border-color:transparent;color:var(--text-mute);} .rb-tab.active{background:var(--accent-soft);color:var(--accent-deep);border-color:transparent;box-shadow:none;}
+  .wave-quote{border-left-color:var(--accent);} .wave-quote .q-label{color:var(--accent-deep);} /* 두 번째 보라 제거 */
+  .imp-replace{background:transparent;border:1px solid var(--border);color:var(--text-mute);border-radius:999px;}
+  .fold{border-color:transparent;background:transparent;opacity:.45;} .msg.ai:hover .fold,.fold:focus-visible{opacity:1;background:var(--card-soft);} /* 접기 버튼은 필요할 때만 */
+  .modal .hint{font-size:.8rem;color:var(--text-soft);} header.top .build{font-size:.74rem;}
+  @media (min-width:1001px){
+    .w-txt{flex-direction:column;align-items:flex-start;gap:1px;flex:1;min-width:0;} .w-item{padding:6px 10px;align-items:flex-start;} .w-num{margin-top:4px;font-size:.7rem;}
+    .w-base{display:inline-flex;align-items:center;gap:5px;flex:none;} .w-base .w-pos{margin-left:0;} .w-ko{max-width:100%;font-size:.76rem;} /* 2줄 골격: 단어+품사 / 느낌 글로스(잘리지 않게) */
+    .w-search input{height:34px;padding:0 12px;} .w-pos-sel{height:34px;} .w-filter{top:40px;}
+    .top-btn,.q-list-btn{background:transparent;border-color:transparent;font-weight:500;} .top-btn:hover,.q-list-btn:hover{background:var(--card-soft);color:var(--text);} /* 위계: 내비·관리 = 고스트, 행동 칩 = 소프트 채움, primary = solid */
+    #btn-settings{background:var(--card-soft);font-weight:600;} #btn-memo{opacity:.6;}
+    .rb-tabs{border-bottom:0;padding:10px 12px 2px;gap:4px;} .rb-tab{border:0;border-radius:999px;top:0;padding:5px 12px;}
+    aside.words{padding-bottom:0;} .w-usage{border-radius:0;margin:8px -10px 0;width:calc(100% + 20px);border-top:1px solid var(--border-soft);border-left:0;border-right:0;border-bottom:0;background:var(--card);} /* 바닥 도킹 푸터 */
+  }
+  @media (max-width:768px){
+    .mp-chip,.dm,#dr-level,#m-thread{background:var(--card-soft);border-color:transparent;font-weight:600;} .mp-chip.active{background:var(--accent);color:#fff;}
+    .w-num{border-color:transparent;background:transparent;font-family:var(--font-mono);color:var(--text-mute);} .w-item.active .w-num{background:transparent;color:var(--accent-deep);}
+    #m-top button{font-size:.64rem;letter-spacing:.01em;} .w-filter{top:38px;}
+  }
 </style>
 </head>
 <body>
@@ -819,7 +952,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.57</span>
+    <span class="build">pAdo · v2.58</span>
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
       <option value="">🪜 단계 선택 안 함</option>
@@ -838,7 +971,6 @@
     <button class="top-btn" id="btn-rules" type="button" title="영어의 공식 — 흔들리지 않는 조립 규칙, 휘는 곳까지">⚖️ 영어 규칙</button>
     <button class="top-btn" id="btn-memo" type="button" title="아이디어 메모 — 텍스트+그림, 자동 저장">📝 개발 메모</button>
     <button class="top-btn" id="btn-wave-list" type="button" title="파도 리스트 열기">≡ 파도 <span id="wave-count">0</span></button>
-    <a class="top-btn" href="index.html" style="text-decoration:none;" title="웹서퍼(단어 사전)로 돌아가기">🏠 웹서퍼</a>
     <button class="top-btn" id="btn-settings" type="button">⚙️ 설정</button>
   </header>
 
@@ -921,7 +1053,6 @@
       <button class="mm-item" type="button" data-mm="btn-review">🧠 복습 — 오늘 볼 카드·전체·내역</button>
       <button class="mm-item" type="button" data-mm="btn-memo">📝 개발 메모</button>
       <button class="mm-item" type="button" data-mm="btn-settings">⚙️ 설정 (API 키 · 모델)</button>
-      <a class="mm-item" href="index.html">🏠 웹서퍼(단어 사전)로</a>
     </div>
   </div>
 
@@ -983,7 +1114,7 @@
   <h2>⚙️ 설정</h2>
   <label>Claude API 키</label>
   <input type="password" id="set-key" placeholder="sk-ant-..." autocomplete="off">
-  <div class="hint">키는 <b>이 브라우저에만</b> 저장되고, Anthropic API 호출에만 쓰입니다. 어디에도 전송·업로드되지 않습니다. 키 발급: console.anthropic.com → API Keys · 키 대신 <b>계정 코드</b>를 받았다면 아래 👥 계정에 넣으세요(키 없이도 돼요).</div>
+  <div class="hint">키는 <b>이 브라우저에만</b> 저장되고, Anthropic API 호출에만 쓰입니다. 어디에도 전송·업로드되지 않습니다. 키 발급: console.anthropic.com → API Keys · 키가 없어도 아래 <b>👥 계정</b>에 로그인하면 계정으로 AI를 쓸 수 있어요(서버에 키가 있을 때).</div>
   <label>모델</label>
   <select id="set-model">
     <option value="claude-opus-4-8">Claude Opus 4.8 — 기본 (깊이 최상)</option>
@@ -1004,20 +1135,27 @@
     <button type="button" id="move-save-file">파일로 저장</button>
     <button type="button" class="primary" id="move-import">가져오기</button>
   </div>
-  <label style="margin-top:14px">👥 계정 — PC·폰 이어 쓰기, 다른 사람과 함께 쓰기 (선택)</label><!-- v2.57: v2.45 자동 동기화(주소+암호)를 계정 코드로 대체 -->
-  <div class="hint">계정 코드를 넣으면 학습 기록·대화·설정이 <b>계정에 저장</b>되고, 같은 코드를 넣은 다른 기기(PC·폰)에서 그대로 이어져요. API 키가 없는 기기는 <b>계정으로 AI를 써요</b>(서버가 대신 호출 — 키는 서버에만 있어요). <b>API 키·계정 코드·관리 암호는 다른 기기로 전송되지 않아요.</b> 서버 만들기는 프로젝트 <b>sync 폴더의 안내</b> 참조. 코드 칸을 비우고 저장하면 연결이 꺼져요(기록은 이 기기에 남아요).</div>
-  <input type="text" id="sync-url" placeholder="서버 주소 — https://pado-sync-….workers.dev" autocomplete="off">
-  <input type="text" id="acct-code" placeholder="계정 코드 — pado-xxxxx-xxxxx-xxxxx-xxxxx (발급받은 코드)" autocomplete="off" style="margin-top:6px">
-  <div class="hint" id="acct-status"></div>
-  <details id="acct-admin">
-    <summary>🔑 계정 발급 — 서버 주인용</summary>
-    <div class="hint">서버를 만든 사람만 써요. 관리 암호(ADMIN_SECRET)는 이 브라우저에만 저장돼요. 발급한 계정은 <b>빈 기록으로 시작</b>하고, 이번 달 AI 사용 한도(기본 $10)를 넘으면 서버가 막아요.</div>
-    <input type="password" id="admin-secret" placeholder="관리 암호 (서버 만들 때 정한 ADMIN_SECRET)" autocomplete="off">
-    <div class="row" style="justify-content:flex-start;flex-wrap:wrap;margin-top:6px">
-      <input type="text" id="acct-new-name" placeholder="새 계정 이름 (예: 민수)" autocomplete="off" style="flex:1;min-width:140px;width:auto">
-      <button type="button" id="acct-issue">계정 발급</button>
-      <button type="button" id="acct-list">계정 목록</button>
+  <label style="margin-top:14px">👥 계정 — 아이디·비밀번호로 PC·폰 이어 쓰기, 함께 쓰기 (선택)</label><!-- v2.58: 계정 코드 → 아이디·비밀번호 회원가입/로그인 (사용자: "아이디랑 비밀번호를 입력해서 생성한 뒤 같은 도메인으로 접속") -->
+  <div class="hint" id="acct-hint">가입하면 학습 기록·대화·설정이 <b>계정에 저장</b>되고, 어느 기기에서든 같은 아이디로 로그인하면 그대로 이어져요. API 키가 없어도 <b>계정으로 AI를 쓸 수 있어요</b>(서버에 키가 있을 때). <b>비밀번호·API 키는 다른 기기로 전송되지 않아요.</b> 새 계정은 빈 기록으로 시작해요.</div>
+  <div id="acct-status" class="acct-status"></div>
+  <div id="acct-auth">
+    <div class="acct-row">
+      <input type="text" id="acct-id" placeholder="아이디 (영문 소문자·숫자 3~20자)" autocomplete="username" autocapitalize="off" spellcheck="false">
+      <input type="password" id="acct-pw" placeholder="비밀번호 (6자 이상)" autocomplete="current-password">
     </div>
+    <input type="text" id="acct-signup-code" placeholder="가입 코드 (서버 주인에게 받은 코드)" autocomplete="off" hidden>
+    <div class="row acct-btns"><button type="button" class="primary" id="acct-login">로그인</button><button type="button" id="acct-signup">회원가입</button></div>
+    <div class="hint" id="acct-server-note"></div>
+  </div>
+  <div id="acct-session" hidden>
+    <div class="row acct-btns"><button type="button" id="acct-logout">로그아웃</button><button type="button" id="acct-pwchange">비밀번호 바꾸기</button></div>
+  </div>
+  <details id="acct-admin">
+    <summary>🔧 서버 주인용 — 서버 주소·사용자 목록</summary>
+    <div class="hint">서버를 만든 사람만 써요(<b>sync 폴더의 안내</b> 15분). 서버 주소는 배포 스크립트가 앱에 심어 주지만 여기서 직접 넣어 바꿀 수도 있어요. 관리 암호(ADMIN_SECRET)는 이 브라우저에만 저장돼요.</div>
+    <input type="text" id="sync-url" placeholder="서버 주소 — https://pado-sync-….workers.dev (비우면 앱에 심긴 주소)" autocomplete="off">
+    <input type="password" id="admin-secret" placeholder="관리 암호 (서버 만들 때 정한 ADMIN_SECRET)" autocomplete="off" style="margin-top:6px">
+    <div class="row" style="justify-content:flex-start;margin-top:6px"><button type="button" id="acct-list">사용자 목록</button></div>
     <div id="acct-admin-out"></div>
   </details>
   <div class="row">
@@ -1127,108 +1265,508 @@ function mdRender(src){
 
 /* ── 단어 데이터 (websurfer 철학 — 뜻이 아니라 느낌으로) ── */
 const WORDS = [
-  { base:"the", ko:'"너도 알지?" 신호', metaphor:'👉 "너도 알지?" 신호', desc:'the는 "그"가 아니다. 말하는 사람과 듣는 사람이 같은 것을 떠올릴 수 있을 때 붙이는 신호다. "우리 둘 다 아는 바로 그것" — 이 느낌이 잡히면 관사의 절반이 끝난다.', tagline:'우리 둘 다 아는 바로 그것', main:{ en:"Pass me the salt.", ko:"(식탁 위, 우리 둘 다 보이는) 소금 좀 건네줘." } },
-  { base:"be", ko:"등호(＝)", metaphor:"＝ 등호", desc:'be는 "이다"가 아니라 등호다. A be B = A와 B를 같다고 잇는 다리. am/is/are/was/were 전부 이 등호의 변형일 뿐이다.', tagline:"A ＝ B로 잇는 다리", main:{ en:"She is a doctor.", ko:"그녀 ＝ 의사." } },
-  { base:"on", ko:"표면에 닿아 있다", metaphor:"🤚 표면 접촉", desc:'on은 "위에"가 아니다. 표면에 닿아 있으면 전부 on이다 — 천장에 붙은 파리도 on the ceiling, 벽의 그림도 on the wall. "접촉"이 핵심.', tagline:"닿아 있으면 전부 on", main:{ en:"The picture is on the wall.", ko:"그림이 벽에 (닿아) 붙어 있다." } },
-  { base:"and", ko:"잇는 다리 (순서·결과까지)", metaphor:"🌉 잇는 다리", desc:'and는 "그리고"만이 아니다. 잇는 다리라서 순서(가서 사와=go and buy)도, 결과(그러면=and)도 나른다.', tagline:"단어·행동·결과를 잇는 다리", main:{ en:"Go and get some rest.", ko:"가서 (그리고) 좀 쉬어." } },
-  { base:"a", ko:"(아무거나) 하나 — 소리 기준 an", metaphor:"☝️ 하나, 아무거나", desc:'a는 "특정하지 않은 하나"의 신호다. 조건에 맞으면 아무거나 한 개. an은 a의 형제 — 다음 단어의 첫 "소리"가 모음이면 an (an hour: h가 묵음이라 아워 → an).', tagline:"조건에 맞는 아무거나 하나", main:{ en:"We need a reliable person.", ko:"우리는 (조건에 맞는 아무나) 믿을 만한 사람 하나가 필요하다." } },
-  { base:"need", ko:"없으면 안 되는 필요", metaphor:"🚨 없으면 곤란", desc:'want가 "있으면 좋겠다(욕구)"라면 need는 "없으면 곤란하다(필수)". 그래서 I need는 강하고 단도직입적이다 — 부탁할 땐 I\'d like로 부드럽게.', tagline:"want보다 무거운 필수", main:{ en:"We need a reliable person.", ko:"우리는 믿을 만한 사람이 (꼭) 필요하다." } },
-  { base:"reliable", ko:"닻 — 흔들려도 그 자리", metaphor:"⚓ 닻(anchor)", desc:'rely(의지하다) + able(~할 수 있는) = 의지해도 되는. 배가 흔들려도 그 자리에 박혀 있는 닻의 느낌. 상황이 요동쳐도 변하지 않고 있어 준다는 안정감.', tagline:"맡기면 해내는, 기대도 되는", main:{ en:"We need a reliable person.", ko:"우리는 믿을 만한 사람이 필요하다." } },
-  { base:"person", ko:"셀 수 있는 사람 한 명", metaphor:"🧍 한 명", desc:'개인 "한 명"을 또렷이 셀 때 person. 복수는 persons가 아니라 people — "two people"이 자연스럽다. persons는 법률·공지문에서만.', tagline:"복수는 people", main:{ en:"We need a reliable person.", ko:"우리는 믿을 만한 사람 한 명이 필요하다." } },
-  { base:"of", ko:"소속·뿌리 — 행위의 주인", metaphor:"🔗 소속의 고리", desc:'of는 "~의"를 넘어 소속·출처의 고리다. kind of you에서 of you는 소유가 아니라 "친절한 행동의 주인이 너"라는 뜻 — 방향이 to you(받는 사람)와 정반대.', tagline:"kind of you = 친절의 주인은 너", main:{ en:"That was so kind of you.", ko:"그건 정말 친절했어 — 너로서(네가 그런 사람)." } },
-  { base:"way", ko:"길 — 일부러 벗어나면 성의", metaphor:"🛤 나의 길", desc:'way는 물리적 길이자 "방식". go out of one\'s way = 자기 길(동선·수고)을 일부러 벗어나다 → "굳이 그렇게까지 해 주다"라는 관용 표현이 된다.', tagline:"out of one's way = 굳이 그렇게까지", main:{ en:"You really went out of your way.", ko:"너 정말 굳이 그렇게까지 해 줬어." } },
-  { base:"could", ko:"can의 부드러운 그림자", metaphor:"🕊 정중의 그림자", desc:'could는 can의 과거형이지만, 부탁에서는 "시제"가 아니라 "거리"다. 한 발 물러선 거리감이 정중함이 된다. Can → Could → Could ... please 순으로 부드러워진다.', tagline:"물러선 만큼 정중해진다", main:{ en:"Could you please tell me about this?", ko:"이것에 대해 (부디) 말해 줄 수 있나요?" } },
-  { base:"tell", ko:"내용을 '전달'하는 말하기", metaphor:"📨 건네주는 말", desc:'say가 "말을 내뱉다"라면 tell은 "누구에게 내용을 건네다". 그래서 tell은 받는 사람이 바로 뒤에 온다 — tell me, tell her. say me는 틀리고 tell me가 맞는 이유.', tagline:"tell + 사람 (받는 이가 먼저)", main:{ en:"Could you please tell me about this?", ko:"이것에 대해 나에게 말해 줄 수 있나요?" } }
+  { base:"the", pos:["관사"], ko:'"너도 알지?" 신호', metaphor:'👉 "너도 알지?" 신호', desc:'the는 "그"가 아니다. 말하는 사람과 듣는 사람이 같은 것을 떠올릴 수 있을 때 붙이는 신호다. "우리 둘 다 아는 바로 그것" — 이 느낌이 잡히면 관사의 절반이 끝난다.', tagline:'우리 둘 다 아는 바로 그것', main:{ en:"Pass me the salt.", ko:"(식탁 위, 우리 둘 다 보이는) 소금 좀 건네줘." } },
+  { base:"be", pos:["동사"], ko:"등호(＝)", metaphor:"＝ 등호", desc:'be는 "이다"가 아니라 등호다. A be B = A와 B를 같다고 잇는 다리. am/is/are/was/were 전부 이 등호의 변형일 뿐이다.', tagline:"A ＝ B로 잇는 다리", main:{ en:"She is a doctor.", ko:"그녀 ＝ 의사." } },
+  { base:"on", pos:["전치사", "부사"], ko:"표면에 닿아 있다", metaphor:"🤚 표면 접촉", desc:'on은 "위에"가 아니다. 표면에 닿아 있으면 전부 on이다 — 천장에 붙은 파리도 on the ceiling, 벽의 그림도 on the wall. "접촉"이 핵심.', tagline:"닿아 있으면 전부 on", main:{ en:"The picture is on the wall.", ko:"그림이 벽에 (닿아) 붙어 있다." } },
+  { base:"and", pos:["접속사"], ko:"잇는 다리 (순서·결과까지)", metaphor:"🌉 잇는 다리", desc:'and는 "그리고"만이 아니다. 잇는 다리라서 순서(가서 사와=go and buy)도, 결과(그러면=and)도 나른다.', tagline:"단어·행동·결과를 잇는 다리", main:{ en:"Go and get some rest.", ko:"가서 (그리고) 좀 쉬어." } },
+  { base:"a", pos:["관사"], ko:"(아무거나) 하나 — 소리 기준 an", metaphor:"☝️ 하나, 아무거나", desc:'a는 "특정하지 않은 하나"의 신호다. 조건에 맞으면 아무거나 한 개. an은 a의 형제 — 다음 단어의 첫 "소리"가 모음이면 an (an hour: h가 묵음이라 아워 → an).', tagline:"조건에 맞는 아무거나 하나", main:{ en:"We need a reliable person.", ko:"우리는 (조건에 맞는 아무나) 믿을 만한 사람 하나가 필요하다." } },
+  { base:"need", pos:["동사", "명사"], ko:"없으면 안 되는 필요", metaphor:"🚨 없으면 곤란", desc:'want가 "있으면 좋겠다(욕구)"라면 need는 "없으면 곤란하다(필수)". 그래서 I need는 강하고 단도직입적이다 — 부탁할 땐 I\'d like로 부드럽게.', tagline:"want보다 무거운 필수", main:{ en:"We need a reliable person.", ko:"우리는 믿을 만한 사람이 (꼭) 필요하다." } },
+  { base:"reliable", pos:["형용사"], ko:"닻 — 흔들려도 그 자리", metaphor:"⚓ 닻(anchor)", desc:'rely(의지하다) + able(~할 수 있는) = 의지해도 되는. 배가 흔들려도 그 자리에 박혀 있는 닻의 느낌. 상황이 요동쳐도 변하지 않고 있어 준다는 안정감.', tagline:"맡기면 해내는, 기대도 되는", main:{ en:"We need a reliable person.", ko:"우리는 믿을 만한 사람이 필요하다." } },
+  { base:"person", pos:["명사"], ko:"셀 수 있는 사람 한 명", metaphor:"🧍 한 명", desc:'개인 "한 명"을 또렷이 셀 때 person. 복수는 persons가 아니라 people — "two people"이 자연스럽다. persons는 법률·공지문에서만.', tagline:"복수는 people", main:{ en:"We need a reliable person.", ko:"우리는 믿을 만한 사람 한 명이 필요하다." } },
+  { base:"of", pos:["전치사"], ko:"소속·뿌리 — 행위의 주인", metaphor:"🔗 소속의 고리", desc:'of는 "~의"를 넘어 소속·출처의 고리다. kind of you에서 of you는 소유가 아니라 "친절한 행동의 주인이 너"라는 뜻 — 방향이 to you(받는 사람)와 정반대.', tagline:"kind of you = 친절의 주인은 너", main:{ en:"That was so kind of you.", ko:"그건 정말 친절했어 — 너로서(네가 그런 사람)." } },
+  { base:"way", pos:["명사"], ko:"길 — 일부러 벗어나면 성의", metaphor:"🛤 나의 길", desc:'way는 물리적 길이자 "방식". go out of one\'s way = 자기 길(동선·수고)을 일부러 벗어나다 → "굳이 그렇게까지 해 주다"라는 관용 표현이 된다.', tagline:"out of one's way = 굳이 그렇게까지", main:{ en:"You really went out of your way.", ko:"너 정말 굳이 그렇게까지 해 줬어." } },
+  { base:"could", pos:["조동사"], ko:"can의 부드러운 그림자", metaphor:"🕊 정중의 그림자", desc:'could는 can의 과거형이지만, 부탁에서는 "시제"가 아니라 "거리"다. 한 발 물러선 거리감이 정중함이 된다. Can → Could → Could ... please 순으로 부드러워진다.', tagline:"물러선 만큼 정중해진다", main:{ en:"Could you please tell me about this?", ko:"이것에 대해 (부디) 말해 줄 수 있나요?" } },
+  { base:"tell", pos:["동사"], ko:"내용을 '전달'하는 말하기", metaphor:"📨 건네주는 말", desc:'say가 "말을 내뱉다"라면 tell은 "누구에게 내용을 건네다". 그래서 tell은 받는 사람이 바로 뒤에 온다 — tell me, tell her. say me는 틀리고 tell me가 맞는 이유.', tagline:"tell + 사람 (받는 이가 먼저)", main:{ en:"Could you please tell me about this?", ko:"이것에 대해 나에게 말해 줄 수 있나요?" } }
 ,
-  {"base":"that","ko":"멀리 가리키는 손가락","metaphor":"👉 먼 곳 가리키기","desc":"that의 뿌리는 \"저것\" — 나에게서 떨어진 것을 가리키는 손가락이다. 방금 상대가 한 말·행동도 이미 내 손을 떠난 것이라 that으로 가리킨다. 이 가리키기가 발전해 문장 전체를 가리켜 잇는 손잡이(I think that ...)가 됐다.","tagline":"멀면 that, 가까우면 this — 문장도 가리킨다","main":{"en":"That was so kind of you.","ko":"그건(방금 네가 한 일) 정말 친절했어."}},
-  {"base":"so","ko":"\"그 정도로\" — 정도를 가리키는 손","metaphor":"📏 그만큼!","desc":"so는 \"매우\"가 아니라 \"그 정도로\"다. 손으로 크기를 보여 주듯 정도를 가리킨다 — so kind = (네가 방금 한 일) 그만큼 친절한. 그리고 \"그 정도니까 → 그래서\"로 결과를 잇는 다리도 된다.","tagline":"그만큼! — 정도 강조와 \"그래서\"가 한 뿌리","main":{"en":"That was so kind of you.","ko":"그건 정말(그 정도로) 친절했어."}},
-  {"base":"kind","ko":"가족처럼 대하는 따뜻함 + 종류","metaphor":"🤲 내 편의 온도","desc":"kind는 \"친절한\"이라는 매너보다 깊다 — 어원이 kin(핏줄·가족)이라 \"가족처럼 대해 주는\" 따뜻함이다. 같은 뿌리에서 \"같은 무리 = 종류(a kind of)\"라는 두 번째 얼굴이 나온다.","tagline":"kin(핏줄)에서 나온 두 얼굴 — 다정함과 종류","main":{"en":"That was so kind of you.","ko":"그건 정말 친절했어 — 너 참 다정하다."}},
-  {"base":"you","ko":"너·당신·여러분 — 전부 하나","metaphor":"👥 벽 없는 부름","desc":"영어의 you는 반말 \"너\"도 존댓말 \"당신\"도, 한 명도 여럿도 전부 하나다. 높임의 벽이 없어서 누구에게나 같은 거리로 말을 건다. 한국어에서 호칭 고르느라 애먹는 문제가 영어엔 아예 없다.","tagline":"단수·복수·존댓말이 전부 you 하나","main":{"en":"That was so kind of you.","ko":"그건 정말 친절했어 — 너로서(네가 그런 사람)."}},
-  {"base":"out","ko":"안→밖으로 벗어남","metaphor":"📤 경계 넘어 밖으로","desc":"out은 \"밖\"이라는 장소가 아니라 \"안에서 밖으로 벗어나는 움직임\"이다. 방을 나가도(go out), 불이 꺼져도(the fire is out — 타던 상태에서 벗어남), 종이가 다 떨어져도(out of paper) 전부 out.","tagline":"경계를 넘어 벗어나면 전부 out","main":{"en":"You really went out of your way.","ko":"너 정말 네 길을 벗어나면서까지(굳이) 해 줬어."}},
-  {"base":"really","ko":"real(진짜) + ly = 진짜로","metaphor":"✅ 진짜 도장","desc":"really는 그냥 강조가 아니라 real(진짜)에서 온 \"진짜로\"다. Really?라고 되물을 때 우리는 사실인지 확인하는 것 — 진짜라는 도장을 찍는 단어다.","tagline":"real에서 온 말 — 사실임을 확인하는 강조","main":{"en":"You really went out of your way.","ko":"너 정말(진짜로) 굳이 그렇게까지 해 줬어."}},
-  {"base":"go","ko":"여기서 멀어지는 움직임","metaphor":"🚶 멀어지는 화살표","desc":"go는 \"가다\"보다 \"여기서 멀어진다\"가 정확하다. 기준점은 말하는 사람 — 나에게서 멀어지면 go, 나(또는 상대)에게 다가가면 come. 그래서 전화로 \"지금 갈게!\"는 I'm coming이지 I'm going이 아니다.","tagline":"멀어지면 go, 다가가면 come","main":{"en":"Go and get some rest.","ko":"가서 (그리고) 좀 쉬어."}},
-  {"base":"about","ko":"둘레를 빙 돌기 — ~에 관해·대략","metaphor":"🔄 주위를 빙 두르기","desc":"about의 뿌리는 \"바깥 둘레에\"다. 어떤 주제의 둘레를 도는 게 talk about(~에 관해 이야기하다), 숫자의 둘레를 도는 게 about ten(대략 열). 정중앙을 찍는 게 아니라 그 언저리를 도는 느낌.","tagline":"주제의 둘레면 '~에 관해', 숫자의 둘레면 '대략'","main":{"en":"Could you please tell me about this?","ko":"이것에 대해 나에게 말해 줄 수 있나요?"}},
+  {"base":"that", pos:["한정사", "접속사"],"ko":"멀리 가리키는 손가락","metaphor":"👉 먼 곳 가리키기","desc":"that의 뿌리는 \"저것\" — 나에게서 떨어진 것을 가리키는 손가락이다. 방금 상대가 한 말·행동도 이미 내 손을 떠난 것이라 that으로 가리킨다. 이 가리키기가 발전해 문장 전체를 가리켜 잇는 손잡이(I think that ...)가 됐다.","tagline":"멀면 that, 가까우면 this — 문장도 가리킨다","main":{"en":"That was so kind of you.","ko":"그건(방금 네가 한 일) 정말 친절했어."}},
+  {"base":"so", pos:["부사", "접속사"],"ko":"\"그 정도로\" — 정도를 가리키는 손","metaphor":"📏 그만큼!","desc":"so는 \"매우\"가 아니라 \"그 정도로\"다. 손으로 크기를 보여 주듯 정도를 가리킨다 — so kind = (네가 방금 한 일) 그만큼 친절한. 그리고 \"그 정도니까 → 그래서\"로 결과를 잇는 다리도 된다.","tagline":"그만큼! — 정도 강조와 \"그래서\"가 한 뿌리","main":{"en":"That was so kind of you.","ko":"그건 정말(그 정도로) 친절했어."}},
+  {"base":"kind", pos:["명사", "형용사"],"ko":"가족처럼 대하는 따뜻함 + 종류","metaphor":"🤲 내 편의 온도","desc":"kind는 \"친절한\"이라는 매너보다 깊다 — 어원이 kin(핏줄·가족)이라 \"가족처럼 대해 주는\" 따뜻함이다. 같은 뿌리에서 \"같은 무리 = 종류(a kind of)\"라는 두 번째 얼굴이 나온다.","tagline":"kin(핏줄)에서 나온 두 얼굴 — 다정함과 종류","main":{"en":"That was so kind of you.","ko":"그건 정말 친절했어 — 너 참 다정하다."}},
+  {"base":"you", pos:["대명사"],"ko":"너·당신·여러분 — 전부 하나","metaphor":"👥 벽 없는 부름","desc":"영어의 you는 반말 \"너\"도 존댓말 \"당신\"도, 한 명도 여럿도 전부 하나다. 높임의 벽이 없어서 누구에게나 같은 거리로 말을 건다. 한국어에서 호칭 고르느라 애먹는 문제가 영어엔 아예 없다.","tagline":"단수·복수·존댓말이 전부 you 하나","main":{"en":"That was so kind of you.","ko":"그건 정말 친절했어 — 너로서(네가 그런 사람)."}},
+  {"base":"out", pos:["부사", "전치사"],"ko":"안→밖으로 벗어남","metaphor":"📤 경계 넘어 밖으로","desc":"out은 \"밖\"이라는 장소가 아니라 \"안에서 밖으로 벗어나는 움직임\"이다. 방을 나가도(go out), 불이 꺼져도(the fire is out — 타던 상태에서 벗어남), 종이가 다 떨어져도(out of paper) 전부 out.","tagline":"경계를 넘어 벗어나면 전부 out","main":{"en":"You really went out of your way.","ko":"너 정말 네 길을 벗어나면서까지(굳이) 해 줬어."}},
+  {"base":"really", pos:["부사"],"ko":"real(진짜) + ly = 진짜로","metaphor":"✅ 진짜 도장","desc":"really는 그냥 강조가 아니라 real(진짜)에서 온 \"진짜로\"다. Really?라고 되물을 때 우리는 사실인지 확인하는 것 — 진짜라는 도장을 찍는 단어다.","tagline":"real에서 온 말 — 사실임을 확인하는 강조","main":{"en":"You really went out of your way.","ko":"너 정말(진짜로) 굳이 그렇게까지 해 줬어."}},
+  {"base":"go", pos:["동사"],"ko":"여기서 멀어지는 움직임","metaphor":"🚶 멀어지는 화살표","desc":"go는 \"가다\"보다 \"여기서 멀어진다\"가 정확하다. 기준점은 말하는 사람 — 나에게서 멀어지면 go, 나(또는 상대)에게 다가가면 come. 그래서 전화로 \"지금 갈게!\"는 I'm coming이지 I'm going이 아니다.","tagline":"멀어지면 go, 다가가면 come","main":{"en":"Go and get some rest.","ko":"가서 (그리고) 좀 쉬어."}},
+  {"base":"about", pos:["전치사", "부사"],"ko":"둘레를 빙 돌기 — ~에 관해·대략","metaphor":"🔄 주위를 빙 두르기","desc":"about의 뿌리는 \"바깥 둘레에\"다. 어떤 주제의 둘레를 도는 게 talk about(~에 관해 이야기하다), 숫자의 둘레를 도는 게 about ten(대략 열). 정중앙을 찍는 게 아니라 그 언저리를 도는 느낌.","tagline":"주제의 둘레면 '~에 관해', 숫자의 둘레면 '대략'","main":{"en":"Could you please tell me about this?","ko":"이것에 대해 나에게 말해 줄 수 있나요?"}},
   /* ── v2.42: 필수 80단어 확장 (20 → 100) — 대명사5·조동사7·동사20·전치사13·접속6·의문사5·부사7·명사10·형용사7 ── */
-  {"base":"I","ko":"언제나 대문자인 나","metaphor":"🙋 항상 대문자","desc":"영어의 I는 문장 어디에 있어도 대문자다. 한국어처럼 \"저/나\"의 높임 구분이 없어서 대통령 앞에서도 친구 앞에서도 같은 I를 쓴다 — 낮출 필요도 높일 필요도 없는 나.","tagline":"누구 앞에서든 같은 나","main":{"en":"I think you're right.","ko":"네 말이 맞는 것 같아."}},
-  {"base":"it","ko":"이미 아는 그것 + 자리 채우기","metaphor":"📦 자리를 채우는 상자","desc":"it은 \"그것\"을 넘어 자리 채우기 선수다. 날씨(It's raining)·시간(It's 3 o'clock)처럼 마땅한 주어가 없을 때 빈자리를 채운다. 한국어는 주어를 비우지만 영어는 it으로 채운다.","tagline":"주어 자리가 비면 it이 들어간다","main":{"en":"It's raining outside.","ko":"밖에 비가 와요."}},
-  {"base":"this","ko":"가까이 가리키는 손가락","metaphor":"👇 가까운 것 가리키기","desc":"this는 내 손이 닿는 것을 가리킨다. that(먼 것)의 짝 — 지금 벌어지는 일, 지금 하려는 말도 아직 내 손안에 있어서 this로 가리킨다.","tagline":"가까우면 this, 멀면 that","main":{"en":"This is my favorite song.","ko":"이건 내가 제일 좋아하는 노래야."}},
-  {"base":"we","ko":"나를 포함한 진짜 우리","metaphor":"🤝 나 + 너(그들)","desc":"영어 we는 반드시 \"나\"를 포함한 여럿이다. 한국어는 혼자여도 \"우리 엄마·우리 집\"이라 하지만 영어에선 my mom, my house — 정말 여럿일 때만 we/our를 쓴다.","tagline":"혼자면 my, 여럿이어야 we","main":{"en":"We need more time.","ko":"우리는 시간이 더 필요해요."}},
-  {"base":"they","ko":"복수는 전부 they — 사물도","metaphor":"👥 저쪽의 여럿","desc":"they는 사람 \"그들\"만이 아니라 사물 복수(the books → they)도 받는다. 성별을 모르는 한 명(Someone left their bag)을 they로 받는 것도 요즘 표준.","tagline":"사람·사물·모르는 한 명까지 they","main":{"en":"They are waiting for us.","ko":"그들이 우리를 기다리고 있어요."}},
-  {"base":"do","ko":"행동의 대표 + 문장의 시동키","metaphor":"🔑 시동을 거는 열쇠","desc":"do는 \"하다\"이자 의문문·부정문의 시동키다. Do you...? / I don't...의 do는 뜻 없이 문장을 굴리는 엔진 — 일반동사는 be처럼 스스로 뒤집지 못해서 do가 대신 나선다.","tagline":"의문·부정엔 do가 시동을 건다","main":{"en":"Do you like coffee?","ko":"커피 좋아해요?"}},
-  {"base":"will","ko":"지금 정한 의지","metaphor":"⚡ 지금 켜는 스위치","desc":"will은 \"미래\"보다 \"의지\"다. 말하는 순간 마음을 정했으면 I'll do it. 미리 잡아 둔 계획은 be going to — will은 그 자리에서 켜는 스위치다.","tagline":"지금 결심 = will, 이미 계획 = be going to","main":{"en":"I'll call you tonight.","ko":"오늘 밤에 전화할게."}},
-  {"base":"would","ko":"will의 한 발 물러선 그림자","metaphor":"🌫 부드러운 가정","desc":"would는 will이 한 발 물러선 것 — \"그렇다면 ~할 텐데\"라는 가정의 거리다. 이 거리감이 정중함이 된다. I would like = 원하는 마음을 한 발 물러서 건네기.","tagline":"물러선 만큼 부드러워진다","main":{"en":"I would like some water.","ko":"물을 좀 마시고 싶어요."}},
-  {"base":"can","ko":"가능의 문이 열려 있다","metaphor":"🚪 열려 있는 문","desc":"can은 \"할 수 있다(능력)\"만이 아니다. 능력(I can swim)·허락(You can go)·가능성(It can happen) — 전부 \"문이 열려 있다\"는 하나의 그림으로 통한다.","tagline":"능력·허락·가능 — 전부 열린 문","main":{"en":"You can sit here.","ko":"여기 앉아도 돼요."}},
-  {"base":"should","ko":"하는 게 좋다 — 권유의 나침반","metaphor":"🧭 권하는 나침반","desc":"should는 \"해야 한다\"보다 약한 \"하는 게 좋겠다\"다. must(다른 길 없음)·have to(사정상 필수)보다 부드러운 권유 — 조언할 때 should를 쓰는 이유다.","tagline":"must(강제) 〉 have to(필수) 〉 should(권유)","main":{"en":"You should get some rest.","ko":"좀 쉬는 게 좋겠어요."}},
-  {"base":"must","ko":"다른 길이 없다","metaphor":"🧱 벽 — 다른 길 없음","desc":"must는 빠져나갈 길이 없는 벽이다. 의무(반드시 해야 한다)에도, 강한 확신(He must be tired — 분명 피곤할 거야, 다른 가능성이 없다)에도 같은 벽이 선다.","tagline":"의무도 확신도 \"다른 가능성 없음\"","main":{"en":"You must wear a seatbelt.","ko":"안전벨트를 반드시 매야 해요."}},
-  {"base":"may","ko":"반쯤 열린 문","metaphor":"🌤 반쯤 열린 문","desc":"may는 can보다 조심스러운 \"그럴 수도 있다\"다. 허락을 구할 땐 가장 격식 있는 문(May I...?), 추측일 땐 반반의 가능성(It may rain).","tagline":"허락의 최고 격식 + 반반의 추측","main":{"en":"May I come in?","ko":"들어가도 될까요?"}},
-  {"base":"have","ko":"내 영역 안에 있다","metaphor":"🎒 내 가방 안","desc":"have는 \"가지다\"보다 \"내 영역 안에 있다\"다. 물건도, 시간도(have time), 식사도(have lunch — 식사가 내 앞에 놓인 시간), 경험도 전부 내 영역 안에 든다.","tagline":"소유·시간·식사·경험 — 전부 내 안에","main":{"en":"I have two tickets.","ko":"나 표 두 장 있어."}},
-  {"base":"get","ko":"없던 것이 손에 들어옴","metaphor":"🧲 손에 들어오는 순간","desc":"get의 핵심은 \"움직여서 손에 들어오는 순간\"이다. 물건을 얻고(get a gift), 상태가 내게 오고(get tired — 피곤함이 옴), 장소에 닿는다(get home).","tagline":"물건·상태·장소 — 도착의 순간","main":{"en":"I got your message.","ko":"네 메시지 받았어."}},
-  {"base":"make","ko":"없던 것을 빚어냄","metaphor":"🏺 빚어 만들기","desc":"make는 없던 것을 내 손에서 빚어내는 것이다. 요리도, 결정도(make a decision), 실수도(make a mistake) 새로 태어난다. do와 짝: do는 하고, make는 만든다.","tagline":"do는 하고, make는 만든다","main":{"en":"She made a big decision.","ko":"그녀는 큰 결정을 내렸어요."}},
-  {"base":"take","ko":"내 쪽으로 집어 가짐","metaphor":"✊ 집어서 가져가기","desc":"take는 손을 뻗어 내 쪽으로 집는 것이다. 물건을 집고, 버스를 잡아타고(take a bus), 시간을 집어 쓴다(It takes 10 minutes). give(건네기)의 반대 방향.","tagline":"give가 건네면 take는 집는다","main":{"en":"It takes ten minutes.","ko":"10분 걸려요."}},
-  {"base":"give","ko":"내 손에서 상대 손으로","metaphor":"🎁 건네는 손","desc":"give는 내 것이 상대 손으로 넘어가는 움직임이다. 물건뿐 아니라 기회(give a chance)·전화(give a call)·시간까지 — 건넬 수 있는 건 전부 give로 건넨다.","tagline":"물건·기회·전화 — 건네면 다 give","main":{"en":"Give me a second.","ko":"잠깐만 (시간을 줘)."}},
-  {"base":"come","ko":"대화의 자리로 다가옴","metaphor":"🧲 나에게 오는 화살표","desc":"come은 \"오다\"가 아니라 \"말하는 사람(또는 듣는 사람) 쪽으로 움직인다\"다. 상대에게 갈 때도 I'm coming!이라 하는 이유 — 기준이 \"우리 대화의 자리\"라서다.","tagline":"go(멀어짐) ↔ come(다가옴)","main":{"en":"I'm coming!","ko":"지금 가! (너에게 가는 중)"}},
-  {"base":"know","ko":"이미 안에 들어와 있는 앎","metaphor":"💡 이미 켜져 있는 불","desc":"know는 배우는 중이 아니라 이미 안에 있는 앎이다. 그래서 진행형을 쓰지 않는다(I'm knowing ✗). 사람을 know하면 \"아는 사이\"까지 포함한다.","tagline":"이미 아는 상태 — 진행형 없음","main":{"en":"I know how you feel.","ko":"네 기분이 어떤지 알아."}},
-  {"base":"think","ko":"머릿속에서 굴리는 중","metaphor":"🌀 머릿속 회전","desc":"think는 결론이 아니라 머릿속에서 굴리는 과정이다. I think = \"굴려 보니 이런 것 같다\"라는 부드러운 의견 — 한국어 \"~인 것 같아\"가 앉는 자리다.","tagline":"단정 대신 I think로 한 겹 감싼다","main":{"en":"I think it's a good idea.","ko":"좋은 생각인 것 같아."}},
-  {"base":"see","ko":"눈에 들어오다 → 이해하다","metaphor":"👁 눈에 들어옴","desc":"see는 노력 없이 눈에 들어오는 것이다(look은 일부러 보기). 그래서 \"이해\"로 자란다 — I see = \"그림이 눈에 들어왔다 = 알겠다\".","tagline":"보이면 see, 들여다보면 look","main":{"en":"I see what you mean.","ko":"무슨 말인지 알겠어."}},
-  {"base":"want","ko":"없어서 당기는 마음","metaphor":"🧲 끌어당기는 마음","desc":"want의 뿌리는 \"부족\"이다. 없으니 당긴다 — 그래서 직설적이고 힘이 세다. 부탁·주문에서는 would like로 한 발 물러서는 게 부드럽다.","tagline":"want(직진) ↔ would like(정중)","main":{"en":"I want to learn English.","ko":"나는 영어를 배우고 싶어."}},
-  {"base":"like","ko":"마음이 기울다 + 닮다","metaphor":"💗 기울고 닮음","desc":"like는 두 얼굴이다. 마음이 그쪽으로 기울면 \"좋아하다\", 모양이 그쪽으로 기울면 \"~같은\"(like a bird). 둘 다 \"그쪽으로 기울기\"라는 한 결이다.","tagline":"좋아함도 닮음도 \"기울기\"","main":{"en":"It looks like rain.","ko":"비가 올 것처럼 보여요."}},
-  {"base":"use","ko":"도구를 손에 쥐고 굴리기","metaphor":"🔧 손에 쥔 도구","desc":"use는 무언가를 도구 삼아 굴리는 것이다. 물건도, 시간도, 말도 도구가 된다. used to(예전엔 ~하곤 했다)는 \"예전에 늘 굴리던 습관\"이라는 다른 얼굴.","tagline":"도구로 쓰다 + used to(옛 습관)","main":{"en":"Can I use your phone?","ko":"전화 좀 써도 될까요?"}},
-  {"base":"find","ko":"찾아서 만나는 순간 + 알게 됨","metaphor":"🔍 발견의 순간","desc":"find는 찾는 과정(look for)이 아니라 만나는 순간이다. 그래서 \"겪어 보니 알게 됐다\"로 자란다 — I found it helpful(써 보니 도움이 되더라).","tagline":"look for(찾는 중) → find(찾았다!)","main":{"en":"I found my keys.","ko":"열쇠 찾았어!"}},
-  {"base":"work","ko":"일하다 + 제대로 굴러가다","metaphor":"⚙️ 굴러가는 톱니","desc":"work는 사람이 일하는 것만이 아니다. 기계가 돌아가도(It works), 계획이 먹혀도(The plan worked) work — \"제 기능대로 굴러간다\"가 핵심이다.","tagline":"사람·기계·계획 — \"굴러가면\" work","main":{"en":"My phone isn't working.","ko":"내 폰이 작동을 안 해요."}},
-  {"base":"help","ko":"짐을 나눠 드는 손","metaphor":"🤲 나눠 드는 손","desc":"help는 상대의 짐을 나눠 드는 것이다. help me finish처럼 동사가 바로 붙을 수 있다 — 손을 보태는 그림이라서. can't help ~ing은 \"어쩔 수 없이 하게 된다\".","tagline":"help + 사람 + 동사원형","main":{"en":"Can you help me carry this?","ko":"이거 옮기는 것 좀 도와줄래요?"}},
-  {"base":"try","ko":"결과 모르고 부딪혀 보기","metaphor":"🧗 일단 해보기","desc":"try는 결과를 모른 채 부딪혀 보는 것이다. try to(목표를 향해 애씀)와 try ~ing(시험 삼아 해보기)의 결이 다르다 — to는 몸부림, ~ing은 실험.","tagline":"try to(애씀) vs try ~ing(실험)","main":{"en":"I'll try my best.","ko":"최선을 다해 볼게요."}},
-  {"base":"feel","ko":"피부와 마음에 닿는 감각","metaphor":"🫧 닿아서 느껴짐","desc":"feel은 밖의 것이 피부·마음에 닿는 감각이다. 촉감도, 기분도(I feel tired), 직감도(I feel like...) 전부 닿아 오는 것이다.","tagline":"몸·마음에 닿으면 feel","main":{"en":"I feel much better now.","ko":"지금은 훨씬 나아졌어요."}},
-  {"base":"look","ko":"시선을 일부러 보내기","metaphor":"🔭 시선 화살","desc":"look은 시선을 일부러 그쪽으로 보내는 것이다(see는 저절로 보임). look at(점을 향해)·look for(찾아 두리번)·look after(뒤를 봐주다=돌보다) — 화살의 방향이 뜻을 만든다.","tagline":"look + 방향이 뜻을 만든다","main":{"en":"Look at this picture.","ko":"이 사진 좀 봐."}},
-  {"base":"say","ko":"말을 소리로 내놓기","metaphor":"🗣 내뱉은 말 자체","desc":"say는 말 자체를 내놓는 것 — 들은 그대로 옮길 때 쓴다(She said \"no\"). 사람에게 건네는 느낌은 tell의 몫이라, say me는 어색하고 tell me가 자연스럽다.","tagline":"내용 자체 = say, 사람에게 = tell","main":{"en":"What did she say?","ko":"그녀가 뭐라고 했어?"}},
-  {"base":"put","ko":"자리에 놓기 — 상태도 놓는다","metaphor":"📍 자리에 놓기","desc":"put은 무언가를 자리에 놓는 것이다. 물건을 놓고, 옷을 몸에 놓고(put on), 말을 자리에 놓는다(to put it simply — 쉽게 말하면). 과거형도 put — 모양이 안 변하는 동사.","tagline":"put on / off / away — 놓는 자리가 뜻","main":{"en":"Put it on the table.","ko":"그거 테이블 위에 놓아 줘."}},
-  {"base":"to","ko":"도착점을 향한 화살표","metaphor":"➡️ 도착점 화살표","desc":"to는 도착점을 향한 화살표다. 장소로도(go to school), 사람에게도(give it to me), 행동으로도(want to go — \"가기\"라는 도착점) 날아간다. to부정사의 to도 같은 화살표다.","tagline":"장소·사람·행동 — 화살표의 끝","main":{"en":"I'm going to the station.","ko":"역으로 가는 중이에요."}},
-  {"base":"in","ko":"경계 안에 폭 들어가 있음","metaphor":"📦 안에 폭","desc":"in은 경계 안에 들어가 있는 그림이다. 상자 안도, 도시 안도(in Seoul), 시간의 통 안도(in March), 상태 안도(in love) — 통 안이면 전부 in.","tagline":"공간·시간·상태 — 통 안이면 in","main":{"en":"She is in the kitchen.","ko":"그녀는 부엌에 있어요."}},
-  {"base":"at","ko":"지도 위의 한 점","metaphor":"📍 콕 찍은 점","desc":"at은 넓이 없는 \"점\"이다. 장소를 점으로 찍고(at the door), 시간을 점으로 찍고(at 3), 과녁을 점으로 겨눈다(look at). in(안)·on(면)·at(점) 삼형제의 막내.","tagline":"in(안) · on(면) · at(점)","main":{"en":"Let's meet at the station.","ko":"역에서 만나자."}},
-  {"base":"for","ko":"~를 향한 마음 + 맞바꿈","metaphor":"🎯 마음이 향하는 과녁","desc":"for는 대상을 향해 마음·용도가 겨눠진 것이다. 선물도(for you), 고마움의 이유도(thanks for), 맞바꿈도(for $10), 기간도(for two hours — 두 시간을 향해 쭉).","tagline":"용도·이유·교환·기간 — 겨눠지면 for","main":{"en":"This gift is for you.","ko":"이 선물은 너를 위한 거야."}},
-  {"base":"with","ko":"붙어서 함께 — 도구까지","metaphor":"🧷 붙어서 함께","desc":"with는 붙어 있는 그림이다. 사람과 함께 있고(with you), 도구를 손에 붙이고(cut with a knife), 특징을 몸에 붙인다(the girl with long hair).","tagline":"동행·도구·특징 — 붙으면 with","main":{"en":"Come with me.","ko":"나랑 같이 가자."}},
-  {"base":"from","ko":"출발점 — 뿌리","metaphor":"🌱 출발점 표시","desc":"from은 출발점이다. 장소의 출발(from Seoul), 시간의 출발(from Monday), 출신의 뿌리(I'm from Korea), 재료의 뿌리(made from grapes). to(도착점)의 짝이다.","tagline":"from(출발) ↔ to(도착)","main":{"en":"Where are you from?","ko":"어디 출신이에요?"}},
-  {"base":"by","ko":"곁에 — 수단·기한까지","metaphor":"🧍 바로 곁","desc":"by의 뿌리는 \"곁\"이다. 창가 곁에 서고(by the window), 버스 곁에 실려 가고(by bus), 기한 곁에 닿기 전까지 끝낸다(by Friday).","tagline":"곁·수단·기한 — 전부 \"곁\"","main":{"en":"I go to work by bus.","ko":"나는 버스로 출근해요."}},
-  {"base":"up","ko":"위로 + 끝까지 차오름","metaphor":"⬆️ 차오르는 화살표","desc":"up은 방향 \"위\"를 넘어 \"끝까지\"다. 다 마시면 drink up, 다 쓰면 use up, 시간이 다 차면 time's up — 컵에 물이 차오르듯 끝까지 가는 그림이다.","tagline":"위로 + 완전히(끝까지)","main":{"en":"Time is up.","ko":"시간이 다 됐어요."}},
-  {"base":"off","ko":"붙어 있던 것이 떨어짐","metaphor":"🧲 떨어지는 순간","desc":"off는 on(접촉)의 반대 — 붙어 있던 것이 떨어지는 순간이다. 불이 떨어지고(turn off), 옷이 몸에서 떨어지고(take off), 하루가 일에서 떨어지면 휴일(day off).","tagline":"on(붙음) ↔ off(떨어짐)","main":{"en":"Please turn off the light.","ko":"불 좀 꺼 주세요."}},
-  {"base":"over","ko":"위를 넘어 덮는 아치","metaphor":"🌈 넘어가는 아치","desc":"over는 위로 아치를 그리며 넘는 그림이다. 다리를 넘고(over the bridge), 끝을 넘으면 종료(The game is over), 전체를 덮으면 all over the world.","tagline":"넘고·덮고·끝나고 — 전부 아치","main":{"en":"The meeting is over.","ko":"회의가 끝났어요."}},
-  {"base":"under","ko":"아래에 — 영향 아래까지","metaphor":"⛱ 그늘 아래","desc":"under는 무언가의 아래에 들어가 있는 그림이다. 테이블 아래도, 압박 아래도(under pressure), 공사라는 지붕 아래면 공사 중(under construction).","tagline":"물리적 아래 + 영향력 아래","main":{"en":"The cat is under the table.","ko":"고양이가 테이블 아래에 있어요."}},
-  {"base":"into","ko":"안으로 파고드는 화살표","metaphor":"🎯 안으로 쏙","desc":"into는 in(안) + to(화살표) — 밖에서 안으로 들어가는 움직임이다. 방으로 들어가고, 변화 속으로 들어가면 변신(turn into), 푹 빠지면 I'm into it.","tagline":"이동·변화·몰입 — 안으로 들어감","main":{"en":"She walked into the room.","ko":"그녀는 방으로 걸어 들어갔어요."}},
-  {"base":"through","ko":"터널을 뚫고 통과","metaphor":"🚇 터널 통과","desc":"through는 안을 뚫고 지나가는 그림이다. 터널을 통과하고, 밤을 처음부터 끝까지 지나고(through the night), 힘든 일을 몸으로 통과한다(go through — 겪다).","tagline":"공간·시간·경험을 관통","main":{"en":"We drove through the tunnel.","ko":"우리는 터널을 통과해서 갔어요."}},
-  {"base":"but","ko":"방향을 꺾는 팔꿈치","metaphor":"↩️ 꺾이는 지점","desc":"but은 문장의 방향을 꺾는 팔꿈치다. 앞말을 지우는 게 아니라 \"그런데 방향은 이쪽\"이라고 트는 것 — 칭찬 뒤의 but이 뼈아픈 이유다.","tagline":"앞말 유지 + 방향 꺾기","main":{"en":"I'm tired, but I'm happy.","ko":"피곤하지만 행복해요."}},
-  {"base":"or","ko":"갈림길의 두 팻말","metaphor":"🔀 갈림길","desc":"or는 갈림길이다. 이 길 아니면 저 길(coffee or tea). 부정문에서는 \"둘 다 아님\"이 된다 — I don't drink coffee or tea(커피도 차도 안 마셔요).","tagline":"선택의 갈림길 — 부정문에선 둘 다 X","main":{"en":"Coffee or tea?","ko":"커피요, 아니면 차요?"}},
-  {"base":"if","ko":"문을 여는 조건의 열쇠","metaphor":"🗝 조건의 열쇠","desc":"if는 \"만약\"이라는 열쇠다. 이 열쇠가 맞으면 뒷문장이 열린다. 열쇠가 현실이면 will(If it rains, I'll stay), 상상이면 would — 열쇠의 재질이 시제를 정한다.","tagline":"현실은 if+will, 상상은 if+would","main":{"en":"If it rains, I'll stay home.","ko":"비가 오면 집에 있을 거야."}},
-  {"base":"because","ko":"\"왜?\"의 대답 — 원인의 뿌리","metaphor":"🌳 이유의 뿌리","desc":"because는 \"왜?\"에 대답하는 뿌리다. 결과 곁에 그 뿌리를 보여 준다. so와 방향이 반대 — \"아파서(because) 쉬었다\" ↔ \"아팠다, 그래서(so) 쉬었다\".","tagline":"because(뿌리) ↔ so(그래서)","main":{"en":"I stayed home because I was sick.","ko":"아파서 집에 있었어요."}},
-  {"base":"when","ko":"시간에 못을 박는 말","metaphor":"🕰 시간 못 박기","desc":"when은 사건을 시간에 못 박는다. 물을 때도(When...?), 이야기를 걸 때도(when I was young — 어릴 때라는 못에 걸린 이야기). 함정: when절의 미래는 현재형으로 쓴다(when I arrive).","tagline":"when절의 미래는 현재형으로","main":{"en":"Call me when you arrive.","ko":"도착하면 전화해 줘."}},
-  {"base":"then","ko":"그다음 칸 — 그렇다면","metaphor":"⏭ 다음 칸으로","desc":"then은 이야기의 다음 칸이다. 시간의 다음(First..., then...)도, 논리의 다음(그렇다면)도 then — 앞 칸을 딛고 다음 칸으로 넘어간다.","tagline":"시간의 다음 + 논리의 다음","main":{"en":"We had dinner, and then watched a movie.","ko":"우리는 저녁을 먹고, 그다음 영화를 봤어요."}},
-  {"base":"what","ko":"정체를 묻는 빈칸","metaphor":"❓ 빈칸 채우기","desc":"what은 \"무엇\"이라는 빈칸이다. 이름·내용·정체를 묻는 만능 빈칸 — 감탄에도 쓴다(What a day! — 어떤 하루인지 빈칸에 감탄을 채운다).","tagline":"정체를 묻는 만능 빈칸","main":{"en":"What do you mean?","ko":"무슨 뜻이에요?"}},
-  {"base":"who","ko":"사람 자리의 빈칸","metaphor":"🙎 누구?","desc":"who는 사람 자리의 빈칸이다. 묻기도 하고(Who is it?), 문장 속에서 사람을 이어 주는 손잡이도 된다(the person who called — 전화한 그 사람).","tagline":"묻기도 하고, 사람을 잇기도 한다","main":{"en":"Who told you that?","ko":"누가 그걸 말해 줬어?"}},
-  {"base":"how","ko":"방법과 정도를 재는 저울","metaphor":"⚖️ 어떻게·얼마나","desc":"how는 방법(어떻게)과 정도(얼마나)의 저울이다. How do you...?(방법), How old / How much(정도) — 저울에 무엇을 올리느냐만 다르다.","tagline":"how + 형용사 = 얼마나 ~한지","main":{"en":"How does this work?","ko":"이건 어떻게 작동해요?"}},
-  {"base":"where","ko":"장소 자리의 빈칸","metaphor":"🗺 어디?","desc":"where는 장소의 빈칸이다. 묻기도 하고, 장소를 이어 주기도 한다(the place where we met — 우리가 만난 그곳).","tagline":"장소를 묻고, 장소를 잇는다","main":{"en":"Where should we meet?","ko":"우리 어디서 만날까?"}},
-  {"base":"why","ko":"이유의 뿌리를 캐는 곡괭이","metaphor":"⛏ 왜? 뿌리 캐기","desc":"why는 because(뿌리)를 캐묻는 곡괭이다. Why not?은 \"안 될 이유가 어디 있어?\" = \"좋아, 하자\"라는 뜻 — 부정을 캐물어 긍정이 되는 재미있는 결.","tagline":"Why not? = 좋아, 하자","main":{"en":"Why did you choose this?","ko":"왜 이걸 골랐어요?"}},
-  {"base":"not","ko":"등호를 끊는 가위","metaphor":"✂️ 관계를 끊는 가위","desc":"not은 문장의 등호를 끊는 가위다. be·조동사 뒤에 딱 붙어서 자른다(is not, do not). 위치가 생명 — 일반동사 앞이 아니라 조동사 뒤에 선다.","tagline":"조동사·be 뒤에서 자른다","main":{"en":"I'm not sure.","ko":"확실하지 않아요."}},
-  {"base":"just","ko":"딱 — 방금·그냥·바로","metaphor":"🎯 딱 그 지점","desc":"just의 결은 \"딱\"이다. 시간이 딱 붙으면 \"방금\"(just arrived), 범위가 딱 좁혀지면 \"그냥\"(just looking), 정확히 딱 맞으면 \"바로\"(just right).","tagline":"방금·그냥·딱 — 전부 \"딱\"","main":{"en":"I just got home.","ko":"방금 집에 왔어."}},
-  {"base":"still","ko":"멈춘 듯 그대로 이어짐","metaphor":"🧊 그대로 이어짐","desc":"still은 \"아직도\"보다 \"그대로 이어지는 중\"이다. 움직임 없는 고요함(still water)과 상태가 안 변하고 이어짐(still waiting)이 한 뿌리다.","tagline":"변화 없이 이어지면 still","main":{"en":"Are you still there?","ko":"아직 거기 있어요?"}},
-  {"base":"already","ko":"예상보다 먼저 도착","metaphor":"🏁 벌써 결승선","desc":"already는 \"이미\"보다 \"예상보다 먼저\"다. 그래서 놀람이 배어 있다 — Is it 5 already?(벌써 5시야?). yet(아직 안 옴)의 짝이다.","tagline":"already(벌써 옴) ↔ yet(아직)","main":{"en":"I've already had lunch.","ko":"점심은 벌써 먹었어요."}},
-  {"base":"always","ko":"시간 전 구간에 칠해짐","metaphor":"🌈 전 구간 칠하기","desc":"always는 시간 전체에 칠해진 색이다. 빈도의 꼭대기(100%) — never(0%)의 반대 끝. 자리는 일반동사 앞, be동사 뒤다(I always go / I am always late).","tagline":"빈도 100% — 일반동사 앞·be 뒤","main":{"en":"She always keeps her promise.","ko":"그녀는 항상 약속을 지켜요."}},
-  {"base":"never","ko":"0% — 한 번도 없음","metaphor":"🚫 빈도 0%","desc":"never는 not보다 강한 \"한 번도 없음(0%)\"이다. never 자체가 부정이라 not과 겹쳐 쓰지 않는다 — I never give up 한 방이면 부정이 끝난다.","tagline":"never 하나로 부정 끝","main":{"en":"I'll never forget this.","ko":"이건 절대 잊지 않을 거야."}},
-  {"base":"too","ko":"선을 넘은 정도 + 나도","metaphor":"🌡 넘침 표시","desc":"too는 두 얼굴이다. 정도가 선을 넘으면 \"너무\"(too hot — 문제라는 신호), 문장 끝에 붙으면 \"~도\"(me too). very(그냥 강함)와 달리 too는 \"지나쳐서 문제\"다.","tagline":"very(강함) ↔ too(지나침) + 문끝 \"~도\"","main":{"en":"This coffee is too hot.","ko":"이 커피는 너무 뜨거워요."}},
-  {"base":"time","ko":"흐르는 시간 + 셀 수 있는 번","metaphor":"⏳ 흐름과 횟수","desc":"time은 흐르는 시간(셀 수 없음)이자 \"번·회\"(셀 수 있음 — three times)다. 함정: 시간이 있다/없다는 have time — 영어는 시간을 소유물처럼 가진다.","tagline":"흐름(time) + 횟수(times)","main":{"en":"I don't have time today.","ko":"오늘은 시간이 없어요."}},
-  {"base":"thing","ko":"이름 대신 담는 만능 상자","metaphor":"📦 만능 상자","desc":"thing은 이름이 안 떠오르거나 뭉뚱그릴 때 쓰는 만능 상자다. 물건도, 일도(things went well — 일들이 잘 굴러갔다), 추상적인 것도 다 담는다.","tagline":"이름 모를 땐 일단 thing","main":{"en":"How are things going?","ko":"요즘 일들은 어떻게 되어 가요?"}},
-  {"base":"day","ko":"하루 — 표현의 벽돌","metaphor":"☀️ 하루의 단위","desc":"day는 해가 뜨고 지는 하루다. one day(언젠가), these days(요즘), day off(일에서 떨어진 날 = 휴일) — 하루라는 단위가 표현의 벽돌이 된다.","tagline":"one day · these days · day off","main":{"en":"Have a nice day!","ko":"좋은 하루 보내요!"}},
-  {"base":"home","ko":"건물이 아니라 \"내 자리\"","metaphor":"🏠 마음이 놓이는 자리","desc":"home은 house(건물)와 다르다 — 마음이 놓이는 \"내 자리\"다. 그래서 go home에는 to가 없다. home이 장소 이름이 아니라 \"집으로\"라는 방향처럼 구르기 때문이다.","tagline":"go home — to 없음!","main":{"en":"I want to go home.","ko":"집에 가고 싶어요."}},
-  {"base":"friend","ko":"나이 무관 — 곁의 사람","metaphor":"🤝 곁을 지키는 사람","desc":"friend는 곁을 지키는 사람이다. 한국어 \"친구\"는 동갑 느낌이 있지만 영어 friend는 나이·상하가 없다 — 부모도, 스무 살 많은 사람도 friend가 될 수 있다.","tagline":"나이 무관 — 곁이면 friend","main":{"en":"She's an old friend of mine.","ko":"그녀는 나의 오랜 친구예요."}},
-  {"base":"mind","ko":"생각이 사는 방","metaphor":"🧠 생각의 방","desc":"mind는 생각이 사는 방이다. 방을 바꾸면 change one's mind(마음 바꾸기), 방에 걸려 있으면 on my mind(마음에 걸림), 방해가 싫으면 Do you mind...?(꺼리세요?).","tagline":"바꾸고·담고·꺼리는 생각의 방","main":{"en":"I changed my mind.","ko":"마음을 바꿨어요."}},
-  {"base":"heart","ko":"감정이 사는 심장","metaphor":"❤️ 감정의 집","desc":"heart는 심장이자 감정의 집이다. mind(생각의 방)와 짝 — 머리로 알고 가슴으로 느낀다. by heart(심장에 새겨서 = 외워서), break one's heart(마음을 부수다).","tagline":"mind(머리) ↔ heart(가슴)","main":{"en":"I learned it by heart.","ko":"그걸 통째로 외웠어요."}},
-  {"base":"word","ko":"말의 벽돌 + 약속의 무게","metaphor":"🧱 말의 벽돌","desc":"word는 말의 최소 벽돌이다. 이 벽돌 하나가 무거워지면 \"약속\"이 된다 — keep one's word(말을 지키다), You have my word(내 말을 걸게 = 약속할게).","tagline":"단어이자 약속","main":{"en":"I'll keep my word.","ko":"내 약속은 지킬게."}},
-  {"base":"world","ko":"우리 모두가 아는 그 세계","metaphor":"🌍 세계 전부","desc":"world는 지구라는 땅덩이보다 \"삶이 벌어지는 세계 전부\"다. 거의 항상 the가 붙는다 — 우리 모두가 아는 그 세계라서. 최상급 + in the world = 세상에서 제일.","tagline":"the world — 다 아는 그 세계","main":{"en":"She's the best in the world.","ko":"그녀가 세계 최고예요."}},
-  {"base":"life","ko":"살아 있음 + 살아온 이야기","metaphor":"🌱 살아 있음의 전부","desc":"life는 생명이자 한 사람이 살아온 이야기 전체다. 삶 일반을 말하면 관사 없이(Life is short), 한 사람의 인생이면 a를 붙인다(a happy life).","tagline":"삶 일반(무관사) + 한 인생(a life)","main":{"en":"Life is short.","ko":"인생은 짧아요."}},
-  {"base":"good","ko":"제 역할을 해내는 좋음","metaphor":"👍 제 몫을 함","desc":"good은 착함보다 \"제 역할을 해냄\"이다. 음식이 제 맛을 내면 good, 어떤 일에서 제 몫을 해내면 good at(잘함) — be good at cooking은 요리에서 제 몫을 하는 상태다.","tagline":"good at ~ = ~를 잘함","main":{"en":"She is good at cooking.","ko":"그녀는 요리를 잘해요."}},
-  {"base":"right","ko":"곧아서 맞다 — 오른쪽·권리까지","metaphor":"✅ 곧게 맞음","desc":"right의 뿌리는 \"곧다\"다. 곧으면 맞고(You're right), 곧게 뻗은 쪽이 오른쪽이고, 곧게 지켜져야 할 몫이 권리(rights)다. 대답 \"Right.\"은 맞장구.","tagline":"맞다·오른쪽·권리 — 뿌리는 \"곧음\"","main":{"en":"You're right about that.","ko":"그 점은 네 말이 맞아."}},
-  {"base":"new","ko":"시간이 안 묻은 상태","metaphor":"✨ 갓 나온 반짝임","desc":"new는 시간이 안 묻은 상태다. 물건도, 소식도(What's new? — 새로 생긴 일 있어?), 사람도(I'm new here — 여기 갓 온 사람이에요) 전부 new로 반짝인다.","tagline":"What's new? = 별일 있어?","main":{"en":"I'm new here.","ko":"저는 여기 처음이에요."}},
-  {"base":"sure","ko":"흔들리지 않는 확신 + 흔쾌한 대답","metaphor":"🪨 흔들림 없음","desc":"sure는 마음이 흔들리지 않는 상태다. 확신(I'm sure)이자, 부탁에 대한 흔쾌한 \"그럼요\"(Sure!) — 흔들림 없이 바로 나오는 대답이라서다.","tagline":"I'm sure(확신) + Sure!(그럼요)","main":{"en":"Are you sure about this?","ko":"이거 확실해요?"}},
-  {"base":"same","ko":"겹쳐 보면 하나","metaphor":"🪞 겹치면 하나","desc":"same은 겹쳐 보면 하나가 되는 것이다. 거의 항상 the와 다닌다(the same) — \"우리 둘 다 아는 그 기준과 겹친다\"는 신호가 필요해서다.","tagline":"항상 the same — the가 세트","main":{"en":"We have the same idea.","ko":"우리 생각이 같네요."}},
-  {"base":"different","ko":"다른 쪽으로 갈라짐","metaphor":"🔱 갈라진 길","desc":"different의 뿌리는 \"서로 다른 쪽으로 실려 감\"이다. 갈라진 만큼 다르다 — 비교 대상은 from으로 잇는다(different from — 어디에서 갈라졌는지).","tagline":"different from ~ = ~와 갈라짐","main":{"en":"My idea is different from yours.","ko":"내 생각은 네 생각과 달라요."}},
-  {"base":"important","ko":"안으로 무게가 실림","metaphor":"⚖️ 무게가 실림","desc":"important는 \"안으로 실어 나르다(import)\"에서 왔다 — 안에 무게가 실린 것이다. 무게가 실렸으니 다루는 순서가 앞으로 온다.","tagline":"무게가 실린 것부터 먼저","main":{"en":"This is really important to me.","ko":"이건 나에게 정말 중요해요."}},
+  {"base":"I", pos:["대명사"],"ko":"언제나 대문자인 나","metaphor":"🙋 항상 대문자","desc":"영어의 I는 문장 어디에 있어도 대문자다. 한국어처럼 \"저/나\"의 높임 구분이 없어서 대통령 앞에서도 친구 앞에서도 같은 I를 쓴다 — 낮출 필요도 높일 필요도 없는 나.","tagline":"누구 앞에서든 같은 나","main":{"en":"I think you're right.","ko":"네 말이 맞는 것 같아."}},
+  {"base":"it", pos:["대명사"],"ko":"이미 아는 그것 + 자리 채우기","metaphor":"📦 자리를 채우는 상자","desc":"it은 \"그것\"을 넘어 자리 채우기 선수다. 날씨(It's raining)·시간(It's 3 o'clock)처럼 마땅한 주어가 없을 때 빈자리를 채운다. 한국어는 주어를 비우지만 영어는 it으로 채운다.","tagline":"주어 자리가 비면 it이 들어간다","main":{"en":"It's raining outside.","ko":"밖에 비가 와요."}},
+  {"base":"this", pos:["한정사", "대명사"],"ko":"가까이 가리키는 손가락","metaphor":"👇 가까운 것 가리키기","desc":"this는 내 손이 닿는 것을 가리킨다. that(먼 것)의 짝 — 지금 벌어지는 일, 지금 하려는 말도 아직 내 손안에 있어서 this로 가리킨다.","tagline":"가까우면 this, 멀면 that","main":{"en":"This is my favorite song.","ko":"이건 내가 제일 좋아하는 노래야."}},
+  {"base":"we", pos:["대명사"],"ko":"나를 포함한 진짜 우리","metaphor":"🤝 나 + 너(그들)","desc":"영어 we는 반드시 \"나\"를 포함한 여럿이다. 한국어는 혼자여도 \"우리 엄마·우리 집\"이라 하지만 영어에선 my mom, my house — 정말 여럿일 때만 we/our를 쓴다.","tagline":"혼자면 my, 여럿이어야 we","main":{"en":"We need more time.","ko":"우리는 시간이 더 필요해요."}},
+  {"base":"they", pos:["대명사"],"ko":"복수는 전부 they — 사물도","metaphor":"👥 저쪽의 여럿","desc":"they는 사람 \"그들\"만이 아니라 사물 복수(the books → they)도 받는다. 성별을 모르는 한 명(Someone left their bag)을 they로 받는 것도 요즘 표준.","tagline":"사람·사물·모르는 한 명까지 they","main":{"en":"They are waiting for us.","ko":"그들이 우리를 기다리고 있어요."}},
+  {"base":"do", pos:["동사", "조동사"],"ko":"행동의 대표 + 문장의 시동키","metaphor":"🔑 시동을 거는 열쇠","desc":"do는 \"하다\"이자 의문문·부정문의 시동키다. Do you...? / I don't...의 do는 뜻 없이 문장을 굴리는 엔진 — 일반동사는 be처럼 스스로 뒤집지 못해서 do가 대신 나선다.","tagline":"의문·부정엔 do가 시동을 건다","main":{"en":"Do you like coffee?","ko":"커피 좋아해요?"}},
+  {"base":"will", pos:["조동사"],"ko":"지금 정한 의지","metaphor":"⚡ 지금 켜는 스위치","desc":"will은 \"미래\"보다 \"의지\"다. 말하는 순간 마음을 정했으면 I'll do it. 미리 잡아 둔 계획은 be going to — will은 그 자리에서 켜는 스위치다.","tagline":"지금 결심 = will, 이미 계획 = be going to","main":{"en":"I'll call you tonight.","ko":"오늘 밤에 전화할게."}},
+  {"base":"would", pos:["조동사"],"ko":"will의 한 발 물러선 그림자","metaphor":"🌫 부드러운 가정","desc":"would는 will이 한 발 물러선 것 — \"그렇다면 ~할 텐데\"라는 가정의 거리다. 이 거리감이 정중함이 된다. I would like = 원하는 마음을 한 발 물러서 건네기.","tagline":"물러선 만큼 부드러워진다","main":{"en":"I would like some water.","ko":"물을 좀 마시고 싶어요."}},
+  {"base":"can", pos:["조동사"],"ko":"가능의 문이 열려 있다","metaphor":"🚪 열려 있는 문","desc":"can은 \"할 수 있다(능력)\"만이 아니다. 능력(I can swim)·허락(You can go)·가능성(It can happen) — 전부 \"문이 열려 있다\"는 하나의 그림으로 통한다.","tagline":"능력·허락·가능 — 전부 열린 문","main":{"en":"You can sit here.","ko":"여기 앉아도 돼요."}},
+  {"base":"should", pos:["조동사"],"ko":"하는 게 좋다 — 권유의 나침반","metaphor":"🧭 권하는 나침반","desc":"should는 \"해야 한다\"보다 약한 \"하는 게 좋겠다\"다. must(다른 길 없음)·have to(사정상 필수)보다 부드러운 권유 — 조언할 때 should를 쓰는 이유다.","tagline":"must(강제) 〉 have to(필수) 〉 should(권유)","main":{"en":"You should get some rest.","ko":"좀 쉬는 게 좋겠어요."}},
+  {"base":"must", pos:["조동사"],"ko":"다른 길이 없다","metaphor":"🧱 벽 — 다른 길 없음","desc":"must는 빠져나갈 길이 없는 벽이다. 의무(반드시 해야 한다)에도, 강한 확신(He must be tired — 분명 피곤할 거야, 다른 가능성이 없다)에도 같은 벽이 선다.","tagline":"의무도 확신도 \"다른 가능성 없음\"","main":{"en":"You must wear a seatbelt.","ko":"안전벨트를 반드시 매야 해요."}},
+  {"base":"may", pos:["조동사"],"ko":"반쯤 열린 문","metaphor":"🌤 반쯤 열린 문","desc":"may는 can보다 조심스러운 \"그럴 수도 있다\"다. 허락을 구할 땐 가장 격식 있는 문(May I...?), 추측일 땐 반반의 가능성(It may rain).","tagline":"허락의 최고 격식 + 반반의 추측","main":{"en":"May I come in?","ko":"들어가도 될까요?"}},
+  {"base":"have", pos:["동사", "조동사"],"ko":"내 영역 안에 있다","metaphor":"🎒 내 가방 안","desc":"have는 \"가지다\"보다 \"내 영역 안에 있다\"다. 물건도, 시간도(have time), 식사도(have lunch — 식사가 내 앞에 놓인 시간), 경험도 전부 내 영역 안에 든다.","tagline":"소유·시간·식사·경험 — 전부 내 안에","main":{"en":"I have two tickets.","ko":"나 표 두 장 있어."}},
+  {"base":"get", pos:["동사"],"ko":"없던 것이 손에 들어옴","metaphor":"🧲 손에 들어오는 순간","desc":"get의 핵심은 \"움직여서 손에 들어오는 순간\"이다. 물건을 얻고(get a gift), 상태가 내게 오고(get tired — 피곤함이 옴), 장소에 닿는다(get home).","tagline":"물건·상태·장소 — 도착의 순간","main":{"en":"I got your message.","ko":"네 메시지 받았어."}},
+  {"base":"make", pos:["동사"],"ko":"없던 것을 빚어냄","metaphor":"🏺 빚어 만들기","desc":"make는 없던 것을 내 손에서 빚어내는 것이다. 요리도, 결정도(make a decision), 실수도(make a mistake) 새로 태어난다. do와 짝: do는 하고, make는 만든다.","tagline":"do는 하고, make는 만든다","main":{"en":"She made a big decision.","ko":"그녀는 큰 결정을 내렸어요."}},
+  {"base":"take", pos:["동사"],"ko":"내 쪽으로 집어 가짐","metaphor":"✊ 집어서 가져가기","desc":"take는 손을 뻗어 내 쪽으로 집는 것이다. 물건을 집고, 버스를 잡아타고(take a bus), 시간을 집어 쓴다(It takes 10 minutes). give(건네기)의 반대 방향.","tagline":"give가 건네면 take는 집는다","main":{"en":"It takes ten minutes.","ko":"10분 걸려요."}},
+  {"base":"give", pos:["동사"],"ko":"내 손에서 상대 손으로","metaphor":"🎁 건네는 손","desc":"give는 내 것이 상대 손으로 넘어가는 움직임이다. 물건뿐 아니라 기회(give a chance)·전화(give a call)·시간까지 — 건넬 수 있는 건 전부 give로 건넨다.","tagline":"물건·기회·전화 — 건네면 다 give","main":{"en":"Give me a second.","ko":"잠깐만 (시간을 줘)."}},
+  {"base":"come", pos:["동사"],"ko":"대화의 자리로 다가옴","metaphor":"🧲 나에게 오는 화살표","desc":"come은 \"오다\"가 아니라 \"말하는 사람(또는 듣는 사람) 쪽으로 움직인다\"다. 상대에게 갈 때도 I'm coming!이라 하는 이유 — 기준이 \"우리 대화의 자리\"라서다.","tagline":"go(멀어짐) ↔ come(다가옴)","main":{"en":"I'm coming!","ko":"지금 가! (너에게 가는 중)"}},
+  {"base":"know", pos:["동사"],"ko":"이미 안에 들어와 있는 앎","metaphor":"💡 이미 켜져 있는 불","desc":"know는 배우는 중이 아니라 이미 안에 있는 앎이다. 그래서 진행형을 쓰지 않는다(I'm knowing ✗). 사람을 know하면 \"아는 사이\"까지 포함한다.","tagline":"이미 아는 상태 — 진행형 없음","main":{"en":"I know how you feel.","ko":"네 기분이 어떤지 알아."}},
+  {"base":"think", pos:["동사"],"ko":"머릿속에서 굴리는 중","metaphor":"🌀 머릿속 회전","desc":"think는 결론이 아니라 머릿속에서 굴리는 과정이다. I think = \"굴려 보니 이런 것 같다\"라는 부드러운 의견 — 한국어 \"~인 것 같아\"가 앉는 자리다.","tagline":"단정 대신 I think로 한 겹 감싼다","main":{"en":"I think it's a good idea.","ko":"좋은 생각인 것 같아."}},
+  {"base":"see", pos:["동사"],"ko":"눈에 들어오다 → 이해하다","metaphor":"👁 눈에 들어옴","desc":"see는 노력 없이 눈에 들어오는 것이다(look은 일부러 보기). 그래서 \"이해\"로 자란다 — I see = \"그림이 눈에 들어왔다 = 알겠다\".","tagline":"보이면 see, 들여다보면 look","main":{"en":"I see what you mean.","ko":"무슨 말인지 알겠어."}},
+  {"base":"want", pos:["동사"],"ko":"없어서 당기는 마음","metaphor":"🧲 끌어당기는 마음","desc":"want의 뿌리는 \"부족\"이다. 없으니 당긴다 — 그래서 직설적이고 힘이 세다. 부탁·주문에서는 would like로 한 발 물러서는 게 부드럽다.","tagline":"want(직진) ↔ would like(정중)","main":{"en":"I want to learn English.","ko":"나는 영어를 배우고 싶어."}},
+  {"base":"like", pos:["동사", "전치사"],"ko":"마음이 기울다 + 닮다","metaphor":"💗 기울고 닮음","desc":"like는 두 얼굴이다. 마음이 그쪽으로 기울면 \"좋아하다\", 모양이 그쪽으로 기울면 \"~같은\"(like a bird). 둘 다 \"그쪽으로 기울기\"라는 한 결이다.","tagline":"좋아함도 닮음도 \"기울기\"","main":{"en":"It looks like rain.","ko":"비가 올 것처럼 보여요."}},
+  {"base":"use", pos:["동사", "명사"],"ko":"도구를 손에 쥐고 굴리기","metaphor":"🔧 손에 쥔 도구","desc":"use는 무언가를 도구 삼아 굴리는 것이다. 물건도, 시간도, 말도 도구가 된다. used to(예전엔 ~하곤 했다)는 \"예전에 늘 굴리던 습관\"이라는 다른 얼굴.","tagline":"도구로 쓰다 + used to(옛 습관)","main":{"en":"Can I use your phone?","ko":"전화 좀 써도 될까요?"}},
+  {"base":"find", pos:["동사"],"ko":"찾아서 만나는 순간 + 알게 됨","metaphor":"🔍 발견의 순간","desc":"find는 찾는 과정(look for)이 아니라 만나는 순간이다. 그래서 \"겪어 보니 알게 됐다\"로 자란다 — I found it helpful(써 보니 도움이 되더라).","tagline":"look for(찾는 중) → find(찾았다!)","main":{"en":"I found my keys.","ko":"열쇠 찾았어!"}},
+  {"base":"work", pos:["동사", "명사"],"ko":"일하다 + 제대로 굴러가다","metaphor":"⚙️ 굴러가는 톱니","desc":"work는 사람이 일하는 것만이 아니다. 기계가 돌아가도(It works), 계획이 먹혀도(The plan worked) work — \"제 기능대로 굴러간다\"가 핵심이다.","tagline":"사람·기계·계획 — \"굴러가면\" work","main":{"en":"My phone isn't working.","ko":"내 폰이 작동을 안 해요."}},
+  {"base":"help", pos:["동사", "명사"],"ko":"짐을 나눠 드는 손","metaphor":"🤲 나눠 드는 손","desc":"help는 상대의 짐을 나눠 드는 것이다. help me finish처럼 동사가 바로 붙을 수 있다 — 손을 보태는 그림이라서. can't help ~ing은 \"어쩔 수 없이 하게 된다\".","tagline":"help + 사람 + 동사원형","main":{"en":"Can you help me carry this?","ko":"이거 옮기는 것 좀 도와줄래요?"}},
+  {"base":"try", pos:["동사"],"ko":"결과 모르고 부딪혀 보기","metaphor":"🧗 일단 해보기","desc":"try는 결과를 모른 채 부딪혀 보는 것이다. try to(목표를 향해 애씀)와 try ~ing(시험 삼아 해보기)의 결이 다르다 — to는 몸부림, ~ing은 실험.","tagline":"try to(애씀) vs try ~ing(실험)","main":{"en":"I'll try my best.","ko":"최선을 다해 볼게요."}},
+  {"base":"feel", pos:["동사"],"ko":"피부와 마음에 닿는 감각","metaphor":"🫧 닿아서 느껴짐","desc":"feel은 밖의 것이 피부·마음에 닿는 감각이다. 촉감도, 기분도(I feel tired), 직감도(I feel like...) 전부 닿아 오는 것이다.","tagline":"몸·마음에 닿으면 feel","main":{"en":"I feel much better now.","ko":"지금은 훨씬 나아졌어요."}},
+  {"base":"look", pos:["동사"],"ko":"시선을 일부러 보내기","metaphor":"🔭 시선 화살","desc":"look은 시선을 일부러 그쪽으로 보내는 것이다(see는 저절로 보임). look at(점을 향해)·look for(찾아 두리번)·look after(뒤를 봐주다=돌보다) — 화살의 방향이 뜻을 만든다.","tagline":"look + 방향이 뜻을 만든다","main":{"en":"Look at this picture.","ko":"이 사진 좀 봐."}},
+  {"base":"say", pos:["동사"],"ko":"말을 소리로 내놓기","metaphor":"🗣 내뱉은 말 자체","desc":"say는 말 자체를 내놓는 것 — 들은 그대로 옮길 때 쓴다(She said \"no\"). 사람에게 건네는 느낌은 tell의 몫이라, say me는 어색하고 tell me가 자연스럽다.","tagline":"내용 자체 = say, 사람에게 = tell","main":{"en":"What did she say?","ko":"그녀가 뭐라고 했어?"}},
+  {"base":"put", pos:["동사"],"ko":"자리에 놓기 — 상태도 놓는다","metaphor":"📍 자리에 놓기","desc":"put은 무언가를 자리에 놓는 것이다. 물건을 놓고, 옷을 몸에 놓고(put on), 말을 자리에 놓는다(to put it simply — 쉽게 말하면). 과거형도 put — 모양이 안 변하는 동사.","tagline":"put on / off / away — 놓는 자리가 뜻","main":{"en":"Put it on the table.","ko":"그거 테이블 위에 놓아 줘."}},
+  {"base":"to", pos:["전치사"],"ko":"도착점을 향한 화살표","metaphor":"➡️ 도착점 화살표","desc":"to는 도착점을 향한 화살표다. 장소로도(go to school), 사람에게도(give it to me), 행동으로도(want to go — \"가기\"라는 도착점) 날아간다. to부정사의 to도 같은 화살표다.","tagline":"장소·사람·행동 — 화살표의 끝","main":{"en":"I'm going to the station.","ko":"역으로 가는 중이에요."}},
+  {"base":"in", pos:["전치사", "부사"],"ko":"경계 안에 폭 들어가 있음","metaphor":"📦 안에 폭","desc":"in은 경계 안에 들어가 있는 그림이다. 상자 안도, 도시 안도(in Seoul), 시간의 통 안도(in March), 상태 안도(in love) — 통 안이면 전부 in.","tagline":"공간·시간·상태 — 통 안이면 in","main":{"en":"She is in the kitchen.","ko":"그녀는 부엌에 있어요."}},
+  {"base":"at", pos:["전치사"],"ko":"지도 위의 한 점","metaphor":"📍 콕 찍은 점","desc":"at은 넓이 없는 \"점\"이다. 장소를 점으로 찍고(at the door), 시간을 점으로 찍고(at 3), 과녁을 점으로 겨눈다(look at). in(안)·on(면)·at(점) 삼형제의 막내.","tagline":"in(안) · on(면) · at(점)","main":{"en":"Let's meet at the station.","ko":"역에서 만나자."}},
+  {"base":"for", pos:["전치사", "접속사"],"ko":"~를 향한 마음 + 맞바꿈","metaphor":"🎯 마음이 향하는 과녁","desc":"for는 대상을 향해 마음·용도가 겨눠진 것이다. 선물도(for you), 고마움의 이유도(thanks for), 맞바꿈도(for $10), 기간도(for two hours — 두 시간을 향해 쭉).","tagline":"용도·이유·교환·기간 — 겨눠지면 for","main":{"en":"This gift is for you.","ko":"이 선물은 너를 위한 거야."}},
+  {"base":"with", pos:["전치사"],"ko":"붙어서 함께 — 도구까지","metaphor":"🧷 붙어서 함께","desc":"with는 붙어 있는 그림이다. 사람과 함께 있고(with you), 도구를 손에 붙이고(cut with a knife), 특징을 몸에 붙인다(the girl with long hair).","tagline":"동행·도구·특징 — 붙으면 with","main":{"en":"Come with me.","ko":"나랑 같이 가자."}},
+  {"base":"from", pos:["전치사"],"ko":"출발점 — 뿌리","metaphor":"🌱 출발점 표시","desc":"from은 출발점이다. 장소의 출발(from Seoul), 시간의 출발(from Monday), 출신의 뿌리(I'm from Korea), 재료의 뿌리(made from grapes). to(도착점)의 짝이다.","tagline":"from(출발) ↔ to(도착)","main":{"en":"Where are you from?","ko":"어디 출신이에요?"}},
+  {"base":"by", pos:["전치사"],"ko":"곁에 — 수단·기한까지","metaphor":"🧍 바로 곁","desc":"by의 뿌리는 \"곁\"이다. 창가 곁에 서고(by the window), 버스 곁에 실려 가고(by bus), 기한 곁에 닿기 전까지 끝낸다(by Friday).","tagline":"곁·수단·기한 — 전부 \"곁\"","main":{"en":"I go to work by bus.","ko":"나는 버스로 출근해요."}},
+  {"base":"up", pos:["부사", "전치사"],"ko":"위로 + 끝까지 차오름","metaphor":"⬆️ 차오르는 화살표","desc":"up은 방향 \"위\"를 넘어 \"끝까지\"다. 다 마시면 drink up, 다 쓰면 use up, 시간이 다 차면 time's up — 컵에 물이 차오르듯 끝까지 가는 그림이다.","tagline":"위로 + 완전히(끝까지)","main":{"en":"Time is up.","ko":"시간이 다 됐어요."}},
+  {"base":"off", pos:["부사", "전치사"],"ko":"붙어 있던 것이 떨어짐","metaphor":"🧲 떨어지는 순간","desc":"off는 on(접촉)의 반대 — 붙어 있던 것이 떨어지는 순간이다. 불이 떨어지고(turn off), 옷이 몸에서 떨어지고(take off), 하루가 일에서 떨어지면 휴일(day off).","tagline":"on(붙음) ↔ off(떨어짐)","main":{"en":"Please turn off the light.","ko":"불 좀 꺼 주세요."}},
+  {"base":"over", pos:["전치사", "부사"],"ko":"위를 넘어 덮는 아치","metaphor":"🌈 넘어가는 아치","desc":"over는 위로 아치를 그리며 넘는 그림이다. 다리를 넘고(over the bridge), 끝을 넘으면 종료(The game is over), 전체를 덮으면 all over the world.","tagline":"넘고·덮고·끝나고 — 전부 아치","main":{"en":"The meeting is over.","ko":"회의가 끝났어요."}},
+  {"base":"under", pos:["전치사"],"ko":"아래에 — 영향 아래까지","metaphor":"⛱ 그늘 아래","desc":"under는 무언가의 아래에 들어가 있는 그림이다. 테이블 아래도, 압박 아래도(under pressure), 공사라는 지붕 아래면 공사 중(under construction).","tagline":"물리적 아래 + 영향력 아래","main":{"en":"The cat is under the table.","ko":"고양이가 테이블 아래에 있어요."}},
+  {"base":"into", pos:["전치사"],"ko":"안으로 파고드는 화살표","metaphor":"🎯 안으로 쏙","desc":"into는 in(안) + to(화살표) — 밖에서 안으로 들어가는 움직임이다. 방으로 들어가고, 변화 속으로 들어가면 변신(turn into), 푹 빠지면 I'm into it.","tagline":"이동·변화·몰입 — 안으로 들어감","main":{"en":"She walked into the room.","ko":"그녀는 방으로 걸어 들어갔어요."}},
+  {"base":"through", pos:["전치사"],"ko":"터널을 뚫고 통과","metaphor":"🚇 터널 통과","desc":"through는 안을 뚫고 지나가는 그림이다. 터널을 통과하고, 밤을 처음부터 끝까지 지나고(through the night), 힘든 일을 몸으로 통과한다(go through — 겪다).","tagline":"공간·시간·경험을 관통","main":{"en":"We drove through the tunnel.","ko":"우리는 터널을 통과해서 갔어요."}},
+  {"base":"but", pos:["접속사"],"ko":"방향을 꺾는 팔꿈치","metaphor":"↩️ 꺾이는 지점","desc":"but은 문장의 방향을 꺾는 팔꿈치다. 앞말을 지우는 게 아니라 \"그런데 방향은 이쪽\"이라고 트는 것 — 칭찬 뒤의 but이 뼈아픈 이유다.","tagline":"앞말 유지 + 방향 꺾기","main":{"en":"I'm tired, but I'm happy.","ko":"피곤하지만 행복해요."}},
+  {"base":"or", pos:["접속사"],"ko":"갈림길의 두 팻말","metaphor":"🔀 갈림길","desc":"or는 갈림길이다. 이 길 아니면 저 길(coffee or tea). 부정문에서는 \"둘 다 아님\"이 된다 — I don't drink coffee or tea(커피도 차도 안 마셔요).","tagline":"선택의 갈림길 — 부정문에선 둘 다 X","main":{"en":"Coffee or tea?","ko":"커피요, 아니면 차요?"}},
+  {"base":"if", pos:["접속사"],"ko":"문을 여는 조건의 열쇠","metaphor":"🗝 조건의 열쇠","desc":"if는 \"만약\"이라는 열쇠다. 이 열쇠가 맞으면 뒷문장이 열린다. 열쇠가 현실이면 will(If it rains, I'll stay), 상상이면 would — 열쇠의 재질이 시제를 정한다.","tagline":"현실은 if+will, 상상은 if+would","main":{"en":"If it rains, I'll stay home.","ko":"비가 오면 집에 있을 거야."}},
+  {"base":"because", pos:["접속사"],"ko":"\"왜?\"의 대답 — 원인의 뿌리","metaphor":"🌳 이유의 뿌리","desc":"because는 \"왜?\"에 대답하는 뿌리다. 결과 곁에 그 뿌리를 보여 준다. so와 방향이 반대 — \"아파서(because) 쉬었다\" ↔ \"아팠다, 그래서(so) 쉬었다\".","tagline":"because(뿌리) ↔ so(그래서)","main":{"en":"I stayed home because I was sick.","ko":"아파서 집에 있었어요."}},
+  {"base":"when", pos:["접속사", "부사"],"ko":"시간에 못을 박는 말","metaphor":"🕰 시간 못 박기","desc":"when은 사건을 시간에 못 박는다. 물을 때도(When...?), 이야기를 걸 때도(when I was young — 어릴 때라는 못에 걸린 이야기). 함정: when절의 미래는 현재형으로 쓴다(when I arrive).","tagline":"when절의 미래는 현재형으로","main":{"en":"Call me when you arrive.","ko":"도착하면 전화해 줘."}},
+  {"base":"then", pos:["부사"],"ko":"그다음 칸 — 그렇다면","metaphor":"⏭ 다음 칸으로","desc":"then은 이야기의 다음 칸이다. 시간의 다음(First..., then...)도, 논리의 다음(그렇다면)도 then — 앞 칸을 딛고 다음 칸으로 넘어간다.","tagline":"시간의 다음 + 논리의 다음","main":{"en":"We had dinner, and then watched a movie.","ko":"우리는 저녁을 먹고, 그다음 영화를 봤어요."}},
+  {"base":"what", pos:["대명사", "한정사"],"ko":"정체를 묻는 빈칸","metaphor":"❓ 빈칸 채우기","desc":"what은 \"무엇\"이라는 빈칸이다. 이름·내용·정체를 묻는 만능 빈칸 — 감탄에도 쓴다(What a day! — 어떤 하루인지 빈칸에 감탄을 채운다).","tagline":"정체를 묻는 만능 빈칸","main":{"en":"What do you mean?","ko":"무슨 뜻이에요?"}},
+  {"base":"who", pos:["대명사"],"ko":"사람 자리의 빈칸","metaphor":"🙎 누구?","desc":"who는 사람 자리의 빈칸이다. 묻기도 하고(Who is it?), 문장 속에서 사람을 이어 주는 손잡이도 된다(the person who called — 전화한 그 사람).","tagline":"묻기도 하고, 사람을 잇기도 한다","main":{"en":"Who told you that?","ko":"누가 그걸 말해 줬어?"}},
+  {"base":"how", pos:["부사"],"ko":"방법과 정도를 재는 저울","metaphor":"⚖️ 어떻게·얼마나","desc":"how는 방법(어떻게)과 정도(얼마나)의 저울이다. How do you...?(방법), How old / How much(정도) — 저울에 무엇을 올리느냐만 다르다.","tagline":"how + 형용사 = 얼마나 ~한지","main":{"en":"How does this work?","ko":"이건 어떻게 작동해요?"}},
+  {"base":"where", pos:["부사"],"ko":"장소 자리의 빈칸","metaphor":"🗺 어디?","desc":"where는 장소의 빈칸이다. 묻기도 하고, 장소를 이어 주기도 한다(the place where we met — 우리가 만난 그곳).","tagline":"장소를 묻고, 장소를 잇는다","main":{"en":"Where should we meet?","ko":"우리 어디서 만날까?"}},
+  {"base":"why", pos:["부사"],"ko":"이유의 뿌리를 캐는 곡괭이","metaphor":"⛏ 왜? 뿌리 캐기","desc":"why는 because(뿌리)를 캐묻는 곡괭이다. Why not?은 \"안 될 이유가 어디 있어?\" = \"좋아, 하자\"라는 뜻 — 부정을 캐물어 긍정이 되는 재미있는 결.","tagline":"Why not? = 좋아, 하자","main":{"en":"Why did you choose this?","ko":"왜 이걸 골랐어요?"}},
+  {"base":"not", pos:["부사"],"ko":"등호를 끊는 가위","metaphor":"✂️ 관계를 끊는 가위","desc":"not은 문장의 등호를 끊는 가위다. be·조동사 뒤에 딱 붙어서 자른다(is not, do not). 위치가 생명 — 일반동사 앞이 아니라 조동사 뒤에 선다.","tagline":"조동사·be 뒤에서 자른다","main":{"en":"I'm not sure.","ko":"확실하지 않아요."}},
+  {"base":"just", pos:["부사"],"ko":"딱 — 방금·그냥·바로","metaphor":"🎯 딱 그 지점","desc":"just의 결은 \"딱\"이다. 시간이 딱 붙으면 \"방금\"(just arrived), 범위가 딱 좁혀지면 \"그냥\"(just looking), 정확히 딱 맞으면 \"바로\"(just right).","tagline":"방금·그냥·딱 — 전부 \"딱\"","main":{"en":"I just got home.","ko":"방금 집에 왔어."}},
+  {"base":"still", pos:["부사"],"ko":"멈춘 듯 그대로 이어짐","metaphor":"🧊 그대로 이어짐","desc":"still은 \"아직도\"보다 \"그대로 이어지는 중\"이다. 움직임 없는 고요함(still water)과 상태가 안 변하고 이어짐(still waiting)이 한 뿌리다.","tagline":"변화 없이 이어지면 still","main":{"en":"Are you still there?","ko":"아직 거기 있어요?"}},
+  {"base":"already", pos:["부사"],"ko":"예상보다 먼저 도착","metaphor":"🏁 벌써 결승선","desc":"already는 \"이미\"보다 \"예상보다 먼저\"다. 그래서 놀람이 배어 있다 — Is it 5 already?(벌써 5시야?). yet(아직 안 옴)의 짝이다.","tagline":"already(벌써 옴) ↔ yet(아직)","main":{"en":"I've already had lunch.","ko":"점심은 벌써 먹었어요."}},
+  {"base":"always", pos:["부사"],"ko":"시간 전 구간에 칠해짐","metaphor":"🌈 전 구간 칠하기","desc":"always는 시간 전체에 칠해진 색이다. 빈도의 꼭대기(100%) — never(0%)의 반대 끝. 자리는 일반동사 앞, be동사 뒤다(I always go / I am always late).","tagline":"빈도 100% — 일반동사 앞·be 뒤","main":{"en":"She always keeps her promise.","ko":"그녀는 항상 약속을 지켜요."}},
+  {"base":"never", pos:["부사"],"ko":"0% — 한 번도 없음","metaphor":"🚫 빈도 0%","desc":"never는 not보다 강한 \"한 번도 없음(0%)\"이다. never 자체가 부정이라 not과 겹쳐 쓰지 않는다 — I never give up 한 방이면 부정이 끝난다.","tagline":"never 하나로 부정 끝","main":{"en":"I'll never forget this.","ko":"이건 절대 잊지 않을 거야."}},
+  {"base":"too", pos:["부사"],"ko":"선을 넘은 정도 + 나도","metaphor":"🌡 넘침 표시","desc":"too는 두 얼굴이다. 정도가 선을 넘으면 \"너무\"(too hot — 문제라는 신호), 문장 끝에 붙으면 \"~도\"(me too). very(그냥 강함)와 달리 too는 \"지나쳐서 문제\"다.","tagline":"very(강함) ↔ too(지나침) + 문끝 \"~도\"","main":{"en":"This coffee is too hot.","ko":"이 커피는 너무 뜨거워요."}},
+  {"base":"time", pos:["명사"],"ko":"흐르는 시간 + 셀 수 있는 번","metaphor":"⏳ 흐름과 횟수","desc":"time은 흐르는 시간(셀 수 없음)이자 \"번·회\"(셀 수 있음 — three times)다. 함정: 시간이 있다/없다는 have time — 영어는 시간을 소유물처럼 가진다.","tagline":"흐름(time) + 횟수(times)","main":{"en":"I don't have time today.","ko":"오늘은 시간이 없어요."}},
+  {"base":"thing", pos:["명사"],"ko":"이름 대신 담는 만능 상자","metaphor":"📦 만능 상자","desc":"thing은 이름이 안 떠오르거나 뭉뚱그릴 때 쓰는 만능 상자다. 물건도, 일도(things went well — 일들이 잘 굴러갔다), 추상적인 것도 다 담는다.","tagline":"이름 모를 땐 일단 thing","main":{"en":"How are things going?","ko":"요즘 일들은 어떻게 되어 가요?"}},
+  {"base":"day", pos:["명사"],"ko":"하루 — 표현의 벽돌","metaphor":"☀️ 하루의 단위","desc":"day는 해가 뜨고 지는 하루다. one day(언젠가), these days(요즘), day off(일에서 떨어진 날 = 휴일) — 하루라는 단위가 표현의 벽돌이 된다.","tagline":"one day · these days · day off","main":{"en":"Have a nice day!","ko":"좋은 하루 보내요!"}},
+  {"base":"home", pos:["명사", "부사"],"ko":"건물이 아니라 \"내 자리\"","metaphor":"🏠 마음이 놓이는 자리","desc":"home은 house(건물)와 다르다 — 마음이 놓이는 \"내 자리\"다. 그래서 go home에는 to가 없다. home이 장소 이름이 아니라 \"집으로\"라는 방향처럼 구르기 때문이다.","tagline":"go home — to 없음!","main":{"en":"I want to go home.","ko":"집에 가고 싶어요."}},
+  {"base":"friend", pos:["명사"],"ko":"나이 무관 — 곁의 사람","metaphor":"🤝 곁을 지키는 사람","desc":"friend는 곁을 지키는 사람이다. 한국어 \"친구\"는 동갑 느낌이 있지만 영어 friend는 나이·상하가 없다 — 부모도, 스무 살 많은 사람도 friend가 될 수 있다.","tagline":"나이 무관 — 곁이면 friend","main":{"en":"She's an old friend of mine.","ko":"그녀는 나의 오랜 친구예요."}},
+  {"base":"mind", pos:["명사", "동사"],"ko":"생각이 사는 방","metaphor":"🧠 생각의 방","desc":"mind는 생각이 사는 방이다. 방을 바꾸면 change one's mind(마음 바꾸기), 방에 걸려 있으면 on my mind(마음에 걸림), 방해가 싫으면 Do you mind...?(꺼리세요?).","tagline":"바꾸고·담고·꺼리는 생각의 방","main":{"en":"I changed my mind.","ko":"마음을 바꿨어요."}},
+  {"base":"heart", pos:["명사"],"ko":"감정이 사는 심장","metaphor":"❤️ 감정의 집","desc":"heart는 심장이자 감정의 집이다. mind(생각의 방)와 짝 — 머리로 알고 가슴으로 느낀다. by heart(심장에 새겨서 = 외워서), break one's heart(마음을 부수다).","tagline":"mind(머리) ↔ heart(가슴)","main":{"en":"I learned it by heart.","ko":"그걸 통째로 외웠어요."}},
+  {"base":"word", pos:["명사"],"ko":"말의 벽돌 + 약속의 무게","metaphor":"🧱 말의 벽돌","desc":"word는 말의 최소 벽돌이다. 이 벽돌 하나가 무거워지면 \"약속\"이 된다 — keep one's word(말을 지키다), You have my word(내 말을 걸게 = 약속할게).","tagline":"단어이자 약속","main":{"en":"I'll keep my word.","ko":"내 약속은 지킬게."}},
+  {"base":"world", pos:["명사"],"ko":"우리 모두가 아는 그 세계","metaphor":"🌍 세계 전부","desc":"world는 지구라는 땅덩이보다 \"삶이 벌어지는 세계 전부\"다. 거의 항상 the가 붙는다 — 우리 모두가 아는 그 세계라서. 최상급 + in the world = 세상에서 제일.","tagline":"the world — 다 아는 그 세계","main":{"en":"She's the best in the world.","ko":"그녀가 세계 최고예요."}},
+  {"base":"life", pos:["명사"],"ko":"살아 있음 + 살아온 이야기","metaphor":"🌱 살아 있음의 전부","desc":"life는 생명이자 한 사람이 살아온 이야기 전체다. 삶 일반을 말하면 관사 없이(Life is short), 한 사람의 인생이면 a를 붙인다(a happy life).","tagline":"삶 일반(무관사) + 한 인생(a life)","main":{"en":"Life is short.","ko":"인생은 짧아요."}},
+  {"base":"good", pos:["형용사"],"ko":"제 역할을 해내는 좋음","metaphor":"👍 제 몫을 함","desc":"good은 착함보다 \"제 역할을 해냄\"이다. 음식이 제 맛을 내면 good, 어떤 일에서 제 몫을 해내면 good at(잘함) — be good at cooking은 요리에서 제 몫을 하는 상태다.","tagline":"good at ~ = ~를 잘함","main":{"en":"She is good at cooking.","ko":"그녀는 요리를 잘해요."}},
+  {"base":"right", pos:["형용사", "부사"],"ko":"곧아서 맞다 — 오른쪽·권리까지","metaphor":"✅ 곧게 맞음","desc":"right의 뿌리는 \"곧다\"다. 곧으면 맞고(You're right), 곧게 뻗은 쪽이 오른쪽이고, 곧게 지켜져야 할 몫이 권리(rights)다. 대답 \"Right.\"은 맞장구.","tagline":"맞다·오른쪽·권리 — 뿌리는 \"곧음\"","main":{"en":"You're right about that.","ko":"그 점은 네 말이 맞아."}},
+  {"base":"new", pos:["형용사"],"ko":"시간이 안 묻은 상태","metaphor":"✨ 갓 나온 반짝임","desc":"new는 시간이 안 묻은 상태다. 물건도, 소식도(What's new? — 새로 생긴 일 있어?), 사람도(I'm new here — 여기 갓 온 사람이에요) 전부 new로 반짝인다.","tagline":"What's new? = 별일 있어?","main":{"en":"I'm new here.","ko":"저는 여기 처음이에요."}},
+  {"base":"sure", pos:["형용사"],"ko":"흔들리지 않는 확신 + 흔쾌한 대답","metaphor":"🪨 흔들림 없음","desc":"sure는 마음이 흔들리지 않는 상태다. 확신(I'm sure)이자, 부탁에 대한 흔쾌한 \"그럼요\"(Sure!) — 흔들림 없이 바로 나오는 대답이라서다.","tagline":"I'm sure(확신) + Sure!(그럼요)","main":{"en":"Are you sure about this?","ko":"이거 확실해요?"}},
+  {"base":"same", pos:["형용사"],"ko":"겹쳐 보면 하나","metaphor":"🪞 겹치면 하나","desc":"same은 겹쳐 보면 하나가 되는 것이다. 거의 항상 the와 다닌다(the same) — \"우리 둘 다 아는 그 기준과 겹친다\"는 신호가 필요해서다.","tagline":"항상 the same — the가 세트","main":{"en":"We have the same idea.","ko":"우리 생각이 같네요."}},
+  {"base":"different", pos:["형용사"],"ko":"다른 쪽으로 갈라짐","metaphor":"🔱 갈라진 길","desc":"different의 뿌리는 \"서로 다른 쪽으로 실려 감\"이다. 갈라진 만큼 다르다 — 비교 대상은 from으로 잇는다(different from — 어디에서 갈라졌는지).","tagline":"different from ~ = ~와 갈라짐","main":{"en":"My idea is different from yours.","ko":"내 생각은 네 생각과 달라요."}},
+  {"base":"important", pos:["형용사"],"ko":"안으로 무게가 실림","metaphor":"⚖️ 무게가 실림","desc":"important는 \"안으로 실어 나르다(import)\"에서 왔다 — 안에 무게가 실린 것이다. 무게가 실렸으니 다루는 순서가 앞으로 온다.","tagline":"무게가 실린 것부터 먼저","main":{"en":"This is really important to me.","ko":"이건 나에게 정말 중요해요."}},  /* ── v2.58: 단어 500개 확장 — 101~500은 스텁(뜻·품사만, 결 콘텐츠는 준비 중). 빈도순 후보 4구간 병렬 생성 → 한국어 뜻·품사 적대 검증(워크플로우). 사용자: "단어 500개까지, 콘텐츠는 당장 생략, 품사 태그는 필수" ── */
+  { base:"well", ko:"잘 · 건강한", pos:["부사", "형용사"], stub:true },
+  { base:"only", ko:"오직 · 유일한", pos:["부사", "형용사"], stub:true },
+  { base:"real", ko:"진짜의 · 실제의", pos:["형용사"], stub:true },
+  { base:"very", ko:"매우 · 아주", pos:["부사"], stub:true },
+  { base:"even", ko:"심지어 · ~조차", pos:["부사"], stub:true },
+  { base:"back", ko:"뒤로 · 등", pos:["부사", "명사"], stub:true },
+  { base:"any", ko:"어떤 · 어느", pos:["한정사", "대명사"], stub:true },
+  { base:"woman", ko:"여자 · 여성", pos:["명사"], stub:true },
+  { base:"body", ko:"몸 · 신체", pos:["명사"], stub:true },
+  { base:"child", ko:"아이 · 어린이", pos:["명사"], stub:true },
+  { base:"down", ko:"아래로", pos:["부사", "전치사"], stub:true },
+  { base:"after", ko:"~후에 · 뒤에", pos:["전치사", "접속사"], stub:true },
+  { base:"call", ko:"부르다 · 전화하다", pos:["동사", "명사"], stub:true },
+  { base:"school", ko:"학교", pos:["명사"], stub:true },
+  { base:"last", ko:"마지막의 · 지속하다", pos:["형용사", "동사"], stub:true },
+  { base:"ask", ko:"묻다 · 부탁하다", pos:["동사"], stub:true },
+  { base:"three", ko:"셋 · 3", pos:["숫자"], stub:true },
+  { base:"become", ko:"~이 되다", pos:["동사"], stub:true },
+  { base:"between", ko:"~사이에", pos:["전치사"], stub:true },
+  { base:"high", ko:"높은 · 높이", pos:["형용사", "부사"], stub:true },
+  { base:"something", ko:"무언가 · 어떤 것", pos:["대명사"], stub:true },
+  { base:"most", ko:"대부분의 · 가장", pos:["한정사", "부사"], stub:true },
+  { base:"another", ko:"또 하나의 · 다른", pos:["한정사", "대명사"], stub:true },
+  { base:"much", ko:"많은 · 많이", pos:["한정사", "부사"], stub:true },
+  { base:"family", ko:"가족", pos:["명사"], stub:true },
+  { base:"own", ko:"자신의 · 소유하다", pos:["형용사", "동사"], stub:true },
+  { base:"leave", ko:"떠나다 · 남기다", pos:["동사"], stub:true },
+  { base:"old", ko:"늙은 · 오래된", pos:["형용사"], stub:true },
+  { base:"while", ko:"~하는 동안", pos:["접속사", "명사"], stub:true },
+  { base:"mean", ko:"의미하다 · 못된", pos:["동사", "형용사"], stub:true },
+  { base:"keep", ko:"유지하다 · 계속하다", pos:["동사"], stub:true },
+  { base:"student", ko:"학생", pos:["명사"], stub:true },
+  { base:"let", ko:"~하게 하다 · 허락하다", pos:["동사"], stub:true },
+  { base:"great", ko:"큰 · 훌륭한", pos:["형용사"], stub:true },
+  { base:"big", ko:"큰", pos:["형용사"], stub:true },
+  { base:"group", ko:"무리 · 집단", pos:["명사"], stub:true },
+  { base:"begin", ko:"시작하다", pos:["동사"], stub:true },
+  { base:"seem", ko:"~인 것 같다", pos:["동사"], stub:true },
+  { base:"country", ko:"나라 · 시골", pos:["명사"], stub:true },
+  { base:"talk", ko:"말하다 · 이야기", pos:["동사", "명사"], stub:true },
+  { base:"turn", ko:"돌다 · 돌리다 · 차례", pos:["동사", "명사"], stub:true },
+  { base:"problem", ko:"문제", pos:["명사"], stub:true },
+  { base:"every", ko:"모든 · 매~", pos:["한정사"], stub:true },
+  { base:"start", ko:"시작하다 · 시작", pos:["동사", "명사"], stub:true },
+  { base:"hand", ko:"손 · 건네주다", pos:["명사", "동사"], stub:true },
+  { base:"might", ko:"~일지도 모른다", pos:["조동사"], stub:true },
+  { base:"show", ko:"보여주다 · 쇼", pos:["동사", "명사"], stub:true },
+  { base:"part", ko:"부분 · 일부", pos:["명사"], stub:true },
+  { base:"against", ko:"~에 반대하여", pos:["전치사"], stub:true },
+  { base:"place", ko:"장소 · 놓다", pos:["명사", "동사"], stub:true },
+  { base:"such", ko:"그런 · 그러한", pos:["한정사"], stub:true },
+  { base:"again", ko:"다시 · 또", pos:["부사"], stub:true },
+  { base:"few", ko:"적은 · 몇몇의", pos:["한정사", "형용사"], stub:true },
+  { base:"week", ko:"주 · 일주일", pos:["명사"], stub:true },
+  { base:"each", ko:"각각의 · 각자", pos:["한정사", "대명사"], stub:true },
+  { base:"hear", ko:"듣다", pos:["동사"], stub:true },
+  { base:"question", ko:"질문 · 문제", pos:["명사", "동사"], stub:true },
+  { base:"during", ko:"~동안", pos:["전치사"], stub:true },
+  { base:"play", ko:"놀다 · 연주하다 · 놀이", pos:["동사", "명사"], stub:true },
+  { base:"run", ko:"달리다 · 운영하다", pos:["동사", "명사"], stub:true },
+  { base:"small", ko:"작은", pos:["형용사"], stub:true },
+  { base:"number", ko:"수 · 숫자 · 번호", pos:["명사"], stub:true },
+  { base:"move", ko:"움직이다 · 이사하다", pos:["동사", "명사"], stub:true },
+  { base:"night", ko:"밤", pos:["명사"], stub:true },
+  { base:"live", ko:"살다", pos:["동사"], stub:true },
+  { base:"believe", ko:"믿다", pos:["동사"], stub:true },
+  { base:"hold", ko:"잡다 · 들다 · 유지하다", pos:["동사"], stub:true },
+  { base:"today", ko:"오늘", pos:["부사", "명사"], stub:true },
+  { base:"bring", ko:"가져오다 · 데려오다", pos:["동사"], stub:true },
+  { base:"happen", ko:"일어나다 · 발생하다", pos:["동사"], stub:true },
+  { base:"next", ko:"다음의 · 다음에", pos:["형용사", "부사"], stub:true },
+  { base:"without", ko:"~없이", pos:["전치사"], stub:true },
+  { base:"before", ko:"~전에 · 앞에", pos:["전치사", "접속사"], stub:true },
+  { base:"large", ko:"큰 · 넓은", pos:["형용사"], stub:true },
+  { base:"water", ko:"물", pos:["명사"], stub:true },
+  { base:"room", ko:"방 · 공간", pos:["명사"], stub:true },
+  { base:"write", ko:"쓰다", pos:["동사"], stub:true },
+  { base:"mother", ko:"어머니 · 엄마", pos:["명사"], stub:true },
+  { base:"money", ko:"돈", pos:["명사"], stub:true },
+  { base:"young", ko:"젊은 · 어린", pos:["형용사"], stub:true },
+  { base:"month", ko:"달 · 월", pos:["명사"], stub:true },
+  { base:"book", ko:"책 · 예약하다", pos:["명사", "동사"], stub:true },
+  { base:"eye", ko:"눈", pos:["명사"], stub:true },
+  { base:"job", ko:"일 · 직업", pos:["명사"], stub:true },
+  { base:"though", ko:"비록 ~이지만", pos:["접속사", "부사"], stub:true },
+  { base:"side", ko:"옆 · 측면 · 편", pos:["명사"], stub:true },
+  { base:"four", ko:"넷 · 4", pos:["숫자"], stub:true },
+  { base:"head", ko:"머리 · 우두머리", pos:["명사"], stub:true },
+  { base:"far", ko:"멀리 · 먼", pos:["부사", "형용사"], stub:true },
+  { base:"black", ko:"검은 · 검정", pos:["형용사", "명사"], stub:true },
+  { base:"long", ko:"긴 · 오래", pos:["형용사", "부사"], stub:true },
+  { base:"both", ko:"둘 다 · 양쪽의", pos:["한정사", "대명사"], stub:true },
+  { base:"little", ko:"작은 · 조금", pos:["형용사", "부사"], stub:true },
+  { base:"house", ko:"집", pos:["명사"], stub:true },
+  { base:"yes", ko:"네 · 응", pos:["감탄사"], stub:true },
+  { base:"since", ko:"~이후로 · ~때문에", pos:["전치사", "접속사"], stub:true },
+  { base:"around", ko:"주위에 · 대략", pos:["전치사", "부사"], stub:true },
+  { base:"father", ko:"아버지 · 아빠", pos:["명사"], stub:true },
+  { base:"sit", ko:"앉다", pos:["동사"], stub:true },
+  { base:"away", ko:"떨어져 · 멀리", pos:["부사"], stub:true },
+  { base:"until", ko:"~까지", pos:["전치사", "접속사"], stub:true },
+  { base:"hour", ko:"시간 · 1시간", pos:["명사"], stub:true },
+  { base:"game", ko:"게임 · 경기", pos:["명사"], stub:true },
+  { base:"often", ko:"자주 · 종종", pos:["부사"], stub:true },
+  { base:"yet", ko:"아직 · 그러나", pos:["부사", "접속사"], stub:true },
+  { base:"end", ko:"끝 · 끝나다", pos:["명사", "동사"], stub:true },
+  { base:"ever", ko:"한 번이라도 · 지금까지", pos:["부사"], stub:true },
+  { base:"stand", ko:"서다 · 견디다", pos:["동사"], stub:true },
+  { base:"bad", ko:"나쁜", pos:["형용사"], stub:true },
+  { base:"lose", ko:"잃다 · 지다", pos:["동사"], stub:true },
+  { base:"pay", ko:"지불하다 · 급여", pos:["동사", "명사"], stub:true },
+  { base:"meet", ko:"만나다", pos:["동사"], stub:true },
+  { base:"car", ko:"자동차 · 차", pos:["명사"], stub:true },
+  { base:"city", ko:"도시", pos:["명사"], stub:true },
+  { base:"almost", ko:"거의", pos:["부사"], stub:true },
+  { base:"name", ko:"이름 · 이름 짓다", pos:["명사", "동사"], stub:true },
+  { base:"five", ko:"다섯 · 5", pos:["숫자"], stub:true },
+  { base:"once", ko:"한 번 · 일단 ~하면", pos:["부사", "접속사"], stub:true },
+  { base:"white", ko:"흰 · 흰색", pos:["형용사", "명사"], stub:true },
+  { base:"learn", ko:"배우다", pos:["동사"], stub:true },
+  { base:"change", ko:"바꾸다 · 변화", pos:["동사", "명사"], stub:true },
+  { base:"point", ko:"점 · 요점 · 가리키다", pos:["명사", "동사"], stub:true },
+  { base:"nothing", ko:"아무것도 아닌 것", pos:["대명사"], stub:true },
+  { base:"understand", ko:"이해하다", pos:["동사"], stub:true },
+  { base:"watch", ko:"보다 · 지켜보다 · 시계", pos:["동사", "명사"], stub:true },
+  { base:"together", ko:"함께 · 같이", pos:["부사"], stub:true },
+  { base:"follow", ko:"따르다 · 따라가다", pos:["동사"], stub:true },
+  { base:"parent", ko:"부모", pos:["명사"], stub:true },
+  { base:"stop", ko:"멈추다 · 정류장", pos:["동사", "명사"], stub:true },
+  { base:"idea", ko:"생각 · 아이디어", pos:["명사"], stub:true },
+  { base:"include", ko:"포함하다", pos:["동사"], stub:true },
+  { base:"continue", ko:"계속하다", pos:["동사"], stub:true },
+  { base:"lead", ko:"이끌다 · 앞서다", pos:["동사"], stub:true },
+  { base:"create", ko:"만들다 · 창조하다", pos:["동사"], stub:true },
+  { base:"speak", ko:"말하다", pos:["동사"], stub:true },
+  { base:"read", ko:"읽다", pos:["동사"], stub:true },
+  { base:"allow", ko:"허락하다", pos:["동사"], stub:true },
+  { base:"add", ko:"더하다 · 추가하다", pos:["동사"], stub:true },
+  { base:"spend", ko:"() 쓰다", pos:["동사"], stub:true },
+  { base:"grow", ko:"자라다 · 커지다", pos:["동사"], stub:true },
+  { base:"open", ko:"열다 · 열린", pos:["동사", "형용사"], stub:true },
+  { base:"walk", ko:"걷다 · 산책", pos:["동사", "명사"], stub:true },
+  { base:"win", ko:"이기다", pos:["동사"], stub:true },
+  { base:"offer", ko:"제공하다 · 제안", pos:["동사", "명사"], stub:true },
+  { base:"remember", ko:"기억하다", pos:["동사"], stub:true },
+  { base:"love", ko:"사랑하다 · 사랑", pos:["동사", "명사"], stub:true },
+  { base:"buy", ko:"사다", pos:["동사"], stub:true },
+  { base:"wait", ko:"기다리다", pos:["동사"], stub:true },
+  { base:"send", ko:"보내다", pos:["동사"], stub:true },
+  { base:"build", ko:"짓다 · 세우다", pos:["동사"], stub:true },
+  { base:"stay", ko:"머물다 · 유지하다", pos:["동사"], stub:true },
+  { base:"fall", ko:"떨어지다 · 가을", pos:["동사", "명사"], stub:true },
+  { base:"cut", ko:"자르다 · 삭감", pos:["동사", "명사"], stub:true },
+  { base:"reach", ko:"닿다 · 도달하다", pos:["동사"], stub:true },
+  { base:"pass", ko:"지나가다 · 통과하다", pos:["동사", "명사"], stub:true },
+  { base:"sell", ko:"팔다", pos:["동사"], stub:true },
+  { base:"decide", ko:"결정하다", pos:["동사"], stub:true },
+  { base:"return", ko:"돌아오다 · 반환", pos:["동사", "명사"], stub:true },
+  { base:"explain", ko:"설명하다", pos:["동사"], stub:true },
+  { base:"hope", ko:"바라다 · 희망", pos:["동사", "명사"], stub:true },
+  { base:"join", ko:"가입하다 · 합류하다", pos:["동사"], stub:true },
+  { base:"agree", ko:"동의하다", pos:["동사"], stub:true },
+  { base:"wear", ko:"입다 · 착용하다", pos:["동사"], stub:true },
+  { base:"eat", ko:"먹다", pos:["동사"], stub:true },
+  { base:"expect", ko:"기대하다 · 예상하다", pos:["동사"], stub:true },
+  { base:"receive", ko:"받다", pos:["동사"], stub:true },
+  { base:"power", ko:"힘 · 권력", pos:["명사"], stub:true },
+  { base:"line", ko:"선 · 줄", pos:["명사"], stub:true },
+  { base:"member", ko:"구성원 · 회원", pos:["명사"], stub:true },
+  { base:"law", ko:"법 · 법률", pos:["명사"], stub:true },
+  { base:"community", ko:"공동체 · 지역 사회", pos:["명사"], stub:true },
+  { base:"team", ko:"팀", pos:["명사"], stub:true },
+  { base:"minute", ko:"분 · 잠깐", pos:["명사"], stub:true },
+  { base:"information", ko:"정보", pos:["명사"], stub:true },
+  { base:"face", ko:"얼굴 · 마주하다", pos:["명사", "동사"], stub:true },
+  { base:"level", ko:"수준 · 단계", pos:["명사"], stub:true },
+  { base:"office", ko:"사무실 · 관직", pos:["명사"], stub:true },
+  { base:"door", ko:"문", pos:["명사"], stub:true },
+  { base:"health", ko:"건강", pos:["명사"], stub:true },
+  { base:"art", ko:"예술 · 미술", pos:["명사"], stub:true },
+  { base:"war", ko:"전쟁", pos:["명사"], stub:true },
+  { base:"history", ko:"역사", pos:["명사"], stub:true },
+  { base:"party", ko:"파티 · 정당", pos:["명사"], stub:true },
+  { base:"result", ko:"결과", pos:["명사"], stub:true },
+  { base:"morning", ko:"아침 · 오전", pos:["명사"], stub:true },
+  { base:"reason", ko:"이유 · 이성", pos:["명사"], stub:true },
+  { base:"plan", ko:"계획 · 계획하다", pos:["명사", "동사"], stub:true },
+  { base:"food", ko:"음식", pos:["명사"], stub:true },
+  { base:"moment", ko:"순간 · 잠깐", pos:["명사"], stub:true },
+  { base:"air", ko:"공기 · 공중", pos:["명사"], stub:true },
+  { base:"teacher", ko:"교사 · 선생님", pos:["명사"], stub:true },
+  { base:"price", ko:"가격 · 값", pos:["명사"], stub:true },
+  { base:"education", ko:"교육", pos:["명사"], stub:true },
+  { base:"age", ko:"나이 · 시대", pos:["명사"], stub:true },
+  { base:"road", ko:"길 · 도로", pos:["명사"], stub:true },
+  { base:"music", ko:"음악", pos:["명사"], stub:true },
+  { base:"light", ko:"빛 · 가벼운", pos:["명사", "형용사"], stub:true },
+  { base:"political", ko:"정치적인", pos:["형용사"], stub:true },
+  { base:"best", ko:"최고의 · 가장 잘", pos:["형용사", "부사"], stub:true },
+  { base:"social", ko:"사회의 · 사교적인", pos:["형용사"], stub:true },
+  { base:"public", ko:"공공의 · 대중", pos:["형용사", "명사"], stub:true },
+  { base:"low", ko:"낮은 · 낮게", pos:["형용사", "부사"], stub:true },
+  { base:"early", ko:"이른 · 일찍", pos:["형용사", "부사"], stub:true },
+  { base:"human", ko:"인간의 · 인간", pos:["형용사", "명사"], stub:true },
+  { base:"able", ko:"할 수 있는", pos:["형용사"], stub:true },
+  { base:"local", ko:"지역의 · 현지의", pos:["형용사"], stub:true },
+  { base:"late", ko:"늦은 · 늦게", pos:["형용사", "부사"], stub:true },
+  { base:"hard", ko:"어려운 · 열심히", pos:["형용사", "부사"], stub:true },
+  { base:"former", ko:"이전의 · 예전의", pos:["형용사"], stub:true },
+  { base:"major", ko:"주요한 · 전공", pos:["형용사", "명사"], stub:true },
+  { base:"economic", ko:"경제의", pos:["형용사"], stub:true },
+  { base:"strong", ko:"강한 · 튼튼한", pos:["형용사"], stub:true },
+  { base:"possible", ko:"가능한", pos:["형용사"], stub:true },
+  { base:"whole", ko:"전체의 · 전부", pos:["형용사", "명사"], stub:true },
+  { base:"free", ko:"자유로운 · 무료의", pos:["형용사", "부사"], stub:true },
+  { base:"true", ko:"사실인 · 진정한", pos:["형용사"], stub:true },
+  { base:"full", ko:"가득 찬 · 완전한", pos:["형용사"], stub:true },
+  { base:"international", ko:"국제적인", pos:["형용사"], stub:true },
+  { base:"special", ko:"특별한", pos:["형용사"], stub:true },
+  { base:"official", ko:"공식적인 · 공무원", pos:["형용사", "명사"], stub:true },
+  { base:"later", ko:"나중에 · 후에", pos:["부사"], stub:true },
+  { base:"ago", ko:"~전에", pos:["부사"], stub:true },
+  { base:"actually", ko:"실제로 · 사실은", pos:["부사"], stub:true },
+  { base:"probably", ko:"아마", pos:["부사"], stub:true },
+  { base:"maybe", ko:"아마 · 어쩌면", pos:["부사"], stub:true },
+  { base:"perhaps", ko:"아마 · 어쩌면", pos:["부사"], stub:true },
+  { base:"sometimes", ko:"때때로 · 가끔", pos:["부사"], stub:true },
+  { base:"finally", ko:"마침내 · 마지막으로", pos:["부사"], stub:true },
+  { base:"especially", ko:"특히", pos:["부사"], stub:true },
+  { base:"across", ko:"건너서 · 가로질러", pos:["전치사", "부사"], stub:true },
+  { base:"toward", ko:"~쪽으로 · ~을 향해", pos:["전치사"], stub:true },
+  { base:"although", ko:"비록 ~이지만", pos:["접속사"], stub:true },
+  { base:"research", ko:"연구 · 조사", pos:["명사"], stub:true },
+  { base:"force", ko:"힘 · 강요하다", pos:["명사", "동사"], stub:true },
+  { base:"foot", ko:"발", pos:["명사"], stub:true },
+  { base:"process", ko:"과정 · 처리하다", pos:["명사", "동사"], stub:true },
+  { base:"consider", ko:"고려하다 · 여기다", pos:["동사"], stub:true },
+  { base:"appear", ko:"나타나다 · 보이다", pos:["동사"], stub:true },
+  { base:"serve", ko:"제공하다 · 봉사하다", pos:["동사"], stub:true },
+  { base:"market", ko:"시장", pos:["명사"], stub:true },
+  { base:"sense", ko:"감각 · 의미", pos:["명사"], stub:true },
+  { base:"college", ko:"대학", pos:["명사"], stub:true },
+  { base:"interest", ko:"관심 · 이자", pos:["명사"], stub:true },
+  { base:"experience", ko:"경험 · 경험하다", pos:["명사", "동사"], stub:true },
+  { base:"remain", ko:"남다 · 남아 있다", pos:["동사"], stub:true },
+  { base:"effect", ko:"효과 · 영향", pos:["명사"], stub:true },
+  { base:"suggest", ko:"제안하다 · 시사하다", pos:["동사"], stub:true },
+  { base:"class", ko:"수업 · 학급 · 계층", pos:["명사"], stub:true },
+  { base:"control", ko:"통제 · 통제하다", pos:["명사", "동사"], stub:true },
+  { base:"raise", ko:"올리다 · 기르다", pos:["동사"], stub:true },
+  { base:"care", ko:"돌봄 · 신경 쓰다", pos:["명사", "동사"], stub:true },
+  { base:"field", ko:"분야 · 들판", pos:["명사"], stub:true },
+  { base:"require", ko:"요구하다 · 필요로 하다", pos:["동사"], stub:true },
+  { base:"development", ko:"발전 · 개발", pos:["명사"], stub:true },
+  { base:"report", ko:"보고서 · 보고하다", pos:["명사", "동사"], stub:true },
+  { base:"role", ko:"역할", pos:["명사"], stub:true },
+  { base:"effort", ko:"노력", pos:["명사"], stub:true },
+  { base:"rate", ko:"비율 · 속도", pos:["명사"], stub:true },
+  { base:"leader", ko:"지도자 · 리더", pos:["명사"], stub:true },
+  { base:"voice", ko:"목소리", pos:["명사"], stub:true },
+  { base:"pull", ko:"당기다", pos:["동사"], stub:true },
+  { base:"decision", ko:"결정", pos:["명사"], stub:true },
+  { base:"develop", ko:"개발하다 · 발전하다", pos:["동사"], stub:true },
+  { base:"view", ko:"관점 · 경치 · 보다", pos:["명사", "동사"], stub:true },
+  { base:"relationship", ko:"관계", pos:["명사"], stub:true },
+  { base:"carry", ko:"나르다 · 지니다", pos:["동사"], stub:true },
+  { base:"town", ko:"소도시 · 마을", pos:["명사"], stub:true },
+  { base:"drive", ko:"운전하다", pos:["동사", "명사"], stub:true },
+  { base:"arm", ko:"팔", pos:["명사"], stub:true },
+  { base:"break", ko:"깨다 · 휴식", pos:["동사", "명사"], stub:true },
+  { base:"difference", ko:"차이", pos:["명사"], stub:true },
+  { base:"thank", ko:"감사하다", pos:["동사"], stub:true },
+  { base:"value", ko:"가치", pos:["명사"], stub:true },
+  { base:"building", ko:"건물", pos:["명사"], stub:true },
+  { base:"action", ko:"행동 · 조치", pos:["명사"], stub:true },
+  { base:"model", ko:"모델 · 모형", pos:["명사"], stub:true },
+  { base:"season", ko:"계절 · 시즌", pos:["명사"], stub:true },
+  { base:"movie", ko:"영화", pos:["명사"], stub:true },
+  { base:"computer", ko:"컴퓨터", pos:["명사"], stub:true },
+  { base:"test", ko:"시험 · 검사", pos:["명사", "동사"], stub:true },
+  { base:"position", ko:"위치 · 자리 · 직위", pos:["명사"], stub:true },
+  { base:"player", ko:"선수 · 플레이어", pos:["명사"], stub:true },
+  { base:"record", ko:"기록 · 기록하다", pos:["명사", "동사"], stub:true },
+  { base:"pick", ko:"고르다 · 집다", pos:["동사"], stub:true },
+  { base:"paper", ko:"종이 · 논문", pos:["명사"], stub:true },
+  { base:"space", ko:"공간 · 우주", pos:["명사"], stub:true },
+  { base:"ground", ko:"땅 · 지면", pos:["명사"], stub:true },
+  { base:"form", ko:"형태 · 양식", pos:["명사", "동사"], stub:true },
+  { base:"support", ko:"지원 · 지지하다", pos:["명사", "동사"], stub:true },
+  { base:"event", ko:"행사 · 사건", pos:["명사"], stub:true },
+  { base:"matter", ko:"문제 · 중요하다", pos:["명사", "동사"], stub:true },
+  { base:"center", ko:"중심 · 센터", pos:["명사"], stub:true },
+  { base:"couple", ko:"한 쌍 · 두어 개", pos:["명사"], stub:true },
+  { base:"site", ko:"장소 · 사이트", pos:["명사"], stub:true },
+  { base:"project", ko:"프로젝트 · 계획", pos:["명사"], stub:true },
+  { base:"hit", ko:"치다 · 때리다", pos:["동사", "명사"], stub:true },
+  { base:"activity", ko:"활동", pos:["명사"], stub:true },
+  { base:"table", ko:"테이블 · 표", pos:["명사"], stub:true },
+  { base:"produce", ko:"생산하다 · 만들다", pos:["동사"], stub:true },
+  { base:"teach", ko:"가르치다", pos:["동사"], stub:true },
+  { base:"half", ko:"절반 · 절반의", pos:["명사", "형용사"], stub:true },
+  { base:"situation", ko:"상황", pos:["명사"], stub:true },
+  { base:"easy", ko:"쉬운", pos:["형용사"], stub:true },
+  { base:"cost", ko:"비용 · 비용이 들다", pos:["명사", "동사"], stub:true },
+  { base:"doctor", ko:"의사", pos:["명사"], stub:true },
+  { base:"figure", ko:"수치 · 인물 · 생각하다", pos:["명사", "동사"], stub:true },
+  { base:"street", ko:"거리 · 길", pos:["명사"], stub:true },
+  { base:"phone", ko:"전화 · 전화하다", pos:["명사", "동사"], stub:true },
+  { base:"data", ko:"데이터 · 자료", pos:["명사"], stub:true },
+  { base:"cover", ko:"덮다 · 다루다 · 덮개", pos:["동사", "명사"], stub:true },
+  { base:"picture", ko:"사진 · 그림", pos:["명사"], stub:true },
+  { base:"clear", ko:"분명한 · 맑은", pos:["형용사"], stub:true },
+  { base:"practice", ko:"연습 · 연습하다", pos:["명사", "동사"], stub:true },
+  { base:"answer", ko:"대답 · 대답하다", pos:["명사", "동사"], stub:true },
+  { base:"happy", ko:"행복한 · 기쁜", pos:["형용사"], stub:true },
+  { base:"ready", ko:"준비된", pos:["형용사"], stub:true },
+  { base:"simple", ko:"간단한 · 단순한", pos:["형용사"], stub:true },
+  { base:"cup", ko:"컵 · 잔", pos:["명사"], stub:true },
+  { base:"box", ko:"상자", pos:["명사"], stub:true },
+  { base:"pretty", ko:"꽤 · 예쁜", pos:["부사", "형용사"], stub:true },
+  { base:"feeling", ko:"느낌 · 감정", pos:["명사"], stub:true },
+  { base:"message", ko:"메시지", pos:["명사"], stub:true },
+  { base:"fail", ko:"실패하다", pos:["동사"], stub:true },
+  { base:"outside", ko:"밖에 · 바깥", pos:["부사", "전치사"], stub:true },
+  { base:"arrive", ko:"도착하다", pos:["동사"], stub:true },
+  { base:"glass", ko:"유리 · 유리잔", pos:["명사"], stub:true },
+  { base:"sister", ko:"언니 · 누나 · 여동생", pos:["명사"], stub:true },
+  { base:"miss", ko:"놓치다 · 그리워하다", pos:["동사"], stub:true },
+  { base:"station", ko:"역 · 정거장", pos:["명사"], stub:true },
+  { base:"blue", ko:"파란 · 파란색", pos:["형용사", "명사"], stub:true },
+  { base:"truth", ko:"진실 · 사실", pos:["명사"], stub:true },
+  { base:"song", ko:"노래", pos:["명사"], stub:true },
+  { base:"check", ko:"확인하다 · 확인", pos:["동사", "명사"], stub:true },
+  { base:"leg", ko:"다리", pos:["명사"], stub:true },
+  { base:"dark", ko:"어두운 · 어둠", pos:["형용사", "명사"], stub:true },
+  { base:"laugh", ko:"웃다 · 웃음", pos:["동사", "명사"], stub:true },
+  { base:"guess", ko:"추측하다 · 추측", pos:["동사", "명사"], stub:true },
+  { base:"forget", ko:"잊다", pos:["동사"], stub:true },
+  { base:"enjoy", ko:"즐기다", pos:["동사"], stub:true },
+  { base:"cold", ko:"추운 · 차가운 · 감기", pos:["형용사", "명사"], stub:true },
+  { base:"green", ko:"초록색의 · 초록색", pos:["형용사", "명사"], stub:true },
+  { base:"memory", ko:"기억 · 추억", pos:["명사"], stub:true },
+  { base:"card", ko:"카드", pos:["명사"], stub:true },
+  { base:"above", ko:"위에 · 위의", pos:["전치사", "부사"], stub:true },
+  { base:"seat", ko:"자리 · 좌석", pos:["명사"], stub:true },
+  { base:"nice", ko:"좋은 · 친절한", pos:["형용사"], stub:true },
+  { base:"spring", ko:"봄", pos:["명사"], stub:true },
+  { base:"radio", ko:"라디오", pos:["명사"], stub:true },
+  { base:"visit", ko:"방문하다 · 방문", pos:["동사", "명사"], stub:true },
+  { base:"avoid", ko:"피하다", pos:["동사"], stub:true },
+  { base:"imagine", ko:"상상하다", pos:["동사"], stub:true },
+  { base:"tonight", ko:"오늘 밤", pos:["부사", "명사"], stub:true },
+  { base:"huge", ko:"거대한 · 엄청난", pos:["형용사"], stub:true },
+  { base:"ball", ko:"공", pos:["명사"], stub:true },
+  { base:"finish", ko:"끝내다 · 끝나다", pos:["동사"], stub:true },
+  { base:"popular", ko:"인기 있는", pos:["형용사"], stub:true },
+  { base:"pain", ko:"고통 · 아픔", pos:["명사"], stub:true },
+  { base:"wide", ko:"넓은", pos:["형용사"], stub:true },
+  { base:"shake", ko:"흔들다 · 떨다", pos:["동사"], stub:true },
+  { base:"fly", ko:"날다 · 비행하다", pos:["동사"], stub:true },
+  { base:"chair", ko:"의자", pos:["명사"], stub:true },
+  { base:"fish", ko:"물고기 · 생선", pos:["명사"], stub:true },
+  { base:"camera", ko:"카메라", pos:["명사"], stub:true },
+  { base:"weight", ko:"무게 · 체중", pos:["명사"], stub:true },
+  { base:"suddenly", ko:"갑자기", pos:["부사"], stub:true },
+  { base:"discover", ko:"발견하다", pos:["동사"], stub:true },
+  { base:"trip", ko:"여행", pos:["명사"], stub:true },
+  { base:"evening", ko:"저녁", pos:["명사"], stub:true },
+  { base:"inside", ko:"안에 · 안쪽", pos:["전치사", "부사"], stub:true },
+  { base:"worry", ko:"걱정하다 · 걱정", pos:["동사", "명사"], stub:true },
+  { base:"deep", ko:"깊은", pos:["형용사"], stub:true },
+  { base:"front", ko:"앞 · 앞쪽", pos:["명사", "형용사"], stub:true },
+  { base:"trouble", ko:"문제 · 곤란", pos:["명사"], stub:true },
+  { base:"fear", ko:"두려움 · 공포", pos:["명사", "동사"], stub:true },
+  { base:"shoulder", ko:"어깨", pos:["명사"], stub:true },
+  { base:"middle", ko:"중간 · 가운데", pos:["명사", "형용사"], stub:true },
+  { base:"sea", ko:"바다", pos:["명사"], stub:true },
+  { base:"dream", ko:"꿈 · 꿈꾸다", pos:["명사", "동사"], stub:true },
+  { base:"beautiful", ko:"아름다운", pos:["형용사"], stub:true },
+  { base:"hotel", ko:"호텔", pos:["명사"], stub:true },
+  { base:"heavy", ko:"무거운", pos:["형용사"], stub:true },
+  { base:"bag", ko:"가방 · 봉지", pos:["명사"], stub:true },
+  { base:"heat", ko:"열 · 더위", pos:["명사"], stub:true },
+  { base:"tough", ko:"힘든 · 강인한", pos:["형용사"], stub:true },
+  { base:"sing", ko:"노래하다", pos:["동사"], stub:true },
+  { base:"skin", ko:"피부", pos:["명사"], stub:true },
+  { base:"ahead", ko:"앞에 · 앞으로", pos:["부사"], stub:true },
+  { base:"address", ko:"주소", pos:["명사"], stub:true },
+  { base:"beat", ko:"이기다 · 때리다", pos:["동사"], stub:true },
+  { base:"finger", ko:"손가락", pos:["명사"], stub:true },
+  { base:"garden", ko:"정원", pos:["명사"], stub:true },
+  { base:"kitchen", ko:"부엌 · 주방", pos:["명사"], stub:true },
+  { base:"wish", ko:"바라다 · 소원", pos:["동사", "명사"], stub:true },
+  { base:"safe", ko:"안전한", pos:["형용사"], stub:true },
+  { base:"mouth", ko:"입", pos:["명사"], stub:true },
+  { base:"newspaper", ko:"신문", pos:["명사"], stub:true },
+  { base:"smile", ko:"미소 짓다 · 미소", pos:["동사", "명사"], stub:true },
+  { base:"interesting", ko:"흥미로운 · 재미있는", pos:["형용사"], stub:true },
+  { base:"rich", ko:"부유한 · 풍부한", pos:["형용사"], stub:true },
+  { base:"dinner", ko:"저녁 식사", pos:["명사"], stub:true },
 ];
 
 /* ── 문장 4단 분석 (기존 우측 콘텐츠 살리기 — 워크플로우 산출) ── */
@@ -2693,10 +3231,24 @@ const LS_STATE = "we_state_v1", LS_KEY = "we_api_key", LS_MODEL = "we_model", LS
 const LS_LEVEL = "we_level", LS_RULES = "we_global_rules"; // v1.7: 학습 단계 · 전체 지침 (총괄 대화에서 합의)
 /* ── v2.57: 💳 API 요금 집계 — 응답의 usage(입력·출력·캐시 토큰)를 모델별 요금표로 환산해 이 기기에 누적(이번 달 + 전체). 좌측 목록 맨 아래 배지에 표시(사용자 요청 "좌측 메뉴 어딘가에 API 요금").
    요금표는 공식 요금표 기준 추정치(1백만 토큰당 USD) — 실제 청구는 Anthropic 콘솔이 기준. 계정으로 쓰는 기기는 서버 집계(_acctInfo, GET /me)가 우선. we_usage_v1은 기기별 집계라 동기화에서 제외. */
-const LS_USAGE = "we_usage_v1", LS_ACCT = "we_acct_code", LS_ACCT_NAME = "we_acct_name", LS_ADMIN = "we_admin_secret"; // 👥 계정(v2.57) — 코드가 곧 자격, 관리 암호는 발급자용
+const LS_USAGE = "we_usage_v1", LS_ACCT = "we_acct_token", LS_ACCT_NAME = "we_acct_name", LS_ADMIN = "we_admin_secret"; // 👥 계정(v2.58) — 로그인 세션 토큰이 자격, 관리 암호는 서버 주인용
+const PADO_SERVER_URL = ""; // 👥 계정 서버 주소 — sync/deploy.sh 가 배포 후 여기에 심는다 (설정창 🔧 서버 주소로 덮어쓸 수 있음). 비어 있으면 계정 기능 안내만 표시
 const PRICE_USD = { "claude-opus-4-8": [5, 25, 6.25, 0.5], "claude-sonnet-5": [3, 15, 3.75, 0.3], "claude-haiku-4-5": [1, 5, 1.25, 0.1] }; // [입력, 출력, 캐시 쓰기, 캐시 읽기] — sync/worker.js와 같은 표
 let _acctInfo = null; // GET /me 결과(이름·이번 달 사용량·한도) — 배지·설정창 상태줄
-let _acctWiped = false; // 계정 바꾸기로 기록을 비운 뒤 새로 고침 전까지 true — 창 이탈 저장(saveState)·push가 비운 기록을 되살리거나 새 계정에 올리지 못하게
+let _acctWiped = false;
+/* v2.58: 품사 — 목록 알약·필터. 학교 문법 용어만(명사·동사·형용사·부사·전치사·대명사·접속사·관사·한정사·감탄사·숫자) + 조동사(can·will·must처럼 동사 앞에 붙는 말) */
+const POS_META = { // v2.58 기획 렌즈: 라벨은 학교 문법 용어(조동사 포함), 뜻은 툴팁으로 — 영어를 전혀 모르는 사람도 알약을 눌러 보면 이해되게
+  "동사": { c: "v", t: "움직임·상태를 말하는 말 — go, be, want" }, "명사": { c: "n", t: "사람·사물·일의 이름 — time, friend, idea" }, "형용사": { c: "adj", t: "이름말을 꾸미는 말 — good, new, big" },
+  "부사": { c: "adv", t: "동사나 문장 전체에 얹는 말 — really, always, well" }, "전치사": { c: "prep", t: "이름말 앞에 붙어 관계를 잇는 말 — on, in, of" }, "대명사": { c: "pron", t: "이름말 대신 쓰는 말 — I, you, it" },
+  "접속사": { c: "conj", t: "덩어리와 덩어리를 잇는 말 — and, but, because" }, "관사": { c: "art", t: "이름말 앞에 붙는 신호 — a, the" }, "조동사": { c: "aux", t: "동사 앞에서 태도·가능성을 더하는 말 — can, will, must" },
+  "한정사": { c: "det", t: "얼마나·어느 것을 정해 주는 말 — this, every, each, any" }, "감탄사": { c: "int", t: "느낌을 내뱉는 말 — yes" }, "숫자": { c: "num", t: "수를 세는 말 — three, four, five" } }; // 예시는 실제 목록에 있는 단어만(기획 재검수)
+let _posFilter = ""; // 현재 품사 필터(""=전체) — 재렌더에도 유지
+function posPillsHTML(pos){ return (pos || []).map(p => { const m = POS_META[p] || { c: "x", t: "" }; return `<span class="w-pos pos-${esc(m.c)}" title="${esc(m.t)}">${esc(p)}</span>`; }).join(""); }
+function posOptionsHTML(){
+  const cnt = {}; WORDS.forEach(w => (w.pos || []).forEach(p => { cnt[p] = (cnt[p] || 0) + 1; }));
+  return `<option value="">전체 품사 · ${WORDS.length}</option>` + Object.keys(POS_META).filter(p => cnt[p]).map(p => `<option value="${esc(p)}">${esc(p)} · ${cnt[p]}</option>`).join("");
+}
+ // 계정 바꾸기로 기록을 비운 뒤 새로 고침 전까지 true — 창 이탈 저장(saveState)·push가 비운 기록을 되살리거나 새 계정에 올리지 못하게
 function priceFor(model){ const k = Object.keys(PRICE_USD).find(p => String(model || "").indexOf(p) === 0); return PRICE_USD[k] || PRICE_USD["claude-opus-4-8"]; }
 function usageCost(model, u){ const p = priceFor(model); return ((u.i || 0) * p[0] + (u.o || 0) * p[1] + (u.cw || 0) * p[2] + (u.cr || 0) * p[3]) / 1e6; }
 function usageMonth(){ const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); }
@@ -3055,12 +3607,13 @@ function buildSystem(extra, cfg, ownerKey){
   const wv = state.waves.find(x => x.id === key);
   if(wv){
     const w = WORDS.find(x => x.base === wv.sourceWord);
-    if(w) base += `\n\n[출처 단어 — ${w.base}] 이 파도는 단어 "${w.base}"(${w.metaphor} — ${w.tagline}) 학습에서 떼어 온 것이다. 설명이 이 단어와 만나는 지점에서는 이 결로 정박해 설명하라. 단, 대화의 초점은 어디까지나 떼어 온 인용 부분이다.`;
+    if(w) base += `\n\n[출처 단어 — ${w.base}] 이 파도는 단어 "${w.base}"(${w.metaphor || w.ko} — ${w.tagline || (w.pos || []).join("·")}) 학습에서 떼어 온 것이다. 설명이 이 단어와 만나는 지점에서는 이 결로 정박해 설명하라. 단, 대화의 초점은 어디까지나 떼어 온 인용 부분이다.`;
     return base + (extra ? "\n" + extra : "");
   }
   // v2.6: 단어 전용 스레드 — 그 단어에 깊이 특화하되, 화면에 이미 보이는 콘텐츠를 통째로 반복하는 투머치 금지
   const w = WORDS.find(x => x.base === key);
   if(!w) return base + (extra ? "\n" + extra : "");
+  if(!w.main) return base + `\n\n[현재 학습 컨텍스트 — 단어 "${w.base}" 전용 스레드]\n- 사전 뜻: ${w.ko} (${(w.pos || []).join("·")})\n- 이 단어의 결(느낌) 콘텐츠는 아직 없다 — 뜻 나열이 아니라 websurfer 방식(한 장면이 떠오르는 결·한국인이 넘어지는 지점)으로 설명하라.` + (extra ? "\n" + extra : ""); // v2.58: 스텁 단어
   const strip = (s) => String(s || "").replace(/<[^>]+>/g, "");
   const r = WORD_RICH[w.base], m = (typeof WORD_MORE !== "undefined" && WORD_MORE[w.base]) || null;
   const meanings = ((r && r.meanings) || []).map(strip).join(" / ");
@@ -3097,7 +3650,7 @@ async function* streamClaude({ system, messages, signal, light, maxTokens }){
     try{ const j = await res.json(); if(j && j.error) detail = j.error.message || (typeof j.error === "string" ? j.error : j.error.type || ""); }catch(e){}
     console.error("[claude-api]", res.status, detail); // 원본 에러는 콘솔에만 — 학습자 화면엔 한국어만 (기획 렌즈 원칙)
     let msg = `연결에 문제가 있었어요 (오류 번호 ${res.status}). 잠시 후 다시 시도해 주세요.`;
-    if(res.status === 401) msg = viaAcct ? "계정 코드가 서버와 달라요. ⚙️ 설정에서 확인해 주세요." : "API 키가 유효하지 않아요. ⚙️ 설정에서 확인해 주세요.";
+    if(res.status === 401){ msg = viaAcct ? "로그인이 풀렸어요 — ⚙️ 설정에서 다시 로그인해 주세요." : "API 키가 유효하지 않아요. ⚙️ 설정에서 확인해 주세요."; if(viaAcct) acctSessionLost(); }
     if(res.status === 402) msg = "이번 달 AI 사용 한도에 도달했어요 — 계정을 발급한 분에게 문의해 주세요."; // v2.57: 서버 한도(capUsd)
     if(res.status === 403 && viaAcct) msg = "이 계정은 AI 대신 호출이 꺼져 있어요 — 계정을 발급한 분에게 문의하거나 ⚙️ 설정에 API 키를 넣어 주세요.";
     if(res.status === 429) msg = "요청이 너무 잦아요(요금제 한도). 잠시 후 다시 시도해 주세요.";
@@ -3215,6 +3768,9 @@ async function memoRefresh(thread, key){
   } catch(e){ console.warn("[memo]", e); } // 키 없음·오류는 조용히 — 다음 완료 때 다시 시도
   finally { _memoBusy.delete(key); }
 }
+/* v2.58: 답변은 다 오면 한 번에 — 흐르는 동안은 진행 표시만 제자리에서 갱신 (사용자: "한 문장씩 밀릴 때마다 스크롤이 툭툭 끊기는 게 신경 쓰여 — 다 되면 한 번에"). 스크롤 이동은 부드럽게 */
+function typingHTML(n){ return `<span class="typing" aria-live="polite"><span class="typing-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="typing-t">답변을 쓰는 중</span><span class="typing-n" aria-hidden="true">${n ? n + "자" : ""}</span></span>`; } // 글자 수는 스크린리더 낭독 제외(접근성 렌즈)
+function smoothBottom(log){ if(!log) return; const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; try { log.scrollTo({ top: log.scrollHeight, behavior: reduce ? "auto" : "smooth" }); } catch(e){ log.scrollTop = log.scrollHeight; } } // OS "동작 줄이기"면 즉시
 async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfgKey }){
   // ts = 질문 내역(날짜별) 재료 (v2.30). img = 붙여넣은 이미지 첨부 (v2.35) — content는 항상 문자열 유지(기존 소비자 보호), API 변환은 trimForApi가
   thread.push(img ? { role: "user", content: text, ts: Date.now(), img } : { role: "user", content: text, ts: Date.now() });
@@ -3239,10 +3795,10 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
   uDiv.dataset.mi = aIdx - 1; // 질문 목록 점프 대상 (재렌더 전에도)
   logEl.appendChild(uDiv);
   const aDiv = document.createElement("div");
-  aDiv.className = "msg ai streaming"; aDiv.innerHTML = '<div class="md"></div>';
+  aDiv.className = "msg ai streaming"; aDiv.innerHTML = '<div class="md">' + typingHTML(0) + '</div>'; // v2.58: 진행 표시 — 본문은 완료 때 한 번에
   aDiv.dataset.mi = aIdx;
   logEl.appendChild(aDiv);
-  logEl.scrollTop = logEl.scrollHeight;
+  smoothBottom(logEl); // v2.58: 부드럽게
   const mdEl = aDiv.querySelector(".md");
   /* v2.26: 스트리밍 중 재렌더(스레드 이탈 후 복귀 등)로 말풍선이 갈려도 계속 그 자리에 흘려 쓴다 —
      재렌더된 로그에서 같은 인덱스(data-mi)의 말풍선을 다시 찾는다. 다른 스레드를 보는 중이면 DOM은 건드리지 않는다(상태만 갱신). */
@@ -3264,11 +3820,9 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
       acc += chunk;
       aMsg.content = acc; // 스로틀 저장·창 이탈 플러시(visibilitychange)가 집어갈 최신 내용
       const t = liveTarget();
-      if(t){
-        // 사용자가 위로 스크롤해 이전 내용을 읽는 중이면 자동 스크롤 금지 — 맨 아래 근처일 때만 따라감
-        const stick = t.log.scrollHeight - t.log.scrollTop - t.log.clientHeight < 48;
-        t.md.innerHTML = mdRender(practiceMode ? stripGradeTail(acc) : acc); // v2.27: 채점 블록은 흐르는 중에도 숨김
-        if(stick) t.log.scrollTop = t.log.scrollHeight;
+      if(t){ // v2.58: 흐르는 동안은 본문을 그리지 않는다(한 줄씩 밀리는 흔들림 제거) — 글자 수만 제자리에서 갱신, 완료 때 한 번에
+        const n = t.md.querySelector(".typing-n");
+        if(n) n.textContent = `${acc.length}자`; else t.md.innerHTML = typingHTML(acc.length);
       }
       // v2.4: 답이 흐르는 동안에도 관련 콘텐츠가 주제를 따라간다 (1.2초에 한 번, 화면에 보이는 스레드만)
       const now = Date.now();
@@ -3320,12 +3874,13 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
         delete aMsg.partial;
         committed = true;
         saveState();
+        errMd.innerHTML = mdRender(acc); // v2.58: 중단까지 받은 만큼을 그린다(흐르는 동안은 안 그렸으므로)
       } else {
         errMd.innerHTML = "⏹ 답변을 중단했어요.";
         rollback();
       }
     } else if(String(err.message) === "NO_KEY"){
-      errMd.innerHTML = '<b>API 키나 계정 코드가 아직 없어요.</b><br>아래 버튼으로 <b>⚙️ 설정</b>을 열어 Claude API 키(또는 받은 계정 코드)를 넣으면 대화가 시작됩니다.<br><button class="key-open" type="button" data-open-settings>⚙️ 설정 열기</button><br><span style="color:var(--text-mute);font-size:.85em">키는 이 브라우저에만 저장돼요 — 컴퓨터·폰 각각 한 번씩 넣어 주세요. (console.anthropic.com에서 발급)</span>'; // v2.40: 모바일엔 "우측 상단 ⚙️"가 없음(보관 탭 안) — 안내에서 바로 연다
+      errMd.innerHTML = '<b>API 키나 계정 로그인이 아직 없어요.</b><br>아래 버튼으로 <b>⚙️ 설정</b>을 열어 Claude API 키를 넣거나 👥 계정에 로그인하면 대화가 시작됩니다.<br><button class="key-open" type="button" data-open-settings>⚙️ 설정 열기</button><br><span style="color:var(--text-mute);font-size:.85em">키는 이 브라우저에만 저장돼요 — 컴퓨터·폰 각각 한 번씩 넣어 주세요. (console.anthropic.com에서 발급)</span>'; // v2.40: 모바일엔 "우측 상단 ⚙️"가 없음(보관 탭 안) — 안내에서 바로 연다
       rollback(); // 실패한 user 턴 롤백
       if(!getDraft(ownerKey)){ setDraft(ownerKey, text); saveState(); } // 질문은 입력창 초안으로 — 즉시 저장(디바운스 400ms 안에 reload가 겹치면 유실되는 race 차단, 개발 렌즈)
       if(img){ _pendImg = img; showImgPrev(img); } // v2.35 QA: 첨부 이미지도 되돌린다 — 무언 유실 방지 (NO_KEY에서 특히 흔한 시나리오)
@@ -3369,7 +3924,7 @@ function detectWords(text){
     const b = t.toLowerCase().replace(/^'+|'+$/g,"");
     if(!b || seen.has(b)) return;
     seen.add(b);
-    if(WORDS.some(w => w.base === b) || WORD_RICH[b]) out.push(b);
+    if(WORDS.some(w => w.base === b && !w.stub) || WORD_RICH[b]) out.push(b); // v2.58: 스텁(결 콘텐츠 없음)은 관련 대상에서 제외
   });
   return out.slice(0, 3);
 }
@@ -3585,13 +4140,18 @@ function renderWordList(){
       <span class="w-base">🧭 파도 Chat</span>
     </div>
     <div class="w-search"><input id="word-search" type="search" placeholder="🔍 단어 검색" title="등록 단어는 바로 걸러지고, 없는 단어는 뜻을 찾아드려요 — Enter로 첫 결과 선택" autocomplete="off"><div id="w-search-gloss" hidden></div></div>
+    <div class="w-filter"><select id="w-pos" class="w-pos-sel" title="품사로 걸러 보기">${posOptionsHTML()}</select><span class="w-count" id="w-count"></span></div><!-- v2.58: 품사 필터 -->
+    <div class="w-pos-hint" id="w-pos-hint" hidden></div><!-- 고른 품사의 한 줄 설명 — 툴팁을 못 보는 터치 기기용(기획 재검수) -->
     <div class="w-div"></div>` + WORDS.map((w, i) => `
-    <div class="w-item ${w.base === state.activeWord ? "active" : ""}" data-word="${esc(w.base)}" role="button" tabindex="0">
+    <div class="w-item ${w.base === state.activeWord ? "active" : ""}${w.stub ? " stub" : ""}" data-word="${esc(w.base)}" data-pos="${esc((w.pos || []).join(" "))}" role="button" tabindex="0">
       <span class="w-num">${i + 1}</span>
-      <div class="w-txt"><span class="w-base">${esc(w.base)}</span>
+      <div class="w-txt"><span class="w-base">${esc(w.base)}${posPillsHTML(w.pos)}</span>
       <span class="w-ko">${esc(w.ko)}</span></div>
     </div>`).join("") + usageBadgeHTML(); // v2.57: 💳 이번 달 API 요금(맨 아래 sticky)
   renderUsageBadge();
+  const psel = document.getElementById("w-pos"); if(psel){ psel.value = _posFilter; if(psel.value !== _posFilter){ _posFilter = ""; psel.value = ""; } } // v2.58: 품사 필터 값 보존
+  posHintRender();
+  if(_posFilter) applyWordFilter();
   const inp = document.getElementById("word-search");
   if(inp && wsQ){
     inp.value = wsQ;
@@ -3606,16 +4166,33 @@ function renderWordList(){
   mSyncAsk();
 }
 /* ── v2.30: 좌측 단어 검색 — 등록 단어 즉시 필터 + 미등록 단어는 미니 사전으로 뜻 (사용자: "언제든 단어만 검색") ── */
-function applyWordFilter(){
+function applyWordFilter(){ // 검색어 + 품사 필터(v2.58) — 둘 다 만족하는 단어만
   const inp = document.getElementById("word-search");
   const q = (inp ? inp.value : "").trim().toLowerCase();
+  const pf = _posFilter;
+  let n = 0;
   document.querySelectorAll("#word-list .w-item:not(.global)").forEach((it) => {
     const base = String(it.dataset.word || "").toLowerCase();
     const koEl = it.querySelector(".w-ko");
     const ko = koEl ? koEl.textContent : "";
-    it.style.display = !q || base.includes(q) || ko.includes(q) ? "" : "none";
+    const ok = (!q || base.includes(q) || ko.includes(q)) && (!pf || String(it.dataset.pos || "").split(" ").includes(pf));
+    it.style.display = ok ? "" : "none";
+    if(ok) n++;
   });
+  const c = document.getElementById("w-count"); if(c) c.textContent = (q || pf) ? `${n}개` : "";
 }
+function posHintRender(){ // 필터 아래 안내 줄 — 고른 품사의 설명을 상시 텍스트로(툴팁은 터치 기기에서 안 보인다)
+  const h = document.getElementById("w-pos-hint"); if(!h) return;
+  const m = POS_META[_posFilter];
+  h.hidden = !m; h.textContent = m ? `${_posFilter} — ${m.t}` : "";
+}
+document.getElementById("word-list").addEventListener("change", (e) => { if(e.target && e.target.id === "w-pos"){ _posFilter = e.target.value; e.target.title = (POS_META[_posFilter] && POS_META[_posFilter].t) || "품사로 걸러 보기"; posHintRender(); applyWordFilter(); } }); // v2.58: 품사 필터 (위임 1회 — 재렌더 생존)
+document.getElementById("word-list").addEventListener("click", (e) => { // 알약 탭 = 그 품사의 설명 토스트 (단어 선택은 막는다 — 캡처 단계라 아래 행 클릭 위임보다 먼저)
+  const pill = e.target.closest && e.target.closest(".w-pos"); if(!pill) return;
+  const p = pill.textContent.trim(), m = POS_META[p];
+  if(m) weToast(`${p} — ${m.t}`);
+  e.stopPropagation();
+}, true);
 let _wsTimer = null;
 function wordSearchInput(){
   applyWordFilter();
@@ -3667,7 +4244,7 @@ function renderChatLog(){
   } else {
     log.innerHTML = chat.map((m, i) => m.role === "user"
       ? `<div class="msg user" data-mi="${i}"><div class="md">${mdRender(m.content)}</div>${m.img ? imgHTML(m.img) : ""}</div>`
-      : `<div class="msg ai${m.collapsed ? " collapsed" : ""}" data-mi="${i}"><button class="fold" data-fold="${i}" type="button" title="답변 접기/펼치기">${m.collapsed ? "▸" : "▾"}</button><div class="md">${mdRender(m.content)}</div>${m.grade ? gradeCardHTML(m.grade) : ""}</div>`).join("")
+      : `<div class="msg ai${m.collapsed ? " collapsed" : ""}${m.partial ? " streaming" : ""}" data-mi="${i}"><button class="fold" data-fold="${i}" type="button" title="답변 접기/펼치기">${m.collapsed ? "▸" : "▾"}</button><div class="md">${m.partial ? typingHTML(String(m.content || "").length) : mdRender(m.content)}</div>${m.grade ? gradeCardHTML(m.grade) : ""}</div>`).join("")
       + ansRowHTML(threadCfg(state.activeWord), chat) + tutorRowHTML(threadCfg(state.activeWord), chat) + roleRowHTML(threadCfg(state.activeWord), chat) + examRowHTML(threadCfg(state.activeWord), chat); // 작문=답안 버튼(v2.0) / 튜터=힌트 버튼(v2.39) / 상황극=주제·힌트·마무리(v2.52) 상주
   }
   log.scrollTop = log.scrollHeight;
@@ -3964,6 +4541,15 @@ function renderWordContent(){
       </section>`;
     return;
   }
+  if(!w.main){ // v2.58: 스텁 단어(뜻·품사만) — 결 콘텐츠는 준비 중, 지금은 AI에게 (백필 대상: WORDS.filter(w => w.stub))
+    document.getElementById("word-content").innerHTML = `
+      <section class="word-hero stub">
+        <div class="wh-base">${esc(w.base)} <span class="wh-short">— ${esc(w.ko)}</span></div>
+        <div class="wh-pos">${posPillsHTML(w.pos)}</div>
+        <div class="wh-desc">이 단어의 <b>결 콘텐츠</b>(느낌·함정·패턴)는 아직 준비 중이에요. 지금은 위 대화창에 물어보세요 — 예: "${esc(w.base)}가 들어간 문장 3개를 결이 다르게 보여줘"</div>
+      </section>`;
+    return;
+  }
   const a = findAnalysis(w.main.en);
   const r = WORD_RICH[w.base];
   const imp = WORD_MORE[w.base] && WORD_MORE[w.base].importance;
@@ -4000,7 +4586,7 @@ function detectWordsAll(text){
     const b = t.toLowerCase().replace(/^'+|'+$/g, "");
     if(!b || seen.has(b)) return;
     seen.add(b);
-    if(WORDS.some(w => w.base === b) || WORD_RICH[b] || WORD_MORE[b]) out.push(b);
+    if(WORDS.some(w => w.base === b && !w.stub) || WORD_RICH[b] || WORD_MORE[b]) out.push(b); // v2.58: 스텁 제외
   });
   return out;
 }
@@ -4048,7 +4634,7 @@ function relatedGroupsHTML(srcText, opt){
   // 관련 문장 — 대표 문장·예문 중 감지 단어 포함 (기준 문장·위 분석 문장은 제외)
   const rels = [];
   const seenEn = new Set([opt.excludeEn || ""].concat(anaTop.map(a => a.en)));
-  WORDS.forEach(w => { if(!seenEn.has(w.main.en) && anyWordIn(w.main.en)){ seenEn.add(w.main.en); rels.push({ en: w.main.en, ko: w.main.ko }); } });
+  WORDS.forEach(w => { if(w.main && !seenEn.has(w.main.en) && anyWordIn(w.main.en)){ seenEn.add(w.main.en); rels.push({ en: w.main.en, ko: w.main.ko }); } });
   Object.values(WORD_RICH).forEach(r => (r && r.main || []).forEach(x => {
     if(x && x.en && !seenEn.has(x.en) && anyWordIn(x.en)){ seenEn.add(x.en); rels.push({ en: x.en, ko: x.ko }); }
   }));
@@ -4188,7 +4774,7 @@ async function fillRulesFromChat(){
   } catch(err){
     console.error("[rules-fill]", err);
     const raw = String(err.message || "");
-    alert(raw === "NO_KEY" ? "API 키나 계정 코드가 필요해요 — ⚙️ 설정에서 넣어 주세요. (컴퓨터: 우측 상단 · 폰: ⭐ 보관 탭)"
+    alert(raw === "NO_KEY" ? "API 키나 계정 로그인이 필요해요 — ⚙️ 설정에서 넣어 주세요. (컴퓨터: 우측 상단 · 폰: ⭐ 보관 탭)"
       : /[가-힣]/.test(raw) ? "요약 실패: " + raw
       : "요약 실패: 잠시 후 다시 시도해 주세요.");
   } finally {
@@ -4291,10 +4877,11 @@ function renderRightBody(){
       body.innerHTML = chips + saDetailHTML(SENT_DATA[dIdx].analysis);
       return;
     }
-    const a = state.activeWord === GLOBAL_ID ? null : findAnalysis(w.main.en);
+    const a = state.activeWord === GLOBAL_ID || !w.main ? null : findAnalysis(w.main.en);
     body.innerHTML = chips + (a ? saDetailHTML(a.analysis)
       : state.activeWord === GLOBAL_ID
         ? `<div class="sa-empty">🧭 파도 Chat에는 대표 문장이 없어요.<br>왼쪽에서 단어를 고르면 그 대표 문장의 4단 파도가 여기 떠요.</div>`
+        : !w.main ? `<div class="sa-empty">"${esc(w.base)}"의 대표 문장은 아직 없어요.<br>중앙 대화창에서 문장을 받아 드래그 → 🔍 구문 분석으로 4단 파도를 만들 수 있어요.</div>`
         : `<div class="sa-empty">"${esc(w.main.en)}"<br>이 문장의 4단 파도는 아직 제작 전이에요.<br><br>중앙 대화창에서 <b>"이 문장 4단으로 분석해줘"</b>라고 하면<br>AI가 즉석에서 타 주고, 드래그해서 파도로 떼어갈 수도 있어요.</div>`);
     return;
   }
@@ -4332,7 +4919,7 @@ function renderRightBody(){
       </div>
       <div class="wave-log" id="wave-log">${(wv.msgs.map((m, i) => m.role === "user"
         ? `<div class="msg user" data-mi="${i}"><div class="md">${mdRender(m.content)}</div></div>`
-        : `<div class="msg ai" data-mi="${i}"><div class="md">${mdRender(m.content)}</div>${m.grade ? gradeCardHTML(m.grade) : ""}</div>`).join("") + ansRowHTML(threadCfg(wv.id), wv.msgs) + tutorRowHTML(threadCfg(wv.id), wv.msgs)) || '<div class="msg notice">떼어온 부분에 대해 무엇이든 물어보세요</div>'}</div>
+        : `<div class="msg ai${m.partial ? " streaming" : ""}" data-mi="${i}"><div class="md">${m.partial ? typingHTML(String(m.content || "").length) : mdRender(m.content)}</div>${m.grade ? gradeCardHTML(m.grade) : ""}</div>`).join("") + ansRowHTML(threadCfg(wv.id), wv.msgs) + tutorRowHTML(threadCfg(wv.id), wv.msgs)) || '<div class="msg notice">떼어온 부분에 대해 무엇이든 물어보세요</div>'}</div>
       <div class="chat-input">
         <textarea id="wave-input" rows="1" placeholder="이 부분에 대해 더 묻기... (Shift+Enter = 줄바꿈)">${esc(getDraft(wv.id))}</textarea>
         <button class="send-btn${ACTIVE.has(wv.msgs) ? " stop" : ""}" id="wave-send" type="button"${ACTIVE.has(wv.msgs) ? ' title="답변 중단"' : ""}>${ACTIVE.has(wv.msgs) ? "⏹" : "↑"}</button>
@@ -5463,7 +6050,7 @@ ${convo ? "\n[대화]\n" + convo : ""}`;
     const raw = String(err.message || "");
     // 학습자 화면엔 한국어만: 우리가 만든 한국어 메시지(한글 포함)는 그대로, JSON SyntaxError 등 영어 예외는 고정 문구로
     const msg = raw === "NO_KEY"
-      ? "API 키나 계정 코드가 필요해요 — ⚙️ 설정에서 넣어 주세요. (컴퓨터: 우측 상단 · 폰: ⭐ 보관 탭)"
+      ? "API 키나 계정 로그인이 필요해요 — ⚙️ 설정에서 넣어 주세요. (컴퓨터: 우측 상단 · 폰: ⭐ 보관 탭)"
       : /[가-힣]/.test(raw)
         ? "저장 실패: " + raw
         : "저장 실패: 답변을 분석 자료로 정리하지 못했어요. 잠시 후 다시 시도해 주세요.";
@@ -5484,7 +6071,7 @@ function waveDone(wv){
       const keep = wlog ? wlog.scrollTop : 0;
       renderRight();
       const nl = document.getElementById("wave-log");
-      if(nl && !stick) nl.scrollTop = keep;
+      if(nl){ nl.scrollTop = keep; if(stick) smoothBottom(nl); } // v2.58: 부드럽게
     } else renderRightTabs();
   };
 }
@@ -5632,7 +6219,8 @@ function sendMainText(text, extra, img){
       const stick = logEl.scrollHeight - logEl.scrollTop - logEl.clientHeight < 48;
       const keep = logEl.scrollTop;
       renderChatLog();
-      if(!stick) logEl.scrollTop = keep;
+      logEl.scrollTop = keep; // v2.58: 재렌더의 즉시 점프를 되돌리고
+      if(stick) smoothBottom(logEl); // 아래 근처였으면 부드럽게 내려간다
       renderRelated();
     }
     else renderQIndex(); // 실패(롤백) → 오류 말풍선은 남기고 질문 카운트만 정정
@@ -5736,10 +6324,9 @@ function openSettings(){
   document.getElementById("set-key").value = localStorage.getItem(LS_KEY) || "";
   document.getElementById("set-model").value = localStorage.getItem(LS_MODEL) || "claude-opus-4-8";
   document.getElementById("set-system").value = localStorage.getItem(LS_SYSTEM) || PHILO;
-  document.getElementById("sync-url").value = localStorage.getItem(LS_SYNC_URL) || ""; // v2.57: 👥 계정 (v2.45 동기화 칸을 계정 코드로 대체)
-  document.getElementById("acct-code").value = localStorage.getItem(LS_ACCT) || "";
+  document.getElementById("sync-url").value = localStorage.getItem(LS_SYNC_URL) || ""; // v2.58: 🔧 서버 주소 덮어쓰기(비우면 PADO_SERVER_URL)
   document.getElementById("admin-secret").value = localStorage.getItem(LS_ADMIN) || "";
-  acctStatusLine();
+  acctRenderSettings(); srvProbe(); // 👥 로그인 전/후 화면 + 서버 상태(가입 코드 필요? 서버 키?)
   document.getElementById("set-memo").checked = memoOn(); // v2.53
   modalBg.classList.add("show"); modal.classList.add("show");
 }
@@ -6331,12 +6918,12 @@ document.getElementById("set-save").addEventListener("click", () => {
     // 지시문: 비었거나 기본값과 동일하면 저장 안 함(기본 PHILO 사용) — 커스텀만 보관
     if(!sys.trim() || sys === PHILO) localStorage.removeItem(LS_SYSTEM);
     else localStorage.setItem(LS_SYSTEM, sys);
-    // v2.57: 👥 계정 — 서버 주소·계정 코드(연결/변경/끄기는 acctApply가 confirm으로 안내, 코드도 키처럼 보이지 않는 문자 정리) + 관리 암호(발급자용, 이 브라우저에만)
+    // v2.58: 🔧 서버 주소 덮어쓰기(비우면 앱에 심긴 주소) + 관리 암호(서버 주인용, 이 브라우저에만). 로그인·가입은 각 버튼이 처리
     const su = document.getElementById("sync-url").value.trim().replace(/\/+$/, "");
-    const ac = document.getElementById("acct-code").value.replace(/[\s​-‍﻿]+/g, "");
     const ad = document.getElementById("admin-secret").value.replace(/[\s​-‍﻿]+/g, "");
+    if(su && su !== PADO_SERVER_URL) localStorage.setItem(LS_SYNC_URL, su); else localStorage.removeItem(LS_SYNC_URL);
     if(ad) localStorage.setItem(LS_ADMIN, ad); else localStorage.removeItem(LS_ADMIN);
-    acctApply(su, ac).then((changed) => { if(!changed && syncCfg().on) initSync(); }); // 변경 없이 켜져 있으면 pull 한 번 더 (initSync는 중복 타이머 가드)
+    if(syncCfg().on) initSync();
   } catch(e){ console.warn(e); }
   closeSettings();
 });
@@ -6423,11 +7010,11 @@ document.getElementById("move-import").addEventListener("click", () => {
   if(r.ok < r.total){
     // 일부 실패를 성공처럼 알리지 않는다 — 정직한 실패 안내 원칙 (읽을 시간을 주고 새로 고침)
     weToast("⚠️ 일부만 가져왔어요 (" + r.ok + "/" + r.total + ") — 브라우저 저장 공간이 부족할 수 있어요. 새로 고침할게요");
-    setTimeout(() => location.reload(), 2200);
+    _acctWiped = true; setTimeout(() => location.reload(), 2200); // v2.58: 이사 결과를 pagehide 저장이 덮지 않게
     return;
   }
   weToast("✅ 전부 가져왔어요 (" + r.ok + "칸) — 새로 고침할게요");
-  setTimeout(() => location.reload(), 700);
+  _acctWiped = true; setTimeout(() => location.reload(), 700); // v2.58: 이사 결과를 pagehide 저장이 덮지 않게
 });
 
 /* ── v2.45: 자동 동기화 — 기기 간 학습 기록 자동 맞춤 (Cloudflare Worker, sync/ 폴더) ──
@@ -6439,18 +7026,18 @@ document.getElementById("move-import").addEventListener("click", () => {
    - pull이 한 번도 성공 못 한 기기는 push 금지(_syncPulledOk) — 새 기기의 빈 상태가 서버 기록을 덮는 사고 차단.
    - 서버(worker.js)도 updatedAt 역행 PUT을 409로 거부 + we_api_key 이중 폐기.
    - LWW(마지막 쓰기 승리) 블롭 단위 — 단일 학습자 전제(sync/README-설정.md에 명시). */
-/* ── v2.57: 👥 계정 — 계정 코드 하나가 자격이다. 같은 코드를 넣은 기기끼리 학습 기록이 이어지고(동기화), API 키가 없는 기기는 서버가 대신 AI를 부른다(streamClaude → /ai/messages).
-   v2.45의 "동기화 암호"(we_sync_secret)는 계정 코드(we_acct_code)로 대체 — 옛 키는 읽지도 보내지도 않는다(제외 목록엔 남겨 push에 실리지 않게).
-   새 계정의 빈 기록 원칙(사용자 요구 "새로 발급받은 사람은 이전 기록 없이 시작"): 계정을 바꾸면 이 브라우저의 기록을 비우고 시작 — acctApply가 confirm으로 확인.
-   초대 링크: …#join=<서버 주소>|<계정 코드> → 설정 없이 바로 연결(acctJoinFromLink). 관리(발급·목록·삭제)는 설정창 [🔑 계정 발급] — 관리 암호는 이 브라우저에만. */
+/* ── v2.58: 👥 계정 — 아이디·비밀번호(회원가입/로그인 → 세션 토큰). 토큰이 이후 모든 요청의 자격이다: 동기화(/sync, 계정별 스냅샷)와 AI 대신 호출(streamClaude → /ai/messages).
+   서버 주소는 배포 스크립트가 PADO_SERVER_URL 상수에 심는다(설정창 🔧에서 덮어쓸 수도). v2.57의 "계정 코드"(we_acct_code)는 폐기 — 토큰 키는 we_acct_token.
+   새 계정의 빈 기록 원칙(사용자 요구): 로그인 시 acctConnect가 confirm으로 확인 — 다른 계정으로 바꾸면 이 브라우저 기록을 비우고 시작, 첫 로그인은 "올릴까/비울까/그만둘까".
+   안전장치(v2.45 계승): 제외 목록(키·토큰·암호·커서·기기별 요금)은 push·pull 양쪽에서 제외 / pull 성공 전 push 금지 / 서버 409 역행 거부 / 로그아웃·계정 바꾸기 뒤 새로 고침 전까지 저장·push 차단(_acctWiped). */
 const LS_SYNC_URL = "we_sync_url", LS_SYNC_SECRET = "we_sync_secret", LS_SYNC_LAST = "we_sync_last";
-const SYNC_EXCLUDE = [LS_KEY, LS_SYNC_URL, LS_SYNC_SECRET, LS_SYNC_LAST, LS_ACCT, LS_ACCT_NAME, LS_ADMIN, LS_USAGE]; // push 제외 + pull 무시 — 키·코드·암호·커서·기기별 요금
+const SYNC_EXCLUDE = [LS_KEY, LS_SYNC_URL, LS_SYNC_SECRET, LS_SYNC_LAST, LS_ACCT, "we_acct_code", LS_ACCT_NAME, LS_ADMIN, LS_USAGE]; // push 제외 + pull 무시 — 키·토큰·암호·커서·기기별 요금
 const ACCT_KEEP = [LS_KEY, LS_MODEL, LS_SYSTEM, LS_MEMO_ON, LS_SYNC_URL, LS_ACCT, LS_ACCT_NAME, LS_ADMIN, LS_USAGE, LS_MTAB, "we_tts_note_v1"]; // 계정을 바꿔도 남는 기기 설정
-let _syncPulledOk = false, _syncPushedHash = "", _syncBusy = false, _syncTimer = null;
+let _syncPulledOk = false, _syncPushedHash = "", _syncBusy = false, _syncTimer = null, _srvInfo = null;
 function syncCfg(){
-  const url = String(localStorage.getItem(LS_SYNC_URL) || "").trim().replace(/\/+$/, "");
-  const code = String(localStorage.getItem(LS_ACCT) || "").trim();
-  return { url, code, on: !!(url && code) };
+  const url = String(localStorage.getItem(LS_SYNC_URL) || PADO_SERVER_URL || "").trim().replace(/\/+$/, "");
+  const token = String(localStorage.getItem(LS_ACCT) || "").trim();
+  return { url, code: token, token, on: !!(url && token) };
 }
 function syncSnapshot(){
   const data = {};
@@ -6471,15 +7058,21 @@ async function syncFetch(method, body){
   if(!cfg.on) return null;
   return fetch(cfg.url + "/sync", {
     method,
-    headers: { "Authorization": "Bearer " + cfg.code, "Content-Type": "application/json" }, // v2.57: 계정 코드가 자격
+    headers: { "Authorization": "Bearer " + cfg.token, "Content-Type": "application/json" },
     body: body ? JSON.stringify(body) : undefined,
   });
+}
+function acctSessionLost(){ // 401 = 세션 만료·삭제 — 토큰을 버리고 다시 로그인하게 안내 (기록은 이 기기에 그대로)
+  localStorage.removeItem(LS_ACCT); _acctInfo = null;
+  if(_syncTimer){ clearInterval(_syncTimer); _syncTimer = null; }
+  renderUsageBadge(); acctRenderSettings();
+  weToast("👥 로그인이 풀렸어요 — ⚙️ 설정에서 다시 로그인해 주세요");
 }
 async function syncPull(){
   try {
     const r = await syncFetch("GET");
     if(!r) return;
-    if(r.status === 401){ weToast("👥 계정 코드가 서버와 달라요 — ⚙️ 설정에서 확인해 주세요"); return; }
+    if(r.status === 401){ acctSessionLost(); return; }
     if(!r.ok) return; // 일시 장애 — 조용히 다음 기회에
     const remote = await r.json();
     _syncPulledOk = true;
@@ -6494,6 +7087,7 @@ async function syncPull(){
       localStorage.setItem(LS_SYNC_LAST, String(remote.updatedAt));
       if(changed){
         weToast("🔄 다른 기기의 학습 기록을 가져왔어요 — 새로 고침할게요");
+        _acctWiped = true; // v2.58: 새로 고침 전 pagehide 저장이 메모리의 옛 상태로 방금 받은 we_state_v1을 덮던 결함 차단(하네스 발견)
         setTimeout(() => location.reload(), 900);
         return;
       }
@@ -6502,7 +7096,7 @@ async function syncPull(){
   } catch(e){ /* 오프라인 등 — 조용히 */ }
 }
 async function syncPush(){
-  if(!_syncPulledOk || _syncBusy || _acctWiped) return; // pull 성공 전 push 금지 — 빈 기기가 서버를 덮는 사고 차단 (v2.57: 계정 바꾸는 중에도 금지)
+  if(!_syncPulledOk || _syncBusy || _acctWiped) return; // pull 성공 전 push 금지 — 빈 기기가 서버를 덮는 사고 차단 (계정 바꾸는 중에도 금지)
   const data = syncSnapshot();
   const h = syncHash(data);
   if(h === _syncPushedHash) return; // 변화 없음
@@ -6518,24 +7112,30 @@ async function syncPush(){
 function initSync(){
   if(!syncCfg().on) return;
   syncPull();
-  acctRefresh(); // v2.57: 이름·이번 달 사용량(서버 집계) → 💳 배지·설정창 상태줄
+  acctRefresh(); // 이름·이번 달 사용량(서버 집계) → 💳 배지·설정창
   if(!_syncTimer){
     _syncTimer = setInterval(syncPush, 60000);
     document.addEventListener("visibilitychange", () => { if(document.visibilityState === "hidden") syncPush(); });
   }
 }
-async function acctFetch(path, opt){ const cfg = syncCfg(); if(!cfg.on) return null; return fetch(cfg.url + path, Object.assign({ headers: { "Authorization": "Bearer " + cfg.code, "Content-Type": "application/json" } }, opt || {})); }
-async function acctRefresh(){ // GET /me — 이름·이번 달 사용량·한도·AI 가능 여부
+async function acctFetch(path, opt){ const cfg = syncCfg(); if(!cfg.on) return null; return fetch(cfg.url + path, Object.assign({ headers: { "Authorization": "Bearer " + cfg.token, "Content-Type": "application/json" } }, opt || {})); }
+async function acctRefresh(){ // GET /me — 아이디·이번 달 사용량·한도·AI 가능 여부
   try {
     const r = await acctFetch("/me"); if(!r) return;
-    if(r.status === 401){ weToast("👥 계정 코드가 서버와 달라요 — ⚙️ 설정에서 확인해 주세요"); return; }
+    if(r.status === 401){ acctSessionLost(); return; }
     if(!r.ok) return;
     _acctInfo = await r.json();
     if(_acctInfo && _acctInfo.name) localStorage.setItem(LS_ACCT_NAME, _acctInfo.name);
-    renderUsageBadge(); acctStatusLine();
+    renderUsageBadge(); acctRenderSettings();
   } catch(e){ /* 오프라인 — 조용히 */ }
 }
-function localHasLearning(){ // 이 브라우저에 학습 기록이 있는가 — 계정 연결 때 "올릴까 / 비울까"를 물을지 판단
+async function srvProbe(){ // GET / — 서버가 살아 있는지 · 가입 코드 필요 여부 · 서버 키 유무 (설정창 안내용)
+  const url = syncCfg().url;
+  if(!url){ _srvInfo = null; acctRenderSettings(); return; }
+  try { const r = await fetch(url + "/"); _srvInfo = r.ok ? await r.json() : { down: true }; } catch(e){ _srvInfo = { down: true }; }
+  acctRenderSettings();
+}
+function localHasLearning(){ // 이 브라우저에 학습 기록이 있는가 — 로그인 때 "올릴까 / 비울까"를 물을지 판단
   try {
     const st = JSON.parse(localStorage.getItem(LS_STATE) || "null");
     if(st && ((st.chats && Object.keys(st.chats).some(k => (st.chats[k] || []).length)) || (st.waves || []).length)) return true;
@@ -6549,111 +7149,115 @@ function wipeLearning(){ // 기기 설정(키·모델·지시문·계정·요금
   _acctWiped = true; _syncPulledOk = false; // 새로 고침 전까지 저장·push 금지 — 옛 계정에서 pull 한 상태로 새 계정에 push 하면 그 계정 기록을 덮어쓴다
   if(_syncTimer){ clearInterval(_syncTimer); _syncTimer = null; }
 }
-async function acctApply(url, code){ // 설정 저장·초대 링크 공통. 반환: true=연결(새로 고침 예약) / false=변경 없음·끔·취소
-  url = String(url || "").trim().replace(/\/+$/, ""); code = String(code || "").replace(/[\s​-‍﻿]+/g, "");
-  const prevUrl = String(localStorage.getItem(LS_SYNC_URL) || ""), prevCode = String(localStorage.getItem(LS_ACCT) || "");
-  if(!url || !code){ // 끄기 — 기록은 이 기기에 그대로
-    const wasOn = syncCfg().on;
-    if(code && !url){ weToast("👥 서버 주소를 먼저 넣어 주세요 (계정을 발급한 분에게 받은 주소)"); return false; } // QA: 코드만 넣고 저장한 경우 조용히 무시하지 않는다
-    if(url) localStorage.setItem(LS_SYNC_URL, url); else localStorage.removeItem(LS_SYNC_URL);
-    localStorage.removeItem(LS_ACCT); localStorage.removeItem(LS_ACCT_NAME); localStorage.removeItem(LS_SYNC_LAST);
-    _acctInfo = null; renderUsageBadge(); acctStatusLine();
-    if(wasOn) weToast("👥 계정 연결을 껐어요 — 기록은 이 기기에 그대로 남아요");
-    return false;
-  }
-  if(url === prevUrl && code === prevCode) return false;
-  let me = null;
-  try {
-    const r = await fetch(url + "/me", { headers: { "Authorization": "Bearer " + code } });
-    if(r.status === 401){ weToast("👥 계정 코드가 맞지 않아요 — 다시 확인해 주세요"); return false; }
-    if(!r.ok) throw new Error("bad");
-    me = await r.json();
-  } catch(e){ weToast("👥 서버에 연결할 수 없어요 — 서버 주소를 확인해 주세요"); return false; }
-  const name = (me && me.name) || "이름 없음";
-  if(code !== prevCode){ // 같은 코드의 주소만 바뀐 경우는 묻지 않는다
+async function acctConnect(token, me){ // 로그인·가입 성공 뒤 — 빈 기록 원칙을 confirm으로 확인하고 토큰을 저장, 새로 고침(pull이 이어받음). 반환 true=연결
+  const name = (me && me.name) || (me && me.id) || "";
+  const prevName = String(localStorage.getItem(LS_ACCT_NAME) || ""), prevTok = String(localStorage.getItem(LS_ACCT) || "");
+  if(name !== prevName || !prevTok){ // 같은 아이디로 다시 로그인한 경우는 묻지 않는다
     const hasLocal = localHasLearning();
-    if(prevCode){
+    if(prevName && name !== prevName){
       if(!confirm(`다른 계정("${name}")으로 바꿔요.\n이 브라우저의 기록을 비우고 그 계정의 기록으로 시작할까요?`)) return false;
+      if(prevTok){ try { await syncPush(); } catch(e){} } // 이전 계정의 안 올린 변경을 마지막으로 올린다
       wipeLearning();
     } else if(hasLocal && me && me.hasData){
-      if(!confirm(`계정 "${name}"에는 이미 기록이 있어요.\n이 기기의 기록을 버리고 그 계정의 기록으로 바꿀까요? (취소하면 연결하지 않아요)`)) return false;
+      if(!confirm(`계정 "${name}"에는 이미 기록이 있어요.\n이 기기의 기록을 버리고 그 계정의 기록으로 바꿀까요? (취소하면 로그인하지 않아요)`)) return false;
       wipeLearning();
-    } else if(hasLocal){ // 빈 계정 + 이 기기에 기록: 올리기 / 비우고 시작 / 연결 안 함 — 남에게 줄 코드를 내 기기에서 넣는 경우를 위해 두 번 묻는다(기획 렌즈)
+    } else if(hasLocal){ // 빈 계정 + 이 기기에 기록: 올리기 / 비우고 시작 / 그만두기 — 남에게 줄 계정을 내 기기에서 만드는 경우를 위해 두 번 묻는다(기획 렌즈)
       if(!confirm(`계정 "${name}"은(는) 아직 빈 계정이에요.\n이 기기의 기록을 그 계정에 올려서 이어 쓸까요?\n(내 계정이면 [확인]. 다른 사람에게 줄 계정이면 [취소] — 올리면 그 사람이 내 기록을 보게 돼요)`)){
-        if(!confirm(`그럼 이 기기의 기록을 비우고 빈 계정 "${name}"으로 새로 시작할까요?\n(취소하면 연결하지 않고 기록도 그대로 둬요)`)) return false;
+        if(!confirm(`그럼 이 기기의 기록을 비우고 빈 계정 "${name}"으로 새로 시작할까요?\n(취소하면 로그인하지 않고 기록도 그대로 둬요)`)) return false;
         wipeLearning();
       }
     }
   }
-  localStorage.setItem(LS_SYNC_URL, url); localStorage.setItem(LS_ACCT, code); localStorage.setItem(LS_ACCT_NAME, name); localStorage.removeItem(LS_SYNC_LAST);
-  weToast(`👥 계정 "${name}" 연결 — 기록을 맞추는 중`);
+  localStorage.setItem(LS_ACCT, token); localStorage.setItem(LS_ACCT_NAME, name); localStorage.removeItem(LS_SYNC_LAST);
+  weToast(`👥 "${name}"으로 로그인 — 기록을 맞추는 중`);
   setTimeout(() => location.reload(), 800);
   return true;
 }
-function acctStatusLine(){ // 설정창 상태줄
-  const el = document.getElementById("acct-status"); if(!el) return;
-  if(!syncCfg().on){ el.textContent = "계정 없음 — 기록은 이 기기(브라우저)에만 저장돼요."; return; }
-  const name = localStorage.getItem(LS_ACCT_NAME) || "";
-  const u = _acctInfo && _acctInfo.usage;
-  el.textContent = `✅ 연결됨${name ? ` · ${name}` : ""}`
-    + (u ? ` · 이번 달 AI 사용 ≈ ${usdText(u.usd)}${_acctInfo.capUsd ? ` / 한도 $${_acctInfo.capUsd}` : ""}` : "")
-    + (_acctInfo && _acctInfo.ai === false ? " · 이 계정은 AI 대신 호출이 꺼져 있어요(API 키가 필요해요)" : "");
+const ACCT_ERR = { bad_id: "아이디는 영문 소문자·숫자 3~20자로 지어 주세요", bad_pw: "비밀번호는 6자 이상이어야 해요", exists: "이미 있는 아이디예요 — 로그인해 보세요", signup_code: "가입 코드가 맞지 않아요 — 서버 주인에게 받은 코드를 넣어 주세요", locked: "여러 번 틀려서 잠시 잠겼어요 — 10분 뒤에 다시 해 주세요", unauthorized: "아이디 또는 비밀번호가 맞지 않아요" };
+async function acctAuth(mode){ // "login" | "signup" — 설정창 버튼
+  const url = syncCfg().url;
+  if(!url){ weToast("👥 서버가 아직 없어요 — sync 폴더의 안내대로 서버를 먼저 만들어 주세요"); return; }
+  const id = String(document.getElementById("acct-id").value || "").trim().toLowerCase(), pw = String(document.getElementById("acct-pw").value || "");
+  const code = String(document.getElementById("acct-signup-code").value || "").trim();
+  if(!id || !pw){ weToast("아이디와 비밀번호를 넣어 주세요"); return; }
+  const btn = document.getElementById(mode === "signup" ? "acct-signup" : "acct-login"); if(btn) btn.disabled = true;
+  try {
+    const r = await fetch(url + "/auth/" + mode, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(mode === "signup" ? { id, pw, code } : { id, pw }) });
+    let j = null; try { j = await r.json(); } catch(e){}
+    if(!r.ok){ weToast("👥 " + (ACCT_ERR[(j && j.error) || ""] || `지금은 연결이 안 돼요 (오류 번호 ${r.status}) — 잠시 후 다시 해 주세요`)); return; }
+    let me = j.user || {};
+    try { const m = await fetch(url + "/me", { headers: { "Authorization": "Bearer " + j.token } }); if(m.ok) me = await m.json(); } catch(e){}
+    if(await acctConnect(j.token, me)){ document.getElementById("acct-pw").value = ""; closeSettings(); }
+  } catch(e){ weToast("👥 서버에 연결할 수 없어요 — 인터넷 상태와 서버 주소를 확인해 주세요"); }
+  finally { if(btn) btn.disabled = false; }
 }
-/* 관리(발급자) — 설정창 [🔑 계정 발급]. 관리 암호는 입력칸 값(저장 전에도) 우선 */
+async function acctLogout(){
+  if(!confirm("로그아웃할까요?\n이 기기의 학습 기록은 비워져요(계정에 저장된 기록은 서버에 그대로 남아요).")) return;
+  try { await syncPush(); } catch(e){} // 안 올린 변경을 마지막으로 올린다 — 로그아웃 뒤 비워도 계정엔 남게
+  try { await acctFetch("/auth/logout", { method: "POST" }); } catch(e){}
+  localStorage.removeItem(LS_ACCT); localStorage.removeItem(LS_ACCT_NAME); localStorage.removeItem(LS_SYNC_LAST); _acctInfo = null;
+  wipeLearning();
+  weToast("👥 로그아웃했어요");
+  setTimeout(() => location.reload(), 600);
+}
+async function acctPwChange(){
+  const old = prompt("현재 비밀번호"); if(old === null) return;
+  const pw = prompt("새 비밀번호 (6자 이상)"); if(pw === null) return;
+  if(String(pw).length < 6){ weToast("비밀번호는 6자 이상이어야 해요"); return; }
+  try {
+    const r = await acctFetch("/auth/password", { method: "POST", body: JSON.stringify({ old, pw }) });
+    if(r && r.ok) weToast("비밀번호를 바꿨어요"); else if(r && r.status === 401) weToast("현재 비밀번호가 맞지 않아요"); else weToast("바꾸지 못했어요 — 잠시 후 다시 해 주세요");
+  } catch(e){ weToast("서버에 연결할 수 없어요"); }
+}
+function acctRenderSettings(){ // 설정창 👥 영역 — 로그인 전/후 + 서버 안내
+  const st = document.getElementById("acct-status"), auth = document.getElementById("acct-auth"), ses = document.getElementById("acct-session"), note = document.getElementById("acct-server-note"), codeIn = document.getElementById("acct-signup-code");
+  if(!st || !auth || !ses) return;
+  const cfg = syncCfg();
+  if(cfg.on){
+    const name = localStorage.getItem(LS_ACCT_NAME) || "";
+    const u = _acctInfo && _acctInfo.usage;
+    st.innerHTML = `✅ <b>${esc(name)}</b>으로 로그인됨` + (u ? ` · 이번 달 AI 사용 ≈ ${esc(usdText(u.usd))}${_acctInfo.capUsd ? ` / 한도 $${esc(_acctInfo.capUsd)}` : ""}` : "") + (_acctInfo && _acctInfo.ai === false ? " · 이 계정은 AI 대신 호출이 꺼져 있어요(API 키가 필요해요)" : "");
+    auth.hidden = true; ses.hidden = false; return;
+  }
+  auth.hidden = false; ses.hidden = true;
+  st.textContent = "로그인 전 — 기록은 이 기기(브라우저)에만 저장돼요.";
+  if(codeIn) codeIn.hidden = !(_srvInfo && _srvInfo.signup === "code");
+  if(note){
+    if(!cfg.url) note.innerHTML = "⚠️ 서버 주소가 아직 없어요 — 서버 주인이 <b>sync 폴더의 안내(15분)</b>대로 서버를 만들면 자동으로 채워져요. 그때까지는 API 키로 쓸 수 있어요.";
+    else if(_srvInfo && _srvInfo.down) note.textContent = "⚠️ 서버에 연결할 수 없어요 — 주소를 확인하거나 잠시 후 다시 열어 주세요.";
+    else if(_srvInfo) note.textContent = `서버 연결됨 · 가입: ${_srvInfo.signup === "code" ? "가입 코드 필요" : "누구나"} · 키 없이 AI: ${_srvInfo.ai ? "가능" : "불가(서버에 키 없음 — 각자 API 키 필요)"}`;
+    else note.textContent = "서버 확인 중…";
+  }
+}
 async function adminFetch(path, opt){
-  const url = String(document.getElementById("sync-url").value || localStorage.getItem(LS_SYNC_URL) || "").trim().replace(/\/+$/, "");
+  const url = syncCfg().url;
   const sec = String(document.getElementById("admin-secret").value || localStorage.getItem(LS_ADMIN) || "").replace(/[\s​-‍﻿]+/g, "");
   if(!url || !sec){ weToast("서버 주소와 관리 암호를 먼저 넣어 주세요"); return null; }
   try { return await fetch(url + path, Object.assign({ headers: { "Authorization": "Bearer " + sec, "Content-Type": "application/json" } }, opt || {})); }
   catch(e){ weToast("서버에 연결할 수 없어요 — 서버 주소를 확인해 주세요"); return null; }
 }
-function inviteLink(code){ // 받은 사람이 열면 바로 연결되는 링크 (이 페이지 기준 — m.html에서 만들면 m.html 링크)
-  const url = String(document.getElementById("sync-url").value || localStorage.getItem(LS_SYNC_URL) || "").trim().replace(/\/+$/, "");
-  return location.origin + location.pathname + "#join=" + encodeURIComponent(url + "|" + code);
-}
-async function acctIssue(){
-  const name = document.getElementById("acct-new-name").value.trim() || "이름 없음";
-  const r = await adminFetch("/admin/accounts", { method: "POST", body: JSON.stringify({ name }) });
-  if(!r) return;
-  if(r.status === 401){ weToast("관리 암호가 서버와 달라요"); return; }
-  if(!r.ok){ weToast(`계정을 만들지 못했어요 (오류 번호 ${r.status})`); return; }
-  const a = (await r.json()).account;
-  document.getElementById("acct-admin-out").innerHTML = `<div class="acct-new"><b>✅ "${esc(a.name)}" 계정을 만들었어요</b>
-    <div class="hint">이 코드(또는 초대 링크)를 그 사람에게 보내세요. 받은 사람은 ⚙️ 설정 → 👥 계정에 코드를 넣거나 링크를 열면 돼요. <b>새 계정은 빈 기록으로 시작</b>해요.</div>
-    <input type="text" readonly value="${esc(a.code)}" id="acct-new-code">
-    <div class="row" style="justify-content:flex-start;margin-top:6px"><button type="button" data-copy="${esc(a.code)}">코드 복사</button><button type="button" data-copy="${esc(inviteLink(a.code))}">초대 링크 복사</button></div></div>`;
-  document.getElementById("acct-new-name").value = "";
-}
 async function acctList(){
-  const r = await adminFetch("/admin/accounts");
+  const r = await adminFetch("/admin/users");
   if(!r) return;
   if(r.status === 401){ weToast("관리 암호가 서버와 달라요"); return; }
   if(!r.ok){ weToast(`목록을 가져오지 못했어요 (오류 번호 ${r.status})`); return; }
   const j = await r.json();
-  const rows = (j.accounts || []).map(a => `<tr><td>${esc(a.name)}</td><td class="acct-code">${esc(a.code)}</td><td>${esc(usdText(a.usage && a.usage.usd))} / $${esc(a.capUsd)}</td><td>${a.ai ? "켬" : "끔"}</td><td><button type="button" data-copy="${esc(inviteLink(a.code))}" title="초대 링크 복사">🔗</button> <button type="button" data-acct-del="${esc(a.code)}" data-acct-name="${esc(a.name)}" title="계정 삭제">🗑</button></td></tr>`).join("");
-  document.getElementById("acct-admin-out").innerHTML = `<table class="acct-table"><thead><tr><th>이름</th><th>계정 코드</th><th>이번 달 / 한도</th><th>AI</th><th></th></tr></thead><tbody>${rows || `<tr><td colspan="5" class="hint">아직 계정이 없어요 — 위에서 발급하세요</td></tr>`}</tbody></table>`
-    + (j.ai ? "" : `<div class="hint">⚠️ 서버에 API 키가 없어요 — 키 없는 기기는 AI를 쓸 수 없어요 (sync 폴더에서: npx wrangler secret put ANTHROPIC_API_KEY)</div>`);
+  const rows = (j.users || []).map(a => `<tr><td>${esc(a.id)}</td><td>${esc(usdText(a.usage && a.usage.usd))} / $${esc(a.capUsd)}</td><td>${a.ai ? "켬" : "끔"}</td><td><button type="button" data-acct-del="${esc(a.id)}" title="계정 삭제">🗑</button></td></tr>`).join("");
+  document.getElementById("acct-admin-out").innerHTML = `<table class="acct-table"><thead><tr><th>아이디</th><th>이번 달 / 한도</th><th>AI</th><th></th></tr></thead><tbody>${rows || `<tr><td colspan="4" class="hint">아직 가입한 사람이 없어요</td></tr>`}</tbody></table>`
+    + `<div class="hint">가입: ${j.signup === "code" ? "가입 코드 필요" : "누구나"} · 서버 키: ${j.ai ? "있음(가입자 모두 이 키로 AI)" : "없음 — 각자 API 키 필요 (sync 폴더: npx wrangler secret put ANTHROPIC_API_KEY)"}</div>`;
 }
-document.getElementById("acct-issue").addEventListener("click", acctIssue);
+document.getElementById("acct-login").addEventListener("click", () => acctAuth("login"));
+document.getElementById("acct-signup").addEventListener("click", () => acctAuth("signup"));
+document.getElementById("acct-pw").addEventListener("keydown", (e) => { if(e.key === "Enter"){ e.preventDefault(); acctAuth("login"); } });
+document.getElementById("acct-logout").addEventListener("click", acctLogout);
+document.getElementById("acct-pwchange").addEventListener("click", acctPwChange);
 document.getElementById("acct-list").addEventListener("click", acctList);
-document.getElementById("acct-admin-out").addEventListener("click", async (e) => { // 위임 1회 — 복사 · 삭제
-  const c = e.target.closest("[data-copy]");
-  if(c){ try { await navigator.clipboard.writeText(c.dataset.copy); weToast("복사했어요"); } catch(err){ weToast("복사하지 못했어요 — 길게 눌러 직접 복사해 주세요"); } return; }
+document.getElementById("acct-admin-out").addEventListener("click", async (e) => { // 위임 1회 — 삭제
   const d = e.target.closest("[data-acct-del]"); if(!d) return;
-  if(!confirm(`계정 "${d.dataset.acctName}"을(를) 삭제할까요? 그 계정의 서버 기록도 함께 지워져요.`)) return;
-  const r = await adminFetch("/admin/accounts/" + encodeURIComponent(d.dataset.acctDel), { method: "DELETE" });
+  if(!confirm(`"${d.dataset.acctDel}" 계정을 삭제할까요? 그 계정의 서버 기록도 함께 지워져요.`)) return;
+  const r = await adminFetch("/admin/users/" + encodeURIComponent(d.dataset.acctDel), { method: "DELETE" });
   if(r && r.ok){ weToast("계정을 삭제했어요"); acctList(); }
 });
-function acctJoinFromLink(){ // 초대 링크: …#join=<서버 주소>|<계정 코드> → 바로 연결 (링크는 주소창에서 지운다). 로드 시 + 이미 열린 탭에 링크를 붙여넣은 경우(hashchange — 같은 문서 이동이라 새로 고침이 없다)
-  const m = /[#&]join=([^&]+)/.exec(location.hash || "");
-  if(!m) return;
-  try { history.replaceState(null, "", location.pathname + location.search); } catch(e){}
-  let url = "", code = "";
-  try { const parts = decodeURIComponent(m[1]).split("|"); url = parts[0] || ""; code = parts[1] || ""; } catch(e){}
-  if(url && code) setTimeout(() => acctApply(url, code), 300);
-}
-acctJoinFromLink();
-window.addEventListener("hashchange", acctJoinFromLink);
 initSync();
 
 /* ── 리사이저 (가로: 중앙↔우측 · 세로: 파도 대화↔우측 하단 콘텐츠) — 상태 영속 ──
