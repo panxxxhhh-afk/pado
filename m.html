@@ -313,7 +313,11 @@
   .pr-score.bad{color:#c25858;}
   .pr-detail{padding:2px 10px 8px;color:var(--text-soft);display:flex;flex-direction:column;gap:3px;border-top:1px dashed var(--border);}
   .pr-empty{color:var(--text-mute);padding:14px 4px;}
-  .q-index{border-bottom:1px solid var(--border-soft);background:var(--card-soft);max-height:180px;overflow-y:auto;padding:6px 10px;display:flex;flex-direction:column;gap:2px;}
+  .q-index{border-bottom:1px solid var(--border-soft);background:var(--card-soft);max-height:min(45vh,360px);flex:none;overflow-y:auto;padding:4px 8px 6px;display:flex;flex-direction:column;gap:2px;} /* v2.57: 180px→45vh(긴 대화에서 3줄만 보이던 문제) + flex:none(모바일 세로 flex에 눌리지 않게) */
+  .qi-head{display:flex;align-items:center;gap:6px;padding:2px 0 4px;position:sticky;top:0;background:var(--card-soft);z-index:1;} /* v2.57 */
+  .qi-search{flex:1;min-width:0;border:1px solid var(--border);border-radius:8px;padding:5px 9px;font:inherit;font-size:.8rem;background:var(--card);color:var(--text);}
+  .qi-info{font-size:.7rem;color:var(--text-mute);white-space:nowrap;}
+  .qi-x{border:0;background:none;color:var(--text-mute);cursor:pointer;font-size:.9rem;padding:2px 6px;}
   .q-index[hidden]{display:none;} /* display:flex가 hidden 속성(UA display:none)을 이기는 것 방지 */
   .qi-item{display:flex;gap:8px;align-items:baseline;border:none;background:transparent;text-align:left;padding:4px 8px;border-radius:6px;cursor:pointer;font-size:.82rem;color:var(--text-soft);min-width:0;}
   .qi-item:hover{background:var(--accent-soft);color:var(--accent-deep);}
@@ -814,6 +818,23 @@
     .word-hero{padding:12px 12px;margin-bottom:8px;}
     .sent-card{padding:12px 12px;} .rel-box{padding:10px 12px;margin-bottom:10px;} .sa-part{padding:12px 12px;margin-bottom:8px;} .sa-headline{margin-bottom:10px;}
   }
+  /* ── v2.57: 💳 API 요금 배지(좌측 목록 맨 아래, sticky) · 🗓 질문 내역 필터 · 👥 계정 관리(설정) · 🔑 물음말 8개 카드(영어 규칙) ── */
+  .w-usage{position:sticky;bottom:0;margin-top:8px;width:100%;display:flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:9px;padding:6px 9px;font-size:.74rem;background:var(--card);color:var(--text-soft);cursor:pointer;text-align:left;font-family:inherit;box-sizing:border-box;}
+  .w-usage:hover{border-color:var(--accent);} .w-usage b{color:var(--accent-deep);font-weight:700;} .w-usage-sub{margin-left:auto;font-size:.66rem;color:var(--text-mute);white-space:nowrap;}
+  #qh-filter-row{display:flex;align-items:center;gap:8px;margin:4px 0 8px;} #qh-filter-row select{flex:1;min-width:0;} #qh-count{font-size:.74rem;color:var(--text-mute);white-space:nowrap;}
+  #acct-admin summary{cursor:pointer;font-size:.8rem;color:var(--text-soft);margin-top:14px;font-weight:600;}
+  .acct-new{border:1px dashed var(--accent);border-radius:10px;padding:10px 12px;margin-top:8px;background:var(--card-soft);font-size:.82rem;} .acct-new input{margin-top:6px;font-family:ui-monospace,monospace;font-size:.78rem;}
+  .acct-table{width:100%;border-collapse:collapse;font-size:.76rem;margin-top:8px;} .acct-table th,.acct-table td{border-bottom:1px solid var(--border-soft);padding:5px 6px;text-align:left;vertical-align:top;} .acct-code{font-family:ui-monospace,monospace;font-size:.68rem;word-break:break-all;}
+  .acct-table button{border:1px solid var(--border);background:var(--card);border-radius:6px;padding:2px 6px;cursor:pointer;font-size:.8rem;}
+  .wh-sec{margin-top:22px;border-top:2px dashed var(--border);padding-top:16px;} .wh-h{font-size:1rem;margin:0 0 6px;}
+  .wh-wrap{overflow-x:auto;margin-bottom:10px;} .wh-matrix{border-collapse:collapse;font-size:.76rem;width:100%;min-width:440px;} .wh-matrix th,.wh-matrix td{border:1px solid var(--border-soft);padding:5px 8px;text-align:left;vertical-align:top;line-height:1.5;} .wh-matrix thead th{background:var(--card-soft);} .wh-matrix tbody th{color:var(--accent-deep);font-weight:700;}
+  .wh-common{margin-bottom:14px;} .wh-common ul{margin:0;padding-left:18px;font-size:.8rem;line-height:1.7;}
+  .wh-card{border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px;background:var(--card-soft);} .wh-head{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;flex-wrap:wrap;} .wh-word{font-weight:800;font-size:1.15rem;color:var(--accent-deep);} .wh-ko{font-size:.85rem;color:var(--text-soft);}
+  .wh-face{margin:8px 0;} .whf-tag{display:inline-block;font-size:.7rem;font-weight:700;color:var(--accent-deep);background:var(--accent-soft);border-radius:999px;padding:1px 9px;margin-bottom:3px;} .wh-note{font-size:.76rem;color:var(--text-mute);line-height:1.65;}
+  /* v2.57: 💳 배지 — 가로 칩 줄(태블릿 769~1000 · engine.html 옛 모바일 words 탭)에선 콤팩트 칩. 기본(sticky bottom) 규칙 뒤에 두어야 이긴다. engine-m ≤768 세로 목록(data-mtab=chat/waves)은 기본 규칙 그대로 */
+  @media (min-width:769px) and (max-width:1000px){ .w-usage{position:static;width:auto;flex:none;margin:0;padding:0 10px;height:30px;white-space:nowrap;border-radius:999px;} .w-usage-sub{margin-left:4px;} }
+  @media (max-width:768px){ .qi-info{display:none;} .q-index{max-height:min(48vh,420px);} .wh-card{padding:12px 12px;}
+    body[data-mtab="words"] .w-usage{position:static;width:auto;flex:none;margin:0;padding:0 10px;height:30px;white-space:nowrap;border-radius:999px;order:-1;} body[data-mtab="words"] .w-usage-sub{margin-left:4px;} } /* order: 옛 모바일 칩 줄(engine.html)에선 맨 앞 — 세로 목록(engine-m)엔 영향 없음 */
 </style>
 </head>
 <body>
@@ -823,7 +844,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.56</span>
+    <span class="build">pAdo · v2.57</span>
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
       <option value="">🪜 단계 선택 안 함</option>
@@ -968,6 +989,7 @@
 <div class="modal" id="qh-modal">
   <h2>🗓 질문 내역 — 날짜별</h2>
   <div class="sv-hint">모든 대화(파도 Chat·단어·파도)에서 내가 던진 질문이 날짜별로 모여요. 항목을 누르면 그 대화의 그 자리로 이동 — 복습에 쓰세요.</div>
+  <div id="qh-filter-row"><select id="qh-filter" class="mini-sel" title="대화 상대(태그)별로 걸러 보기 — 파도 Chat · 단어 · 파도"></select><span id="qh-count"></span></div><!-- v2.57: 태그 필터 -->
   <div id="qh-body"></div>
   <div style="display:flex;justify-content:flex-end;margin-top:6px"><button class="g-btn" id="qh-close" type="button">닫기</button></div>
 </div>
@@ -987,7 +1009,7 @@
   <h2>⚙️ 설정</h2>
   <label>Claude API 키</label>
   <input type="password" id="set-key" placeholder="sk-ant-..." autocomplete="off">
-  <div class="hint">키는 <b>이 브라우저에만</b> 저장되고, Anthropic API 호출에만 쓰입니다. 어디에도 전송·업로드되지 않습니다. 키 발급: console.anthropic.com → API Keys</div>
+  <div class="hint">키는 <b>이 브라우저에만</b> 저장되고, Anthropic API 호출에만 쓰입니다. 어디에도 전송·업로드되지 않습니다. 키 발급: console.anthropic.com → API Keys · 키 대신 <b>계정 코드</b>를 받았다면 아래 👥 계정에 넣으세요(키 없이도 돼요).</div>
   <label>모델</label>
   <select id="set-model">
     <option value="claude-opus-4-8">Claude Opus 4.8 — 기본 (깊이 최상)</option>
@@ -1008,10 +1030,22 @@
     <button type="button" id="move-save-file">파일로 저장</button>
     <button type="button" class="primary" id="move-import">가져오기</button>
   </div>
-  <label style="margin-top:14px">🔄 자동 동기화 — 기기 간 학습 기록 자동 맞춤 (선택)</label>
-  <div class="hint">나만의 동기화 서버를 만들면(프로젝트 <b>sync 폴더의 10분 안내</b> 참조) 학습 기록·대화·설정이 기기 간 <b>자동으로</b> 맞춰져요. <b>API 키와 동기화 암호는 서버에 올라가지 않아요</b> — 키만은 위 [기기 이사]로 한 번 옮기세요. 두 칸을 비우고 저장하면 동기화가 꺼져요.</div>
-  <input type="text" id="sync-url" placeholder="동기화 서버 주소 — https://pado-sync-….workers.dev (비우면 꺼짐)" autocomplete="off">
-  <input type="password" id="sync-secret" placeholder="동기화 암호 — 서버 만들 때 정한 그 문장" autocomplete="off" style="margin-top:6px">
+  <label style="margin-top:14px">👥 계정 — PC·폰 이어 쓰기, 다른 사람과 함께 쓰기 (선택)</label><!-- v2.57: v2.45 자동 동기화(주소+암호)를 계정 코드로 대체 -->
+  <div class="hint">계정 코드를 넣으면 학습 기록·대화·설정이 <b>계정에 저장</b>되고, 같은 코드를 넣은 다른 기기(PC·폰)에서 그대로 이어져요. API 키가 없는 기기는 <b>계정으로 AI를 써요</b>(서버가 대신 호출 — 키는 서버에만 있어요). <b>API 키·계정 코드·관리 암호는 다른 기기로 전송되지 않아요.</b> 서버 만들기는 프로젝트 <b>sync 폴더의 안내</b> 참조. 코드 칸을 비우고 저장하면 연결이 꺼져요(기록은 이 기기에 남아요).</div>
+  <input type="text" id="sync-url" placeholder="서버 주소 — https://pado-sync-….workers.dev" autocomplete="off">
+  <input type="text" id="acct-code" placeholder="계정 코드 — pado-xxxxx-xxxxx-xxxxx-xxxxx (발급받은 코드)" autocomplete="off" style="margin-top:6px">
+  <div class="hint" id="acct-status"></div>
+  <details id="acct-admin">
+    <summary>🔑 계정 발급 — 서버 주인용</summary>
+    <div class="hint">서버를 만든 사람만 써요. 관리 암호(ADMIN_SECRET)는 이 브라우저에만 저장돼요. 발급한 계정은 <b>빈 기록으로 시작</b>하고, 이번 달 AI 사용 한도(기본 $10)를 넘으면 서버가 막아요.</div>
+    <input type="password" id="admin-secret" placeholder="관리 암호 (서버 만들 때 정한 ADMIN_SECRET)" autocomplete="off">
+    <div class="row" style="justify-content:flex-start;flex-wrap:wrap;margin-top:6px">
+      <input type="text" id="acct-new-name" placeholder="새 계정 이름 (예: 민수)" autocomplete="off" style="flex:1;min-width:140px;width:auto">
+      <button type="button" id="acct-issue">계정 발급</button>
+      <button type="button" id="acct-list">계정 목록</button>
+    </div>
+    <div id="acct-admin-out"></div>
+  </details>
   <div class="row">
     <button type="button" id="set-cancel">닫기</button>
     <button type="button" class="primary" id="set-save">저장</button>
@@ -2683,6 +2717,37 @@ function practiceLabel(key){
 /* ── 상태 ── */
 const LS_STATE = "we_state_v1", LS_KEY = "we_api_key", LS_MODEL = "we_model", LS_SYSTEM = "we_system";
 const LS_LEVEL = "we_level", LS_RULES = "we_global_rules"; // v1.7: 학습 단계 · 전체 지침 (총괄 대화에서 합의)
+/* ── v2.57: 💳 API 요금 집계 — 응답의 usage(입력·출력·캐시 토큰)를 모델별 요금표로 환산해 이 기기에 누적(이번 달 + 전체). 좌측 목록 맨 아래 배지에 표시(사용자 요청 "좌측 메뉴 어딘가에 API 요금").
+   요금표는 공식 요금표 기준 추정치(1백만 토큰당 USD) — 실제 청구는 Anthropic 콘솔이 기준. 계정으로 쓰는 기기는 서버 집계(_acctInfo, GET /me)가 우선. we_usage_v1은 기기별 집계라 동기화에서 제외. */
+const LS_USAGE = "we_usage_v1", LS_ACCT = "we_acct_code", LS_ACCT_NAME = "we_acct_name", LS_ADMIN = "we_admin_secret"; // 👥 계정(v2.57) — 코드가 곧 자격, 관리 암호는 발급자용
+const PRICE_USD = { "claude-opus-4-8": [5, 25, 6.25, 0.5], "claude-sonnet-5": [3, 15, 3.75, 0.3], "claude-haiku-4-5": [1, 5, 1.25, 0.1] }; // [입력, 출력, 캐시 쓰기, 캐시 읽기] — sync/worker.js와 같은 표
+let _acctInfo = null; // GET /me 결과(이름·이번 달 사용량·한도) — 배지·설정창 상태줄
+let _acctWiped = false; // 계정 바꾸기로 기록을 비운 뒤 새로 고침 전까지 true — 창 이탈 저장(saveState)·push가 비운 기록을 되살리거나 새 계정에 올리지 못하게
+function priceFor(model){ const k = Object.keys(PRICE_USD).find(p => String(model || "").indexOf(p) === 0); return PRICE_USD[k] || PRICE_USD["claude-opus-4-8"]; }
+function usageCost(model, u){ const p = priceFor(model); return ((u.i || 0) * p[0] + (u.o || 0) * p[1] + (u.cw || 0) * p[2] + (u.cr || 0) * p[3]) / 1e6; }
+function usageMonth(){ const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); }
+function usageLoad(){ try { return JSON.parse(localStorage.getItem(LS_USAGE) || "null") || {}; } catch(e){ return {}; } }
+function usageAdd(model, u, viaAcct){ // viaAcct: 계정 서버가 대신 호출한 건에만 서버 집계를 선반영 (키로 직접 호출한 건은 서버가 모른다 — QA)
+  const s = usageLoad(), mk = usageMonth();
+  if(s.m !== mk){ s.m = mk; s.i = s.o = s.cw = s.cr = s.usd = s.n = 0; } // 달이 바뀌면 이번 달 칸만 비움 (전체 누적은 유지)
+  s.all = s.all || { i: 0, o: 0, cw: 0, cr: 0, usd: 0, n: 0 };
+  const usd = usageCost(model, u);
+  ["i", "o", "cw", "cr"].forEach(k => { s[k] = (s[k] || 0) + (u[k] || 0); s.all[k] = (s.all[k] || 0) + (u[k] || 0); });
+  s.usd = (s.usd || 0) + usd; s.n = (s.n || 0) + 1; s.all.usd = (s.all.usd || 0) + usd; s.all.n = (s.all.n || 0) + 1;
+  try { localStorage.setItem(LS_USAGE, JSON.stringify(s)); } catch(e){}
+  if(viaAcct && _acctInfo && _acctInfo.usage){ _acctInfo.usage.usd = (_acctInfo.usage.usd || 0) + usd; _acctInfo.usage.n = (_acctInfo.usage.n || 0) + 1; } // 서버 집계는 다음 /me 때 정확값으로 — 그 전까지 같은 값을 더해 둔다
+  renderUsageBadge();
+}
+function usdText(n){ n = Number(n) || 0; return n > 0 && n < 0.01 ? "$0.01 미만" : "$" + n.toFixed(2); }
+function usageBadgeHTML(){ return `<button class="w-usage" id="usage-badge" type="button" title="이번 달 API 요금(추정) — 누르면 ⚙️ 설정">💳 …</button>`; }
+function renderUsageBadge(){
+  const el = document.getElementById("usage-badge"); if(!el) return;
+  const s = usageLoad(), mk = usageMonth(), mine = s.m === mk ? s : { usd: 0, i: 0, o: 0, n: 0 };
+  const srv = _acctInfo && _acctInfo.usage && _acctInfo.usage.month === mk ? _acctInfo.usage : null; // 서버 월 키는 UTC — 같은 달이면 서버 집계 채택
+  const cur = srv || mine;
+  el.innerHTML = `💳 이번 달 API 요금 ≈ <b>${esc(usdText(cur.usd))}</b><span class="w-usage-sub">${srv ? "계정 기준" : "이 기기 · 추정"}</span>`;
+  el.title = `이번 달: 입력 ${cur.i || 0} · 출력 ${cur.o || 0} 토큰, ${cur.n || 0}회` + (s.all ? ` / 전체(이 기기): ${usdText(s.all.usd)}` : "") + `\n요금표(1백만 토큰당, 입력/출력): Opus $5/$25 · Sonnet $3/$15 · Haiku $1/$5 — 추정치, 실제 청구는 Anthropic 콘솔 기준. 누르면 ⚙️ 설정`;
+}
 /* 총괄 대화 (v1.7) — 특정 단어가 아니라 파도 엔진 전체를 지휘하는 스레드.
    여기서 합의한 내용을 "전체 지침"(we_global_rules)에 담으면 모든 대화(단어·파도·구문 분석)에 함께 전송된다. */
 const GLOBAL_ID = "__global__";
@@ -2728,6 +2793,7 @@ Object.keys(state.chats || {}).forEach(k => repairThread(state.chats[k], k));
   if(state.drafts) Object.keys(state.drafts).forEach(k => { if(!validKey(k)) delete state.drafts[k]; }); // 초안 고아 정리 (v2.3)
 }
 function saveState(){
+  if(_acctWiped) return; // v2.57: 기록을 비운 뒤엔 새로 고침까지 다시 쓰지 않는다 (pagehide 저장이 옛 대화를 되살리던 결함)
   try{ localStorage.setItem(LS_STATE, JSON.stringify(state)); }
   catch(e){
     console.warn("[state-save]", e);
@@ -3036,51 +3102,61 @@ function buildSystem(extra, cfg, ownerKey){
 
 async function* streamClaude({ system, messages, signal, light, maxTokens }){
   const key = String(localStorage.getItem(LS_KEY) || "").replace(/[\s​-‍﻿]+/g, ""); // v2.41: 이미 공백 섞여 저장된 키도 방어 (구버전에서 저장된 키 백필)
-  if(!key) throw new Error("NO_KEY");
+  const acct = syncCfg(); // v2.57: 키가 없으면 계정 서버가 대신 호출(/ai/messages) — 키는 서버에만, 클라이언트는 계정 코드만 보낸다. 키가 있으면 예전처럼 직접 호출
+  const viaAcct = !key && acct.on;
+  if(!key && !viaAcct) throw new Error("NO_KEY");
   const model = localStorage.getItem(LS_MODEL) || "claude-opus-4-8";
   // light(v2.11 미니 사전): 한 줄 답만 필요 — 토큰 상한 축소 + 확장 사고 생략으로 지연·비용 최소화
   const body = light
     ? { model, max_tokens: maxTokens || 300, stream: true, system, messages } // v2.53: 요약 기억 등 중간 크기 호출도 light 경로(확장 사고 없음)로
     : { model, max_tokens: 16000, stream: true, thinking: { type: "adaptive" }, system, messages };
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const res = await fetch(viaAcct ? acct.url + "/ai/messages" : "https://api.anthropic.com/v1/messages", {
     method: "POST",
     signal, // v1.9: ⏹ 답변 중단
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": key,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true"
-    },
+    headers: viaAcct
+      ? { "Content-Type": "application/json", "Authorization": "Bearer " + acct.code, "anthropic-version": "2023-06-01" } // 계정 코드만 — x-api-key 없음
+      : { "Content-Type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
     body: JSON.stringify(body)
   });
   if(!res.ok){
     let detail = "";
-    try{ const j = await res.json(); if(j && j.error && j.error.message) detail = j.error.message; }catch(e){}
+    try{ const j = await res.json(); if(j && j.error) detail = j.error.message || (typeof j.error === "string" ? j.error : j.error.type || ""); }catch(e){}
     console.error("[claude-api]", res.status, detail); // 원본 에러는 콘솔에만 — 학습자 화면엔 한국어만 (기획 렌즈 원칙)
     let msg = `연결에 문제가 있었어요 (오류 번호 ${res.status}). 잠시 후 다시 시도해 주세요.`;
-    if(res.status === 401) msg = "API 키가 유효하지 않아요. ⚙️ 설정에서 확인해 주세요.";
+    if(res.status === 401) msg = viaAcct ? "계정 코드가 서버와 달라요. ⚙️ 설정에서 확인해 주세요." : "API 키가 유효하지 않아요. ⚙️ 설정에서 확인해 주세요.";
+    if(res.status === 402) msg = "이번 달 AI 사용 한도에 도달했어요 — 계정을 발급한 분에게 문의해 주세요."; // v2.57: 서버 한도(capUsd)
+    if(res.status === 403 && viaAcct) msg = "이 계정은 AI 대신 호출이 꺼져 있어요 — 계정을 발급한 분에게 문의하거나 ⚙️ 설정에 API 키를 넣어 주세요.";
     if(res.status === 429) msg = "요청이 너무 잦아요(요금제 한도). 잠시 후 다시 시도해 주세요.";
     throw new Error(msg);
   }
   const reader = res.body.getReader(); const dec = new TextDecoder();
   let buf = "";
-  while(true){
-    const { done, value } = await reader.read();
-    if(done) break;
-    buf += dec.decode(value, { stream: true });
-    let idx;
-    while((idx = buf.indexOf("\n\n")) >= 0){
-      const frame = buf.slice(0, idx); buf = buf.slice(idx + 2);
-      for(const line of frame.split("\n")){
-        if(!line.startsWith("data:")) continue;
-        const payload = line.slice(5).trim();
-        if(!payload) continue;
-        let ev; try{ ev = JSON.parse(payload); }catch(e){ continue; }
-        if(ev.type === "content_block_delta" && ev.delta && ev.delta.type === "text_delta"){ yield ev.delta.text; }
-        else if(ev.type === "error"){ console.error("[claude-stream]", ev.error); throw new Error("답변이 중간에 끊겼어요. 다시 시도해 주세요."); }
-        else if(ev.type === "message_delta" && ev.delta && ev.delta.stop_reason === "refusal"){ yield "\n\n*(안전상 답변이 중단됐어요 — 질문을 바꿔 다시 시도해 주세요.)*"; }
+  const use = { i: 0, o: 0, cw: 0, cr: 0 }; let useGot = false, chars = 0; // v2.57: 💳 요금 집계 재료 (message_start=입력·캐시, message_delta=출력 누계)
+  try {
+    while(true){
+      const { done, value } = await reader.read();
+      if(done) break;
+      buf += dec.decode(value, { stream: true });
+      let idx;
+      while((idx = buf.indexOf("\n\n")) >= 0){
+        const frame = buf.slice(0, idx); buf = buf.slice(idx + 2);
+        for(const line of frame.split("\n")){
+          if(!line.startsWith("data:")) continue;
+          const payload = line.slice(5).trim();
+          if(!payload) continue;
+          let ev; try{ ev = JSON.parse(payload); }catch(e){ continue; }
+          if(ev.type === "content_block_delta" && ev.delta && ev.delta.type === "text_delta"){ chars += ev.delta.text.length; yield ev.delta.text; }
+          else if(ev.type === "error"){ console.error("[claude-stream]", ev.error); throw new Error("답변이 중간에 끊겼어요. 다시 시도해 주세요."); }
+          else if(ev.type === "message_start" && ev.message && ev.message.usage){ const us = ev.message.usage; use.i = us.input_tokens || 0; use.cw = us.cache_creation_input_tokens || 0; use.cr = us.cache_read_input_tokens || 0; useGot = true; }
+          else if(ev.type === "message_delta"){
+            if(ev.usage && typeof ev.usage.output_tokens === "number"){ use.o = ev.usage.output_tokens; useGot = true; }
+            if(ev.delta && ev.delta.stop_reason === "refusal"){ yield "\n\n*(안전상 답변이 중단됐어요 — 질문을 바꿔 다시 시도해 주세요.)*"; }
+          }
+        }
       }
     }
+  } finally {
+    if(useGot){ if(!use.o && chars) use.o = Math.ceil(chars / 3); usageAdd(model, use, viaAcct); } // ⏹ 중단 등으로 출력 집계를 못 받았으면 글자 수로 어림
   }
 }
 
@@ -3275,7 +3351,7 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
         rollback();
       }
     } else if(String(err.message) === "NO_KEY"){
-      errMd.innerHTML = '<b>API 키가 아직 없어요.</b><br>아래 버튼으로 <b>⚙️ 설정</b>을 열어 Claude API 키를 넣으면 대화가 시작됩니다.<br><button class="key-open" type="button" data-open-settings>⚙️ 설정 열기</button><br><span style="color:var(--text-mute);font-size:.85em">키는 이 브라우저에만 저장돼요 — 컴퓨터·폰 각각 한 번씩 넣어 주세요. (console.anthropic.com에서 발급)</span>'; // v2.40: 모바일엔 "우측 상단 ⚙️"가 없음(보관 탭 안) — 안내에서 바로 연다
+      errMd.innerHTML = '<b>API 키나 계정 코드가 아직 없어요.</b><br>아래 버튼으로 <b>⚙️ 설정</b>을 열어 Claude API 키(또는 받은 계정 코드)를 넣으면 대화가 시작됩니다.<br><button class="key-open" type="button" data-open-settings>⚙️ 설정 열기</button><br><span style="color:var(--text-mute);font-size:.85em">키는 이 브라우저에만 저장돼요 — 컴퓨터·폰 각각 한 번씩 넣어 주세요. (console.anthropic.com에서 발급)</span>'; // v2.40: 모바일엔 "우측 상단 ⚙️"가 없음(보관 탭 안) — 안내에서 바로 연다
       rollback(); // 실패한 user 턴 롤백
       if(!getDraft(ownerKey)){ setDraft(ownerKey, text); saveState(); } // 질문은 입력창 초안으로 — 즉시 저장(디바운스 400ms 안에 reload가 겹치면 유실되는 race 차단, 개발 렌즈)
       if(img){ _pendImg = img; showImgPrev(img); } // v2.35 QA: 첨부 이미지도 되돌린다 — 무언 유실 방지 (NO_KEY에서 특히 흔한 시나리오)
@@ -3540,7 +3616,8 @@ function renderWordList(){
       <span class="w-num">${i + 1}</span>
       <div class="w-txt"><span class="w-base">${esc(w.base)}</span>
       <span class="w-ko">${esc(w.ko)}</span></div>
-    </div>`).join("");
+    </div>`).join("") + usageBadgeHTML(); // v2.57: 💳 이번 달 API 요금(맨 아래 sticky)
+  renderUsageBadge();
   const inp = document.getElementById("word-search");
   if(inp && wsQ){
     inp.value = wsQ;
@@ -3816,30 +3893,40 @@ function roleRowHTML(cfg, msgs){
 }
 
 /* 질문 목록 — 우측 파도 탭 리스트의 중앙판. 긴 대화에서 내 질문 위치로 바로 점프 */
-let qIndexOpen = false;
+let qIndexOpen = false, _qiQuery = ""; // v2.57: 🔍 찾기 문자열(열려 있는 동안 유지)
 function renderQIndex(){
   const box = document.getElementById("q-index");
   const chat = curChat();
-  const qs = chat.map((m, i) => ({ m, i })).filter(x => x.m.role === "user");
+  const qs = chat.map((m, i) => ({ m, i })).filter(x => x.m.role === "user").map((x, n) => ({ m: x.m, i: x.i, n: n + 1 }));
   document.getElementById("q-count").textContent = qs.length;
   const btn = document.getElementById("btn-q-list");
   if(btn) btn.classList.toggle("active", qIndexOpen);
   if(!qIndexOpen){ box.hidden = true; return; }
   box.hidden = false;
-  box.innerHTML = qs.length
-    ? qs.map((x, n) => `<button class="qi-item" data-qjump="${x.i}" type="button"><span class="qi-n">${n + 1}</span><span class="qi-t">${esc(x.m.content.slice(0, 60))}${x.m.content.length > 60 ? "…" : ""}</span></button>`).join("")
-    : `<div class="qi-empty">아직 질문이 없어요 — 아래 대화창에 첫 질문을 던져 보세요.</div>`;
+  // v2.57: 최근 질문부터(번호는 원래 순서) + 🔍 찾기 + ✕ — 긴 대화(질문 100개+)에서 맨 앞 3줄만 보이고 최근 것은 목록 끝에 숨어 있던 문제 (사용자: "단어 채팅 안 질문 내역이 제대로 작동 안 함")
+  const q = _qiQuery.trim().toLowerCase();
+  const shown = qs.slice().reverse().filter(x => !q || String(x.m.content).toLowerCase().includes(q));
+  const prevInp = box.querySelector(".qi-search"), hadFocus = !!prevInp && document.activeElement === prevInp, pos = hadFocus ? prevInp.selectionStart : 0;
+  box.innerHTML = `<div class="qi-head"><input class="qi-search" type="search" placeholder="🔍 질문 찾기" value="${esc(_qiQuery)}" autocomplete="off"><span class="qi-info">${qs.length}개 · 최근 것부터 · 누르면 그 자리로</span><button class="qi-x" type="button" title="목록 닫기">✕</button></div>`
+    + (qs.length
+      ? (shown.length
+        ? shown.map(x => `<button class="qi-item" data-qjump="${x.i}" type="button"><span class="qi-n">${x.n}</span><span class="qi-t">${esc(String(x.m.content).replace(/\s+/g, " ").slice(0, 80))}${x.m.content.length > 80 ? "…" : ""}</span></button>`).join("")
+        : `<div class="qi-empty">"${esc(_qiQuery.trim())}"이(가) 들어간 질문이 없어요.</div>`)
+      : `<div class="qi-empty">아직 질문이 없어요 — 아래 대화창에 첫 질문을 던져 보세요.</div>`);
+  const inp = box.querySelector(".qi-search"); if(inp && hadFocus){ inp.focus(); try { inp.setSelectionRange(pos, pos); } catch(e){} }
 }
 document.getElementById("btn-q-list").addEventListener("click", () => { qIndexOpen = !qIndexOpen; renderQIndex(); });
+document.getElementById("q-index").addEventListener("input", (e) => { if(e.target.classList.contains("qi-search")){ _qiQuery = e.target.value; renderQIndex(); } });
 document.getElementById("q-index").addEventListener("click", (e) => {
+  if(e.target.closest(".qi-x")){ qIndexOpen = false; renderQIndex(); return; }
   const it = e.target.closest("[data-qjump]");
   if(!it) return;
   const t = document.querySelector(`#chat-log [data-mi="${it.dataset.qjump}"]`);
   if(!t) return;
-  t.scrollIntoView({ block: "center", behavior: "smooth" });
+  if(isMobileView()){ qIndexOpen = false; renderQIndex(); } // 모바일: .chat-head가 접혀 목록을 닫을 버튼이 안 보인다 — 점프 전에 닫아 접힌 높이 기준으로 자리를 잡는다
+  t.scrollIntoView({ block: "center" }); // v2.57: 즉시 이동 — 부드러운 스크롤은 긴 대화(3만px)에서 1.5초가 걸려 강조(1.2초)가 도착 전에 끝났다
   t.classList.remove("flash"); void t.offsetWidth; // 애니메이션 재시작
   t.classList.add("flash");
-  if(isMobileView()){ qIndexOpen = false; renderQIndex(); } // v2.56: 모바일은 .chat-head가 접혀 목록을 닫을 버튼이 안 보인다 — 점프 후 자동 닫힘
 });
 /* 답변 접기 — 부분 갱신(해당 말풍선만), 전체 재렌더 없음 → 입력·스크롤 보존 */
 document.getElementById("chat-log").addEventListener("click", (e) => {
@@ -4128,7 +4215,7 @@ async function fillRulesFromChat(){
   } catch(err){
     console.error("[rules-fill]", err);
     const raw = String(err.message || "");
-    alert(raw === "NO_KEY" ? (isMobileView() ? "API 키가 필요해요 — ☰ 메뉴 → ⚙️ 설정에서 넣어 주세요" : "API 키가 필요해요 — ⚙️ 설정에서 넣어 주세요. (컴퓨터: 우측 상단)") // v2.56: 폰 안내는 ☰ 메뉴 경유(옛 4탭 폐지)
+    alert(raw === "NO_KEY" ? (isMobileView() ? "API 키나 계정 코드가 필요해요 — ☰ 메뉴 → ⚙️ 설정에서 넣어 주세요" : "API 키나 계정 코드가 필요해요 — ⚙️ 설정에서 넣어 주세요. (컴퓨터: 우측 상단)") // v2.56: 폰 안내는 ☰ 메뉴 경유(옛 4탭 폐지)
       : /[가-힣]/.test(raw) ? "요약 실패: " + raw
       : "요약 실패: 잠시 후 다시 시도해 주세요.");
   } finally {
@@ -4819,11 +4906,24 @@ function collectQuestions(){
   out.sort((a, b) => b.ts - a.ts); // 최신 먼저 — ts 없는 옛 질문(v2.30 이전)은 맨 뒤 "이전 기록"
   return out;
 }
+let _qhFilter = ""; // v2.57: 🗓 질문 내역 태그 필터 (""=전체) — 항목이 사라진 태그면 전체로
 function renderQH(){
   const body = document.getElementById("qh-body");
   if(!body) return;
-  const qs = collectQuestions();
-  if(!qs.length){ body.innerHTML = `<div class="qh-empty">아직 질문이 없어요 — 대화창에 첫 질문을 던져 보세요.</div>`; return; }
+  const all = collectQuestions();
+  // v2.57: 상단 셀렉트 — 출처 태그(파도 Chat · 단어 · 🌊 파도)별 개수. 순서: 파도 Chat → 단어(많은 순) → 파도(많은 순) (사용자 요청: 태그로 걸러 쉽게 찾기)
+  const sel = document.getElementById("qh-filter"), cnt = document.getElementById("qh-count");
+  if(sel){
+    const counts = {}; all.forEach(q => { counts[q.label] = (counts[q.label] || 0) + 1; });
+    const rank = (l) => l === "총괄" ? 0 : l.indexOf("🌊 ") === 0 ? 2 : 1;
+    const labels = Object.keys(counts).sort((a, b) => rank(a) - rank(b) || counts[b] - counts[a] || a.localeCompare(b));
+    if(_qhFilter && !counts[_qhFilter]) _qhFilter = "";
+    sel.innerHTML = `<option value="">전체 (${all.length})</option>` + labels.map(l => `<option value="${esc(l)}">${esc(srcLabel(l))} (${counts[l]})</option>`).join("");
+    sel.value = _qhFilter;
+  }
+  const qs = _qhFilter ? all.filter(q => q.label === _qhFilter) : all;
+  if(cnt) cnt.textContent = _qhFilter ? `${qs.length}개` : "";
+  if(!qs.length){ body.innerHTML = `<div class="qh-empty">${all.length ? "이 대화 상대에게 한 질문이 없어요." : "아직 질문이 없어요 — 대화창에 첫 질문을 던져 보세요."}</div>`; return; }
   let html = "", lastDate = null;
   qs.forEach((q) => {
     const d = q.ts ? new Date(q.ts).toLocaleDateString("ko-KR") : "이전 기록 — 날짜 기록 전의 질문";
@@ -4862,6 +4962,7 @@ function openQH(){ renderQH(); document.getElementById("qh-modal").classList.add
 function closeQH(){ document.getElementById("qh-modal").classList.remove("show"); modalBg.classList.remove("show"); }
 document.getElementById("btn-qh").addEventListener("click", openQH);
 document.getElementById("qh-close").addEventListener("click", closeQH);
+document.getElementById("qh-filter").addEventListener("change", (e) => { _qhFilter = e.target.value; renderQH(); }); // v2.57
 
 /* ── v2.33: 🧠 복습 포인트 — 학습 채팅·연습 기록·⭐ 저장을 취합해 AI가 복습 카드로 종합, 별도 보관 (사용자 요청) ── */
 const LS_REVIEW = "we_review_v1";
@@ -5377,7 +5478,7 @@ ${convo ? "\n[대화]\n" + convo : ""}`;
     const raw = String(err.message || "");
     // 학습자 화면엔 한국어만: 우리가 만든 한국어 메시지(한글 포함)는 그대로, JSON SyntaxError 등 영어 예외는 고정 문구로
     const msg = raw === "NO_KEY"
-      ? (isMobileView() ? "API 키가 필요해요 — ☰ 메뉴 → ⚙️ 설정에서 넣어 주세요" : "API 키가 필요해요 — ⚙️ 설정에서 넣어 주세요. (컴퓨터: 우측 상단)") // v2.56: 폰 안내는 ☰ 메뉴 경유(옛 4탭 폐지)
+      ? (isMobileView() ? "API 키나 계정 코드가 필요해요 — ☰ 메뉴 → ⚙️ 설정에서 넣어 주세요" : "API 키나 계정 코드가 필요해요 — ⚙️ 설정에서 넣어 주세요. (컴퓨터: 우측 상단)") // v2.56: 폰 안내는 ☰ 메뉴 경유(옛 4탭 폐지)
       : /[가-힣]/.test(raw)
         ? "저장 실패: " + raw
         : "저장 실패: 답변을 분석 자료로 정리하지 못했어요. 잠시 후 다시 시도해 주세요.";
@@ -5650,13 +5751,16 @@ function openSettings(){
   document.getElementById("set-key").value = localStorage.getItem(LS_KEY) || "";
   document.getElementById("set-model").value = localStorage.getItem(LS_MODEL) || "claude-opus-4-8";
   document.getElementById("set-system").value = localStorage.getItem(LS_SYSTEM) || PHILO;
-  document.getElementById("sync-url").value = localStorage.getItem("we_sync_url") || ""; // v2.45
-  document.getElementById("sync-secret").value = localStorage.getItem("we_sync_secret") || "";
+  document.getElementById("sync-url").value = localStorage.getItem(LS_SYNC_URL) || ""; // v2.57: 👥 계정 (v2.45 동기화 칸을 계정 코드로 대체)
+  document.getElementById("acct-code").value = localStorage.getItem(LS_ACCT) || "";
+  document.getElementById("admin-secret").value = localStorage.getItem(LS_ADMIN) || "";
+  acctStatusLine();
   document.getElementById("set-memo").checked = memoOn(); // v2.53
   modalBg.classList.add("show"); modal.classList.add("show");
 }
 function closeSettings(){ modalBg.classList.remove("show"); modal.classList.remove("show"); }
 document.getElementById("btn-settings").addEventListener("click", openSettings);
+document.getElementById("word-list").addEventListener("click", (e) => { if(e.target.closest("#usage-badge")) openSettings(); }); // v2.57: 💳 배지 → 설정(계정·사용량)
 document.getElementById("ch-settings").addEventListener("click", openSettings); // v2.56: 모바일 ⋯ 더 보기 안의 ⚙️ 설정 (헤더가 숨겨지므로 2경로: ⋯→⚙️ · ☰→⚙️)
 document.addEventListener("click", (e) => { if(e.target.closest("[data-open-settings]")) openSettings(); }); // v2.40: 키 없음 안내 말풍선에서 바로 설정 열기 (모바일 포함 — 위임이라 재렌더 생존)
 document.getElementById("set-cancel").addEventListener("click", closeSettings);
@@ -6136,12 +6240,107 @@ function rulesCardHTML(f, idx){
     ${rel ? `<div class="fm-rel"><span>관련 단어</span>${rel}</div>` : ""}
   </article>`;
 }
+/* ── v2.57: 🔑 물음말 8개 — what·when·who·where·why·how·which·whose 가 상황에 따라 바꾸는 얼굴 (사용자 요청: "기본 단어가 상황에 따라 어떤 의미를 갖는지 규칙")
+   용어(학습자 화면): 물음말 = 문장 맨 앞에서 묻는 얼굴 · 고리 = 문장 가운데서 앞 말과 뒷말을 잇는 얼굴(물음표 없음, 뒤는 보통 순서) · 감탄 · 정해진 짝 = 통째로 외우는 표현.
+   영어 문법에만 있는 개념어(의문사·관계대명사·명사절·부사절 등)는 화면에 쓰지 않는다(영어의공식-PLAN §2 D — 결·비유로 치환). 번역은 보수적 — 원문에 없는 말을 더하지 않는다.
+   데이터-주도: WH_DATA → whSectionHTML()(요약 표 + 공통 어순 4줄 + 카드 8장). 단어 페이지가 있는 말(what·when·who·where·why·how)은 칩으로 연결(.fm-word-chip 위임 공유). */
+const WH_COMMON = [
+  { t: "물을 때는 물음말이 맨 앞, 그다음에 be·do·can이 주인공보다 먼저 온다(공식 ④ 도장 이사와 같은 자리).", ex: "What is it? / Where do you live? / When can we meet?" },
+  { t: "물음말 자체가 주인공이면 do 없이 바로 동사.", ex: "Who called? / What happened? (Who did call? ✗)" },
+  { t: "이을 때(고리)는 물음표가 없고, 뒤는 보통 순서(주인공 → 동사)로 돌아간다.", ex: "I know what you mean. (I know what do you mean ✗)" },
+  { t: "\"~인지 알아 / 궁금해 / 말해 줘\" 뒤는 전부 고리 — 물음이 문장 안으로 들어가면 어순도 보통 순서.", ex: "Do you know where he is? (Do you know where is he? ✗)" }
+];
+const WH_DATA = [
+  { w: "what", ko: "무엇 — 정체·내용을 묻는다", faces: [
+      { tag: "물을 때", ex: [{ o: "What is this?", ko: "이게 뭐예요?" }, { o: "What do you want?", ko: "뭘 원해요?" }], note: "범위가 정해져 있지 않은 열린 물음. 눈앞의 몇 개 중에서 고르는 건 which." },
+      { tag: "이을 때(고리)", ex: [{ o: "I know what you mean.", ko: "네 말이 무슨 뜻인지 알아." }, { o: "Tell me what happened.", ko: "무슨 일이 있었는지 말해 줘." }], note: "\"무엇인지\"를 한 덩어리로 만들어 앞 말(know·tell)에 붙인다. 물음표 없음, 뒤는 보통 순서." },
+      { tag: "감탄", ex: [{ o: "What a day!", ko: "정말 대단한 하루야!" }], note: "what + a + 이름말. 멋진 날에도 힘든 날에도 쓴다(상황이 정한다). 꾸밈말을 감탄할 땐 how — How nice!" },
+      { tag: "정해진 짝", ex: [{ o: "What about you?", ko: "너는?" }, { o: "What if it rains?", ko: "비가 오면 어쩌지?" }, { o: "What for?", ko: "뭐 하러?" }], note: "통째로 외우는 짝. What about은 되묻거나 제안할 때." }
+    ], traps: [
+      { wrong: "How do you think? ✗", right: "What do you think? ✓", why: "한국어 \"어떻게 생각해?\"를 그대로 옮긴 오류 1위. 영어는 생각의 내용(무엇)을 묻는다 — how는 방식·정도." },
+      { wrong: "How does he look like? ✗", right: "What does he look like? ✓", why: "like(~같은) 뒤에는 \"무엇\"이 와야 짝이 맞는다. like를 빼면 How does he look?(어때 보여?)도 된다." }
+    ] },
+  { w: "when", ko: "언제 — 시점", faces: [
+      { tag: "물을 때", ex: [{ o: "When did you arrive?", ko: "언제 도착했어?" }, { o: "When are you free?", ko: "언제 시간 돼?" }], note: "" },
+      { tag: "이을 때(고리)", ex: [{ o: "Call me when you get home.", ko: "집에 도착하면 전화해." }, { o: "I was a kid when we moved.", ko: "우리가 이사했을 때 나는 아이였어." }], note: "\"~할 때 / ~하면\"으로 두 덩어리를 잇는다. 물음표 없음." },
+      { tag: "정해진 습관", ex: [{ x: "When I will get there, I'll call.", o: "When I get there, I'll call.", ko: "거기 도착하면 전화할게." }], note: "when 덩어리 안에서는 앞일이어도 will을 넣지 않는다 — will은 다른 쪽 덩어리에만." },
+      { tag: "정해진 짝", ex: [{ o: "Since when?", ko: "언제부터?" }, { o: "when it comes to money", ko: "돈에 관해서라면" }], note: "" }
+    ], traps: [
+      { wrong: "When you are free? ✗", right: "When are you free? ✓", why: "물을 때는 be가 주인공 앞으로 나온다. 한국어는 어순을 안 바꾸고 억양만 올리므로 그대로 두기 쉽다." }
+    ] },
+  { w: "who", ko: "누구 — 사람", faces: [
+      { tag: "물을 때", ex: [{ o: "Who is she?", ko: "저 사람 누구야?" }, { o: "Who called?", ko: "누가 전화했어?" }], note: "물음말이 주인공이면(Who called?) do 없이 바로 동사." },
+      { tag: "이을 때(고리)", ex: [{ o: "the man who called", ko: "전화한 그 남자" }, { o: "I have a friend who lives in Busan.", ko: "부산에 사는 친구가 있어." }], note: "사람 바로 뒤에 붙어 \"어떤 사람인지\" 설명을 잇는다. 사물·동물에는 which(또는 that)." },
+      { tag: "정해진 짝", ex: [{ o: "Who knows?", ko: "누가 알겠어." }, { o: "Who cares?", ko: "알 게 뭐야." }], note: "물음 모양이지만 답을 기다리지 않는다." }
+    ], traps: [
+      { wrong: "the man which called ✗", right: "the man who called ✓", why: "사람 뒤 고리는 who. 한국어는 \"~한 남자\"로 같은 모양이라 구분이 없다." },
+      { wrong: "Who did call? ✗", right: "Who called? ✓", why: "who가 주인공 자리를 차지하면 도장이 이사 갈 do가 필요 없다(공식 ④)." }
+    ] },
+  { w: "where", ko: "어디 — 자리", faces: [
+      { tag: "물을 때", ex: [{ o: "Where are you?", ko: "어디야?" }, { o: "Where do you live?", ko: "어디 살아?" }], note: "" },
+      { tag: "이을 때(고리)", ex: [{ o: "This is where I grew up.", ko: "여기가 내가 자란 곳이야." }, { o: "the cafe where we met", ko: "우리가 만난 그 카페" }], note: "\"~하는 곳\"으로 잇는다. 장소 이름 뒤에 붙거나(the cafe where), 혼자서 \"곳\" 노릇을 한다." },
+      { tag: "정해진 짝", ex: [{ o: "Where are you from?", ko: "어디 출신이에요?" }, { o: "Where to?", ko: "어디로 (가세요)?" }], note: "from이 문장 끝에 남는다 — 빼면 \"지금 어디야?\"로 뜻이 바뀐다." }
+    ], traps: [
+      { wrong: "Where are you? (출신을 물을 때) ✗", right: "Where are you from? ✓", why: "한국어 \"어디 사람이에요?\"엔 from에 해당하는 말이 따로 없어 빠뜨리기 쉽다." }
+    ] },
+  { w: "why", ko: "왜 — 이유", faces: [
+      { tag: "물을 때", ex: [{ o: "Why are you late?", ko: "왜 늦었어?" }, { o: "Why did she leave?", ko: "걔는 왜 떠났어?" }], note: "" },
+      { tag: "이을 때(고리)", ex: [{ o: "That's why I left.", ko: "그래서 내가 떠난 거야." }, { o: "I don't know why.", ko: "왜인지 모르겠어." }], note: "\"그래서 / 왜인지\"로 앞 말과 잇는다. the reason why는 why 하나로 줄여도 된다." },
+      { tag: "정해진 짝", ex: [{ o: "Why not?", ko: "왜 안 돼? (제안에 답할 땐: 그러지 뭐)" }, { o: "Why don't we go?", ko: "우리 갈까?" }], note: "Why don't we/you ~?는 이유를 묻는 게 아니라 제안. 대답도 Sure!" }
+    ], traps: [
+      { wrong: "Why don't you ~? 를 \"왜 안 해?\"(추궁)로 듣기 ✗", right: "\"~하는 게 어때?\"(제안) ✓", why: "모양은 물음이지만 뜻은 제안 — 한국어로 직역하면 따지는 말로 들린다." }
+    ] },
+  { w: "how", ko: "어떻게·얼마나 — 방식과 정도", faces: [
+      { tag: "물을 때(방식)", ex: [{ o: "How do you do it?", ko: "그거 어떻게 해?" }, { o: "How was it?", ko: "어땠어?" }], note: "" },
+      { tag: "물을 때(정도) — 재는 말을 데려온다", ex: [{ o: "How old are you?", ko: "몇 살이에요?" }, { o: "How much is it?", ko: "얼마예요?" }, { o: "How long does it take?", ko: "얼마나 걸려?" }], note: "how 바로 뒤에 재는 말(old·much·long·often·far)이 붙어 한 덩어리로 맨 앞에 선다." },
+      { tag: "이을 때(고리)", ex: [{ o: "I don't know how it works.", ko: "그게 어떻게 돌아가는지 몰라." }, { o: "That's how we met.", ko: "우린 그렇게 만났어." }], note: "" },
+      { tag: "감탄", ex: [{ o: "How nice!", ko: "참 좋다!" }], note: "how + 꾸밈말. 이름말을 감탄할 땐 what — What a day!" },
+      { tag: "정해진 짝", ex: [{ o: "How about a coffee?", ko: "커피 어때?" }, { o: "How come you're late?", ko: "어째서 늦었어?" }, { o: "How are you?", ko: "잘 지내?" }], note: "How come 뒤는 물음 어순으로 뒤집지 않는다(you're late 그대로)." }
+    ], traps: [
+      { wrong: "How do you think? ✗", right: "What do you think? ✓", why: "생각의 내용을 물을 땐 what. how로 물으면 \"어떤 방법으로 생각하냐\"가 된다." },
+      { wrong: "How about go? ✗", right: "How about going? ✓", why: "How about 뒤에는 이름말이나 -ing 모양이 온다 — 맨몸 동사는 못 온다(공식 ③의 딱지 자리와 같은 이치)." }
+    ] },
+  { w: "which", ko: "어느 것 — 정해진 것 중에서 고르기", faces: [
+      { tag: "물을 때", ex: [{ o: "Which one do you want?", ko: "어느 걸로 할래?" }, { o: "Which is better, A or B?", ko: "A랑 B 중 어느 게 나아?" }], note: "눈앞에 후보가 있을 때. 열린 물음은 what." },
+      { tag: "이을 때(고리)", ex: [{ o: "the book which I bought", ko: "내가 산 그 책" }], note: "사물 뒤에 붙는 고리(사람은 who). 말할 땐 that을 쓰거나 아예 빼는 게 더 흔하다 — the book I bought." },
+      { tag: "앞 말 통째로 받기", ex: [{ o: "He was late, which made me angry.", ko: "그가 늦었고, 그게 날 화나게 했어." }], note: "쉼표 뒤 which는 앞 문장 전체를 \"그것\"으로 받는다." }
+    ], traps: [
+      { wrong: "the man which ✗", right: "the man who ✓", why: "사람에겐 who. 한국어엔 사람·사물 구분이 없어 섞어 쓰기 쉽다." }
+    ] },
+  { w: "whose", ko: "누구의 — 임자", faces: [
+      { tag: "물을 때", ex: [{ o: "Whose bag is this?", ko: "이거 누구 가방이야?" }, { o: "Whose is it?", ko: "이거 누구 거야?" }], note: "물건 이름을 whose 바로 뒤에 붙인다(Whose bag)." },
+      { tag: "이을 때(고리)", ex: [{ o: "the girl whose brother is a singer", ko: "형제가 가수인 그 여자애" }], note: "사람·사물 뒤에 붙어 \"그 사람의 ~\"로 잇는다." }
+    ], traps: [
+      { wrong: "Who's bag is this? ✗", right: "Whose bag is this? ✓", why: "who's(= who is)와 소리가 같다. Who's this?(이 사람 누구?) / Whose is this?(이거 누구 거?)로 뜻이 갈린다." }
+    ] }
+];
+function whExHTML(e){ return `<div class="fm-ex">${e.x ? `<span class="fm-x">✗ ${esc(e.x)}</span> → ` : ""}<span class="fm-o">${e.x ? "✓ " : ""}${esc(e.o)}</span><span class="fm-ko">${esc(e.ko || "")}</span></div>`; }
+function whCardHTML(d){
+  const faces = d.faces.map(f => `<div class="wh-face"><span class="whf-tag">${esc(f.tag)}</span><div class="wh-exs">${f.ex.map(whExHTML).join("")}</div>${f.note ? `<div class="wh-note">${esc(f.note)}</div>` : ""}</div>`).join("");
+  const traps = (d.traps || []).map(t => `<div class="fm-trap"><div class="fm-trap-pair"><span class="fm-x">${esc(t.wrong)}</span> → <span class="fm-o">${esc(t.right)}</span></div><div class="fm-trap-why">${esc(t.why)}</div></div>`).join("");
+  const chip = WORDS.some(w => w.base === d.w) ? `<div class="fm-rel"><span>단어 페이지</span><button class="fm-word-chip" type="button" data-fm-word="${esc(d.w)}">${esc(d.w)} 자세히 →</button></div>` : "";
+  return `<article class="wh-card" data-wh="${esc(d.w)}"><div class="wh-head"><span class="wh-word">${esc(d.w)}</span><span class="wh-ko">${esc(d.ko)}</span></div>${faces}${traps ? `<div class="fm-traps"><div class="fm-sec-t">🇰🇷 한국인이 여기서 넘어진다</div>${traps}</div>` : ""}${chip}</article>`;
+}
+function whSectionHTML(){
+  const pick = (d, pre) => { const f = d.faces.find(x => x.tag.indexOf(pre) === 0); return f && f.ex[0] ? f.ex[0].o : "—"; };
+  const other = (d) => { const f = d.faces.find(x => x.tag.indexOf("물을 때") !== 0 && x.tag.indexOf("이을 때") !== 0); return f && f.ex[0] ? `${f.ex[0].o} (${f.tag})` : "—"; };
+  const rows = WH_DATA.map(d => `<tr><th>${esc(d.w)}</th><td>${esc(pick(d, "물을 때"))}</td><td>${esc(pick(d, "이을 때"))}</td><td>${esc(other(d))}</td></tr>`).join("");
+  const common = WH_COMMON.map(c => `<li>${esc(c.t)} <span class="fm-ko">${esc(c.ex)}</span></li>`).join("");
+  return `<section class="wh-sec" id="wh-sec">
+    <h3 class="wh-h">🔑 물음말 8개 — 같은 단어, 상황 따라 다른 얼굴</h3>
+    <p class="fm-intro-sub">what·when·who·where·why·how·which·whose는 문장 <b>맨 앞</b>에 서면 묻는 말이고, 문장 <b>가운데</b> 들어가면 앞 말과 뒷말을 잇는 <b>고리</b>가 돼요(물음표 없음). 표에서 얼굴을 먼저 보고, 카드에서 상황별 예와 함정을 확인하세요.</p>
+    <div class="wh-wrap"><table class="wh-matrix"><thead><tr><th></th><th>물을 때</th><th>이을 때(고리)</th><th>그 밖에</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="wh-common"><div class="fm-sec-t">8개 공통 — 어순 규칙</div><ul>${common}</ul></div>
+    ${WH_DATA.map(whCardHTML).join("")}
+  </section>`;
+}
 function openRules(){
   const sorted = FORMULA_DATA.slice().sort((a, b) => a.order - b.order);
   document.getElementById("rules-body").innerHTML = `
     <p class="fm-intro">파도는 흐르고 변한다. 그 아래 흔들리지 않는 바닥이 있다 — 그 바닥이 <b>공식</b>이다.</p>
     <p class="fm-intro-sub">학원의 '영어 공식'은 외우라고 준다. 여기 공식은 ${sorted.length}개뿐이고, <b>휘는 곳까지</b> 알려준다.<br>※ 맨몸(원형) = 아무것도 안 붙은 가장 기본 모양의 동사 — go, want</p>
-    ${sorted.map((f, i) => rulesCardHTML(f, i)).join("")}`;
+    ${sorted.map((f, i) => rulesCardHTML(f, i)).join("")}
+    ${whSectionHTML()}`; // v2.57: 🔑 물음말 8개 (공식 아래)
   document.getElementById("rules-modal").classList.add("show"); modalBg.classList.add("show");
 }
 function closeRules(){ document.getElementById("rules-modal").classList.remove("show"); modalBg.classList.remove("show"); }
@@ -6291,14 +6490,12 @@ document.getElementById("set-save").addEventListener("click", () => {
     // 지시문: 비었거나 기본값과 동일하면 저장 안 함(기본 PHILO 사용) — 커스텀만 보관
     if(!sys.trim() || sys === PHILO) localStorage.removeItem(LS_SYSTEM);
     else localStorage.setItem(LS_SYSTEM, sys);
-    // v2.45: 자동 동기화 설정 — 암호도 키처럼 보이지 않는 문자 정리 (복붙 오염 방어)
+    // v2.57: 👥 계정 — 서버 주소·계정 코드(연결/변경/끄기는 acctApply가 confirm으로 안내, 코드도 키처럼 보이지 않는 문자 정리) + 관리 암호(발급자용, 이 브라우저에만)
     const su = document.getElementById("sync-url").value.trim().replace(/\/+$/, "");
-    const ss = document.getElementById("sync-secret").value.replace(/[\s​-‍﻿]+/g, "");
-    const syncWasOn = syncCfg().on;
-    if(su) localStorage.setItem(LS_SYNC_URL, su); else localStorage.removeItem(LS_SYNC_URL);
-    if(ss) localStorage.setItem(LS_SYNC_SECRET, ss); else localStorage.removeItem(LS_SYNC_SECRET);
-    if(syncCfg().on) initSync(); // 켜짐/변경 — 즉시 pull부터 (initSync는 중복 타이머 가드)
-    else if(syncWasOn) weToast("🔄 자동 동기화를 껐어요");
+    const ac = document.getElementById("acct-code").value.replace(/[\s​-‍﻿]+/g, "");
+    const ad = document.getElementById("admin-secret").value.replace(/[\s​-‍﻿]+/g, "");
+    if(ad) localStorage.setItem(LS_ADMIN, ad); else localStorage.removeItem(LS_ADMIN);
+    acctApply(su, ac).then((changed) => { if(!changed && syncCfg().on) initSync(); }); // 변경 없이 켜져 있으면 pull 한 번 더 (initSync는 중복 타이머 가드)
   } catch(e){ console.warn(e); }
   closeSettings();
 });
@@ -6401,13 +6598,18 @@ document.getElementById("move-import").addEventListener("click", () => {
    - pull이 한 번도 성공 못 한 기기는 push 금지(_syncPulledOk) — 새 기기의 빈 상태가 서버 기록을 덮는 사고 차단.
    - 서버(worker.js)도 updatedAt 역행 PUT을 409로 거부 + we_api_key 이중 폐기.
    - LWW(마지막 쓰기 승리) 블롭 단위 — 단일 학습자 전제(sync/README-설정.md에 명시). */
+/* ── v2.57: 👥 계정 — 계정 코드 하나가 자격이다. 같은 코드를 넣은 기기끼리 학습 기록이 이어지고(동기화), API 키가 없는 기기는 서버가 대신 AI를 부른다(streamClaude → /ai/messages).
+   v2.45의 "동기화 암호"(we_sync_secret)는 계정 코드(we_acct_code)로 대체 — 옛 키는 읽지도 보내지도 않는다(제외 목록엔 남겨 push에 실리지 않게).
+   새 계정의 빈 기록 원칙(사용자 요구 "새로 발급받은 사람은 이전 기록 없이 시작"): 계정을 바꾸면 이 브라우저의 기록을 비우고 시작 — acctApply가 confirm으로 확인.
+   초대 링크: …#join=<서버 주소>|<계정 코드> → 설정 없이 바로 연결(acctJoinFromLink). 관리(발급·목록·삭제)는 설정창 [🔑 계정 발급] — 관리 암호는 이 브라우저에만. */
 const LS_SYNC_URL = "we_sync_url", LS_SYNC_SECRET = "we_sync_secret", LS_SYNC_LAST = "we_sync_last";
-const SYNC_EXCLUDE = [LS_KEY, LS_SYNC_URL, LS_SYNC_SECRET, LS_SYNC_LAST];
+const SYNC_EXCLUDE = [LS_KEY, LS_SYNC_URL, LS_SYNC_SECRET, LS_SYNC_LAST, LS_ACCT, LS_ACCT_NAME, LS_ADMIN, LS_USAGE]; // push 제외 + pull 무시 — 키·코드·암호·커서·기기별 요금
+const ACCT_KEEP = [LS_KEY, LS_MODEL, LS_SYSTEM, LS_MEMO_ON, LS_SYNC_URL, LS_ACCT, LS_ACCT_NAME, LS_ADMIN, LS_USAGE, LS_MTAB, "we_tts_note_v1"]; // 계정을 바꿔도 남는 기기 설정
 let _syncPulledOk = false, _syncPushedHash = "", _syncBusy = false, _syncTimer = null;
 function syncCfg(){
   const url = String(localStorage.getItem(LS_SYNC_URL) || "").trim().replace(/\/+$/, "");
-  const secret = String(localStorage.getItem(LS_SYNC_SECRET) || "").trim();
-  return { url, secret, on: !!(url && secret) };
+  const code = String(localStorage.getItem(LS_ACCT) || "").trim();
+  return { url, code, on: !!(url && code) };
 }
 function syncSnapshot(){
   const data = {};
@@ -6428,7 +6630,7 @@ async function syncFetch(method, body){
   if(!cfg.on) return null;
   return fetch(cfg.url + "/sync", {
     method,
-    headers: { "Authorization": "Bearer " + cfg.secret, "Content-Type": "application/json" },
+    headers: { "Authorization": "Bearer " + cfg.code, "Content-Type": "application/json" }, // v2.57: 계정 코드가 자격
     body: body ? JSON.stringify(body) : undefined,
   });
 }
@@ -6436,7 +6638,7 @@ async function syncPull(){
   try {
     const r = await syncFetch("GET");
     if(!r) return;
-    if(r.status === 401){ weToast("🔄 동기화 암호가 서버와 달라요 — ⚙️ 설정에서 확인해 주세요"); return; }
+    if(r.status === 401){ weToast("👥 계정 코드가 서버와 달라요 — ⚙️ 설정에서 확인해 주세요"); return; }
     if(!r.ok) return; // 일시 장애 — 조용히 다음 기회에
     const remote = await r.json();
     _syncPulledOk = true;
@@ -6459,7 +6661,7 @@ async function syncPull(){
   } catch(e){ /* 오프라인 등 — 조용히 */ }
 }
 async function syncPush(){
-  if(!_syncPulledOk || _syncBusy) return; // pull 성공 전 push 금지 — 빈 기기가 서버를 덮는 사고 차단
+  if(!_syncPulledOk || _syncBusy || _acctWiped) return; // pull 성공 전 push 금지 — 빈 기기가 서버를 덮는 사고 차단 (v2.57: 계정 바꾸는 중에도 금지)
   const data = syncSnapshot();
   const h = syncHash(data);
   if(h === _syncPushedHash) return; // 변화 없음
@@ -6475,11 +6677,142 @@ async function syncPush(){
 function initSync(){
   if(!syncCfg().on) return;
   syncPull();
+  acctRefresh(); // v2.57: 이름·이번 달 사용량(서버 집계) → 💳 배지·설정창 상태줄
   if(!_syncTimer){
     _syncTimer = setInterval(syncPush, 60000);
     document.addEventListener("visibilitychange", () => { if(document.visibilityState === "hidden") syncPush(); });
   }
 }
+async function acctFetch(path, opt){ const cfg = syncCfg(); if(!cfg.on) return null; return fetch(cfg.url + path, Object.assign({ headers: { "Authorization": "Bearer " + cfg.code, "Content-Type": "application/json" } }, opt || {})); }
+async function acctRefresh(){ // GET /me — 이름·이번 달 사용량·한도·AI 가능 여부
+  try {
+    const r = await acctFetch("/me"); if(!r) return;
+    if(r.status === 401){ weToast("👥 계정 코드가 서버와 달라요 — ⚙️ 설정에서 확인해 주세요"); return; }
+    if(!r.ok) return;
+    _acctInfo = await r.json();
+    if(_acctInfo && _acctInfo.name) localStorage.setItem(LS_ACCT_NAME, _acctInfo.name);
+    renderUsageBadge(); acctStatusLine();
+  } catch(e){ /* 오프라인 — 조용히 */ }
+}
+function localHasLearning(){ // 이 브라우저에 학습 기록이 있는가 — 계정 연결 때 "올릴까 / 비울까"를 물을지 판단
+  try {
+    const st = JSON.parse(localStorage.getItem(LS_STATE) || "null");
+    if(st && ((st.chats && Object.keys(st.chats).some(k => (st.chats[k] || []).length)) || (st.waves || []).length)) return true;
+    return [LS_SRS, LS_PRACTICE, LS_SAVED, LS_REVIEW].some(k => { const v = localStorage.getItem(k); return !!v && v !== "[]"; });
+  } catch(e){ return false; }
+}
+function wipeLearning(){ // 기기 설정(키·모델·지시문·계정·요금)만 남기고 we_* 학습 기록을 전부 지운다 — 새 계정의 빈 기록 원칙
+  const ks = [];
+  for(let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if(k && k.indexOf("we_") === 0 && ACCT_KEEP.indexOf(k) < 0) ks.push(k); }
+  ks.forEach(k => localStorage.removeItem(k));
+  _acctWiped = true; _syncPulledOk = false; // 새로 고침 전까지 저장·push 금지 — 옛 계정에서 pull 한 상태로 새 계정에 push 하면 그 계정 기록을 덮어쓴다
+  if(_syncTimer){ clearInterval(_syncTimer); _syncTimer = null; }
+}
+async function acctApply(url, code){ // 설정 저장·초대 링크 공통. 반환: true=연결(새로 고침 예약) / false=변경 없음·끔·취소
+  url = String(url || "").trim().replace(/\/+$/, ""); code = String(code || "").replace(/[\s​-‍﻿]+/g, "");
+  const prevUrl = String(localStorage.getItem(LS_SYNC_URL) || ""), prevCode = String(localStorage.getItem(LS_ACCT) || "");
+  if(!url || !code){ // 끄기 — 기록은 이 기기에 그대로
+    const wasOn = syncCfg().on;
+    if(code && !url){ weToast("👥 서버 주소를 먼저 넣어 주세요 (계정을 발급한 분에게 받은 주소)"); return false; } // QA: 코드만 넣고 저장한 경우 조용히 무시하지 않는다
+    if(url) localStorage.setItem(LS_SYNC_URL, url); else localStorage.removeItem(LS_SYNC_URL);
+    localStorage.removeItem(LS_ACCT); localStorage.removeItem(LS_ACCT_NAME); localStorage.removeItem(LS_SYNC_LAST);
+    _acctInfo = null; renderUsageBadge(); acctStatusLine();
+    if(wasOn) weToast("👥 계정 연결을 껐어요 — 기록은 이 기기에 그대로 남아요");
+    return false;
+  }
+  if(url === prevUrl && code === prevCode) return false;
+  let me = null;
+  try {
+    const r = await fetch(url + "/me", { headers: { "Authorization": "Bearer " + code } });
+    if(r.status === 401){ weToast("👥 계정 코드가 맞지 않아요 — 다시 확인해 주세요"); return false; }
+    if(!r.ok) throw new Error("bad");
+    me = await r.json();
+  } catch(e){ weToast("👥 서버에 연결할 수 없어요 — 서버 주소를 확인해 주세요"); return false; }
+  const name = (me && me.name) || "이름 없음";
+  if(code !== prevCode){ // 같은 코드의 주소만 바뀐 경우는 묻지 않는다
+    const hasLocal = localHasLearning();
+    if(prevCode){
+      if(!confirm(`다른 계정("${name}")으로 바꿔요.\n이 브라우저의 기록을 비우고 그 계정의 기록으로 시작할까요?`)) return false;
+      wipeLearning();
+    } else if(hasLocal && me && me.hasData){
+      if(!confirm(`계정 "${name}"에는 이미 기록이 있어요.\n이 기기의 기록을 버리고 그 계정의 기록으로 바꿀까요? (취소하면 연결하지 않아요)`)) return false;
+      wipeLearning();
+    } else if(hasLocal){ // 빈 계정 + 이 기기에 기록: 올리기 / 비우고 시작 / 연결 안 함 — 남에게 줄 코드를 내 기기에서 넣는 경우를 위해 두 번 묻는다(기획 렌즈)
+      if(!confirm(`계정 "${name}"은(는) 아직 빈 계정이에요.\n이 기기의 기록을 그 계정에 올려서 이어 쓸까요?\n(내 계정이면 [확인]. 다른 사람에게 줄 계정이면 [취소] — 올리면 그 사람이 내 기록을 보게 돼요)`)){
+        if(!confirm(`그럼 이 기기의 기록을 비우고 빈 계정 "${name}"으로 새로 시작할까요?\n(취소하면 연결하지 않고 기록도 그대로 둬요)`)) return false;
+        wipeLearning();
+      }
+    }
+  }
+  localStorage.setItem(LS_SYNC_URL, url); localStorage.setItem(LS_ACCT, code); localStorage.setItem(LS_ACCT_NAME, name); localStorage.removeItem(LS_SYNC_LAST);
+  weToast(`👥 계정 "${name}" 연결 — 기록을 맞추는 중`);
+  setTimeout(() => location.reload(), 800);
+  return true;
+}
+function acctStatusLine(){ // 설정창 상태줄
+  const el = document.getElementById("acct-status"); if(!el) return;
+  if(!syncCfg().on){ el.textContent = "계정 없음 — 기록은 이 기기(브라우저)에만 저장돼요."; return; }
+  const name = localStorage.getItem(LS_ACCT_NAME) || "";
+  const u = _acctInfo && _acctInfo.usage;
+  el.textContent = `✅ 연결됨${name ? ` · ${name}` : ""}`
+    + (u ? ` · 이번 달 AI 사용 ≈ ${usdText(u.usd)}${_acctInfo.capUsd ? ` / 한도 $${_acctInfo.capUsd}` : ""}` : "")
+    + (_acctInfo && _acctInfo.ai === false ? " · 이 계정은 AI 대신 호출이 꺼져 있어요(API 키가 필요해요)" : "");
+}
+/* 관리(발급자) — 설정창 [🔑 계정 발급]. 관리 암호는 입력칸 값(저장 전에도) 우선 */
+async function adminFetch(path, opt){
+  const url = String(document.getElementById("sync-url").value || localStorage.getItem(LS_SYNC_URL) || "").trim().replace(/\/+$/, "");
+  const sec = String(document.getElementById("admin-secret").value || localStorage.getItem(LS_ADMIN) || "").replace(/[\s​-‍﻿]+/g, "");
+  if(!url || !sec){ weToast("서버 주소와 관리 암호를 먼저 넣어 주세요"); return null; }
+  try { return await fetch(url + path, Object.assign({ headers: { "Authorization": "Bearer " + sec, "Content-Type": "application/json" } }, opt || {})); }
+  catch(e){ weToast("서버에 연결할 수 없어요 — 서버 주소를 확인해 주세요"); return null; }
+}
+function inviteLink(code){ // 받은 사람이 열면 바로 연결되는 링크 (이 페이지 기준 — m.html에서 만들면 m.html 링크)
+  const url = String(document.getElementById("sync-url").value || localStorage.getItem(LS_SYNC_URL) || "").trim().replace(/\/+$/, "");
+  return location.origin + location.pathname + "#join=" + encodeURIComponent(url + "|" + code);
+}
+async function acctIssue(){
+  const name = document.getElementById("acct-new-name").value.trim() || "이름 없음";
+  const r = await adminFetch("/admin/accounts", { method: "POST", body: JSON.stringify({ name }) });
+  if(!r) return;
+  if(r.status === 401){ weToast("관리 암호가 서버와 달라요"); return; }
+  if(!r.ok){ weToast(`계정을 만들지 못했어요 (오류 번호 ${r.status})`); return; }
+  const a = (await r.json()).account;
+  document.getElementById("acct-admin-out").innerHTML = `<div class="acct-new"><b>✅ "${esc(a.name)}" 계정을 만들었어요</b>
+    <div class="hint">이 코드(또는 초대 링크)를 그 사람에게 보내세요. 받은 사람은 ⚙️ 설정 → 👥 계정에 코드를 넣거나 링크를 열면 돼요. <b>새 계정은 빈 기록으로 시작</b>해요.</div>
+    <input type="text" readonly value="${esc(a.code)}" id="acct-new-code">
+    <div class="row" style="justify-content:flex-start;margin-top:6px"><button type="button" data-copy="${esc(a.code)}">코드 복사</button><button type="button" data-copy="${esc(inviteLink(a.code))}">초대 링크 복사</button></div></div>`;
+  document.getElementById("acct-new-name").value = "";
+}
+async function acctList(){
+  const r = await adminFetch("/admin/accounts");
+  if(!r) return;
+  if(r.status === 401){ weToast("관리 암호가 서버와 달라요"); return; }
+  if(!r.ok){ weToast(`목록을 가져오지 못했어요 (오류 번호 ${r.status})`); return; }
+  const j = await r.json();
+  const rows = (j.accounts || []).map(a => `<tr><td>${esc(a.name)}</td><td class="acct-code">${esc(a.code)}</td><td>${esc(usdText(a.usage && a.usage.usd))} / $${esc(a.capUsd)}</td><td>${a.ai ? "켬" : "끔"}</td><td><button type="button" data-copy="${esc(inviteLink(a.code))}" title="초대 링크 복사">🔗</button> <button type="button" data-acct-del="${esc(a.code)}" data-acct-name="${esc(a.name)}" title="계정 삭제">🗑</button></td></tr>`).join("");
+  document.getElementById("acct-admin-out").innerHTML = `<table class="acct-table"><thead><tr><th>이름</th><th>계정 코드</th><th>이번 달 / 한도</th><th>AI</th><th></th></tr></thead><tbody>${rows || `<tr><td colspan="5" class="hint">아직 계정이 없어요 — 위에서 발급하세요</td></tr>`}</tbody></table>`
+    + (j.ai ? "" : `<div class="hint">⚠️ 서버에 API 키가 없어요 — 키 없는 기기는 AI를 쓸 수 없어요 (sync 폴더에서: npx wrangler secret put ANTHROPIC_API_KEY)</div>`);
+}
+document.getElementById("acct-issue").addEventListener("click", acctIssue);
+document.getElementById("acct-list").addEventListener("click", acctList);
+document.getElementById("acct-admin-out").addEventListener("click", async (e) => { // 위임 1회 — 복사 · 삭제
+  const c = e.target.closest("[data-copy]");
+  if(c){ try { await navigator.clipboard.writeText(c.dataset.copy); weToast("복사했어요"); } catch(err){ weToast("복사하지 못했어요 — 길게 눌러 직접 복사해 주세요"); } return; }
+  const d = e.target.closest("[data-acct-del]"); if(!d) return;
+  if(!confirm(`계정 "${d.dataset.acctName}"을(를) 삭제할까요? 그 계정의 서버 기록도 함께 지워져요.`)) return;
+  const r = await adminFetch("/admin/accounts/" + encodeURIComponent(d.dataset.acctDel), { method: "DELETE" });
+  if(r && r.ok){ weToast("계정을 삭제했어요"); acctList(); }
+});
+function acctJoinFromLink(){ // 초대 링크: …#join=<서버 주소>|<계정 코드> → 바로 연결 (링크는 주소창에서 지운다). 로드 시 + 이미 열린 탭에 링크를 붙여넣은 경우(hashchange — 같은 문서 이동이라 새로 고침이 없다)
+  const m = /[#&]join=([^&]+)/.exec(location.hash || "");
+  if(!m) return;
+  try { history.replaceState(null, "", location.pathname + location.search); } catch(e){}
+  let url = "", code = "";
+  try { const parts = decodeURIComponent(m[1]).split("|"); url = parts[0] || ""; code = parts[1] || ""; } catch(e){}
+  if(url && code) setTimeout(() => acctApply(url, code), 300);
+}
+acctJoinFromLink();
+window.addEventListener("hashchange", acctJoinFromLink);
 initSync();
 
 /* ── 리사이저 (가로: 중앙↔우측 · 세로: 파도 대화↔우측 하단 콘텐츠) — 상태 영속 ──
