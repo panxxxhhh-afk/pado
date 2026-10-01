@@ -147,6 +147,7 @@ const PADO_SERVER_URL = ""; // sync/deploy.sh 가 배포 후 여기에 심는다
   .iv-note{font-size:.84rem;color:var(--text-soft);}
   .invite-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px;}
   .invite-warn{margin-top:12px;font-size:.8rem;color:var(--warn);line-height:1.55;}
+  .iv-intro{margin:2px 0 8px;color:var(--text-soft);line-height:1.55;} /* v3.1 */
 
   /* ── ② 계정 목록 ── */
   .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px;}
@@ -155,6 +156,8 @@ const PADO_SERVER_URL = ""; // sync/deploy.sh 가 배포 후 여기에 심는다
   .stat .v{font-size:1.3rem;font-weight:800;letter-spacing:-.01em;line-height:1.35;font-variant-numeric:tabular-nums;}
   .stat .vw{min-width:0;}
   .stat-d{margin-top:2px;font-size:.76rem;color:var(--text-mute);line-height:1.45;}
+  .key-chk{margin-top:8px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;} /* v3.1: [키 점검] + 결과 한 줄 */
+  .key-chk .stat-d{margin-top:0;flex:1 1 160px;}
   .est{margin-top:10px;font-size:.78rem;color:var(--text-mute);}
   .empty{margin-top:18px;padding:28px 16px;border-radius:12px;background:var(--card-soft);text-align:center;font-size:.88rem;color:var(--text-soft);}
   .tbl{width:100%;margin-top:18px;border-collapse:collapse;table-layout:fixed;}
@@ -357,7 +360,7 @@ const PADO_SERVER_URL = ""; // sync/deploy.sh 가 배포 후 여기에 심는다
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </div>
-    <span class="stamp" id="stamp">계정 발급 v1.0</span>
+    <span class="stamp" id="stamp">계정 발급 v1.1</span>
     <span class="sp"></span>
     <!-- 새 탭 + noopener: 같은 탭으로 학습 화면에 가면 sessionStorage(관리 암호)가 그대로 이어진다(§9) -->
     <a class="btn sm ghost" id="open-pado" href="next.html" target="_blank" rel="noopener noreferrer" data-act="open-pado">pAdo 열기</a>
@@ -485,7 +488,7 @@ const PADO_SERVER_URL = ""; // sync/deploy.sh 가 배포 후 여기에 심는다
     <div class="stats" id="stats">
       <div class="stat"><div class="k">계정 수</div><div class="v" id="stat-n">0개</div></div>
       <div class="stat"><div class="k">이번 달 전체 요금</div><div class="v" id="stat-usd">$0.00</div></div>
-      <div class="stat"><div class="k">AI 키(Anthropic)</div><div class="vw"><div class="v" id="stat-key">없음</div><div class="stat-d" id="stat-key-d">AI를 쓸 수 없어요(sync/deploy.sh ⑤에서 넣어요)</div></div></div>
+      <div class="stat"><div class="k">AI 키(Anthropic)</div><div class="vw"><div class="v" id="stat-key">없음</div><div class="stat-d" id="stat-key-d">AI를 쓸 수 없어요(sync/deploy.sh ⑤에서 넣어요)</div><div class="key-chk" id="key-chk" hidden><button type="button" class="btn sm ghost" id="key-check" data-act="key-check" title="서버에 넣은 키로 어떤 AI 모델을 쓸 수 있는지 물어봐요(키 자체는 오지 않아요)">키 점검</button><div class="stat-d" id="key-check-out" aria-live="polite"></div></div></div></div>
     </div>
     <p class="est">추정치예요 — 실제 청구 금액은 Anthropic 요금 페이지(console.anthropic.com)에서 확인하세요.</p>
     <div id="user-list"></div>
@@ -509,7 +512,7 @@ const PADO_SERVER_URL = ""; // sync/deploy.sh 가 배포 후 여기에 심는다
 <div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 <script>
 "use strict";
-/* ── pAdo 계정 발급 v1.0 ───────────────────────────────────────────────
+/* ── pAdo 계정 발급 v1.1 (v3.1: 초대장 11줄·공유/문자/메일·#id=·[키 점검]) ───────────────────────────────────────────────
  * 계약: 신버전-v3-설계.md §7 · §7-1(우선) · §9
  * 보안 원칙
  *  - 관리 암호는 sessionStorage "we_admin_secret" 에만(탭을 닫으면 잊는다). localStorage·URL·콘솔·화면에 싣지 않는다.
@@ -1242,25 +1245,35 @@ async function refreshOwnerUsage(){ // AI 정리 뒤 요금 줄만 조용히 고
 }
 
 /* ── 초대장 ── 임시 비밀번호는 S.invite 에만 잠깐 있고, 닫으면 사라진다 */
-function inviteLines(inv){
-  return [
-    "pAdo 초대장",
-    "주소: " + publicNextUrl(),
-    "아이디: " + inv.id,
-    "임시 비밀번호: " + inv.pw,
-    "처음 로그인하면 새 비밀번호로 바꾸라는 안내가 나와요.",
-    "임시 비밀번호는 7일 뒤 만료돼요.",
-    "다른 곳에서 쓰는 비밀번호는 쓰지 마세요.",
-  ];
+function inviteData(inv){ // v3.1: 초대장은 한 데이터에서 — 복사·공유·문자·메일·화면이 같은 글을 쓴다(영어를 모르는 친구가 읽는 글이라 한국어만)
+  return {
+    title: "pAdo(파도) 초대장",
+    intro: "영어를 단어의 '뜻'이 아니라 '느낌'으로 배우는 영어 선생님이에요. 영어를 거의 몰라도 한국어로 설명해요. 무료예요(요금은 초대한 사람이 내요).",
+    kv: [["주소", publicNextUrl() + "#id=" + encodeURIComponent(inv.id)], ["아이디", inv.id], ["임시 비밀번호", inv.pw]],
+    notes: [
+      "① 주소를 열어요 — 카카오톡 안에서 열리면 오른쪽 위 ⋮ → '다른 브라우저로 열기'(크롬·사파리)로 열어 주세요(아이폰은 오른쪽 아래 공유 → Safari로 열기).",
+      "② 아이디와 임시 비밀번호로 들어가면 나만 아는 새 비밀번호를 정하게 돼요(다른 곳에서 쓰는 비밀번호는 쓰지 마세요).",
+      "③ 처음 화면에서 내 영어 단계를 고르면 시작이에요.",
+      "PC·폰 어디서나 같은 아이디로 들어오면 공부가 그대로 이어져요.",
+      "임시 비밀번호는 7일 안에 써 주세요.",
+      "초대한 사람(운영자)이 공부 기록을 볼 수 있어요.",
+    ],
+  };
 }
+function inviteLines(inv){ const d = inviteData(inv); return [d.title, d.intro].concat(d.kv.map(([k, v]) => k + ": " + v), d.notes); }
+function inviteMailLines(inv){ const d = inviteData(inv); return [d.title, d.intro].concat(d.kv.filter(([k]) => k !== "임시 비밀번호").map(([k, v]) => k + ": " + v), ["임시 비밀번호는 보내 준 사람에게 따로 받으세요(메일에는 적지 않아요)."], d.notes); } // 메일함에 비밀번호가 평문으로 남지 않게
 function inviteHTML(inv){
-  const L = inviteLines(inv);
-  const kv = (line) => { const i = line.indexOf(": "); return '<div class="iv-kv"><span class="k">' + esc(line.slice(0, i + 1)) + '</span> <span class="v">' + esc(line.slice(i + 2)) + "</span></div>"; };
+  const d = inviteData(inv);
+  const kv = ([k, v]) => '<div class="iv-kv"><span class="k">' + esc(k) + ':</span> <span class="v">' + esc(v) + "</span></div>";
+  const canShare = typeof navigator !== "undefined" && typeof navigator.share === "function", mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
   return '<div class="invite" id="invite" role="group" aria-label="' + esc(inv.id) + ' 초대장" tabindex="-1">'
     + '<div class="invite-head"><strong>' + (inv.at === "row" ? "새 임시 비밀번호가 준비됐어요" : "초대장이 준비됐어요") + '</strong><span class="sub">아래 내용을 친구에게 그대로 보내 주세요.</span></div>'
-    + '<div class="invite-paper" id="invite-text"><div class="iv-title">' + esc(L[0]) + "</div>" + kv(L[1]) + kv(L[2]) + kv(L[3])
-    + L.slice(4).map((t) => '<div class="iv-note">' + esc(t) + "</div>").join("") + "</div>"
+    + '<div class="invite-paper" id="invite-text"><div class="iv-title">' + esc(d.title) + "</div>" + '<div class="iv-intro">' + esc(d.intro) + "</div>" + d.kv.map(kv).join("")
+    + d.notes.map((t) => '<div class="iv-note">' + esc(t) + "</div>").join("") + "</div>"
     + '<div class="invite-foot"><button type="button" class="btn tint" id="invite-copy" data-act="invite-copy">초대장 복사</button>'
+    + (canShare ? '<button type="button" class="btn ghost" id="invite-share" data-act="invite-share" title="기기의 공유 창(카카오톡·문자·메일…)">공유…</button>' : "")
+    + (mobile ? '<button type="button" class="btn ghost" id="invite-sms" data-act="invite-sms">문자</button>' : "")
+    + '<button type="button" class="btn ghost" id="invite-mail" data-act="invite-mail" title="메일에는 임시 비밀번호를 적지 않아요 — 따로 보내 주세요">메일</button>'
     + '<button type="button" class="btn ghost" id="invite-close" data-act="invite-close">닫기</button></div>'
     + '<p class="invite-warn">임시 비밀번호는 지금만 보여요 — 닫으면 다시 볼 수 없어요(잊었으면 [비밀번호 다시 발급]).</p></div>';
 }
@@ -1414,6 +1427,7 @@ function renderList(){
   $("stat-usd").textContent = fmtUsd(S.users.reduce((a, u) => a + monthUsd(u), 0));
   $("stat-key").textContent = S.ai ? "있음" : "없음";
   $("stat-key-d").textContent = S.ai ? "회원 모두 이 키로 AI를 써요" : "AI를 쓸 수 없어요(sync/deploy.sh ⑤에서 넣어요)";
+  $("key-chk").hidden = !S.ai; // v3.1: 키가 있을 때만 [키 점검]
   const host = $("user-list");
   if(!S.users.length){ host.innerHTML = '<p class="empty">아직 계정이 없어요. 위에서 첫 계정을 만들어 보세요.</p>'; return; }
   host.innerHTML = '<table class="tbl" id="user-table"><caption class="sr">계정 목록</caption>'
@@ -1507,6 +1521,27 @@ async function refresh(btn){
   finally { S.busy = false; btn.disabled = false; }
 }
 
+/* ── v3.1: [키 점검] — 서버가 자기 키로 /v1/models 를 물어 "쓸 수 있는 모델"만 돌려준다(키 원문은 오지 않는다) ── */
+const MODEL_KO = [["claude-fable-5-1", "Fable 5.1"], ["claude-opus-5-5", "Opus 5.5"], ["claude-sonnet-5-5", "Sonnet 5.5"], ["claude-haiku-4-5", "Haiku 4.5"], ["claude-opus-4-8", "Opus 4.8"], ["claude-sonnet-5", "Sonnet 5"]];
+function modelKo(m){ const x = String(m || ""); const hit = MODEL_KO.find((p) => x.indexOf(p[0]) === 0); return hit ? hit[1] : x; }
+async function keyCheck(btn){
+  if(S.busy || S.state !== "on") return;
+  const out = $("key-check-out"); S.busy = true; btn.disabled = true; out.textContent = "점검 중…";
+  try {
+    const r = await api("GET", "/admin/key-check");
+    if(r && r.ok){
+      const names = (Array.isArray(r.usable) ? r.usable : []).map(modelKo).filter((v, i, a) => a.indexOf(v) === i);
+      out.textContent = "쓸 수 있어요 · 기본 모델 " + modelKo(r.defaultModel) + (names.length ? " · 쓸 수 있는 모델: " + names.join(", ") : "");
+    } else {
+      const code = (r && r.error) || "";
+      out.textContent = code === "no_server_key" ? "서버에 AI 키가 없어요(sync/deploy.sh ⑤에서 넣어요)"
+        : code === "bad_key" ? "키가 동작하지 않아요 — console.anthropic.com 에서 새 키를 만들어 sync/deploy.sh ⑤로 넣어요"
+        : "지금은 확인할 수 없어요(Anthropic 쪽 응답 없음) — 잠시 뒤 다시 눌러 주세요";
+    }
+  } catch(e){ out.textContent = failText(e) || "점검하지 못했어요"; }
+  finally { S.busy = false; btn.disabled = false; }
+}
+
 /* ── 이벤트: #app 에 한 번만 위임 ── */
 function onClick(ev){
   const el = ev.target.closest("[data-act]");
@@ -1522,7 +1557,13 @@ function onClick(ev){
   else if(act === "copy-cmd"){ const c = $(el.dataset.from); if(c) copyText(c.textContent, "명령을 복사했어요", el.closest("li > div")); }
   else if(act === "regen"){ $("c-pw").value = genPw(); checkPw(); toast("임시 비밀번호를 새로 만들었어요"); }
   else if(act === "create") createUser();
+  else if(act === "key-check") keyCheck(el);
   else if(act === "invite-copy"){ if(S.invite) copyText(inviteLines(S.invite).join("\n"), "초대장을 복사했어요", $("invite")); }
+  else if(act === "invite-share"){ // v3.1: 손가락이 닿은 안에서 바로 share — 취소(AbortError)는 조용히, 미지원·오류만 복사로
+    if(S.invite){ const t = inviteLines(S.invite).join("\n"); if(navigator.share){ navigator.share({ title: "pAdo(파도) 초대장", text: t }).catch((e) => { if(!(e && e.name === "AbortError")) copyText(t, "공유 창을 열지 못해 복사했어요 — 메신저에 붙여 넣으세요", $("invite")); }); } else copyText(t, "이 기기엔 공유 창이 없어 복사했어요", $("invite")); }
+  }
+  else if(act === "invite-sms"){ if(S.invite) location.href = "sms:?&body=" + encodeURIComponent(inviteLines(S.invite).join("\n")); } // 폰에서만 보이는 버튼 — 주소는 누를 때 만든다
+  else if(act === "invite-mail"){ if(S.invite) location.href = "mailto:?subject=" + encodeURIComponent("pAdo(파도) 초대장") + "&body=" + encodeURIComponent(inviteMailLines(S.invite).join("\n")); }
   else if(act === "invite-close") closeInvite();
   else if(act === "refresh") refresh(el);
   else if(act === "edit" || act === "pw" || act === "del") openPanel(id, act);
