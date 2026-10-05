@@ -6,6 +6,8 @@
 <title>pAdo — websurfer AI</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"><!-- v2.58: 한국어 본문용 Pretendard(없으면 시스템 글꼴) -->
 <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="1" y="1" width="30" height="30" rx="9" fill="%235d5fef"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="white"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="2" stroke-linecap="round"/></svg>'>
+<meta name="theme-color" id="meta-theme" content="#ffffff">
+<script>(function(){try{var q=new URLSearchParams(location.search),d=q.get("design"),t=q.get("theme");if(d==="v4"||d==="classic")localStorage.setItem("we_design_v1",d);if(t==="light"||t==="dark"||t==="auto")localStorage.setItem("we_theme_v1",t);var D=localStorage.getItem("we_design_v1");if(D==="v4")document.documentElement.setAttribute("data-design","v4");var T=localStorage.getItem("we_theme_v1");if(T==="light"||T==="dark")document.documentElement.setAttribute("data-theme",T);if(d||t){q.delete("design");q.delete("theme");history.replaceState(null,"",location.pathname+(q.toString()?"?"+q:"")+location.hash);}}catch(e){}})();</script><!-- v4: 첫 그리기 전에 모양·밝기 복원(깜빡임 없음) · ?design=v4는 읽자마자 주소에서 지운다(북마크가 설정을 영원히 덮지 않게) -->
 <style>
   /* websurfer 팔레트 계승 */
   :root{
@@ -1217,6 +1219,153 @@
   .es-asks{margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:6px;} .es-h{font-size:.74rem;font-weight:700;color:var(--text-mute);}
   .es-ask{border:0;background:var(--card-soft);color:var(--text-soft);border-radius:14px;padding:7px 14px;font:inherit;font-size:.8rem;line-height:1.4;text-align:left;cursor:pointer;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;} /* 2줄까지 — 70자 질문이 폰에서 "…"로 잘리지 않게 */ .es-ask:hover{background:var(--accent-soft);color:var(--accent-deep);}
   .es-tip{font-size:.78rem;color:var(--text-mute);margin-top:16px;line-height:1.6;}
+  /* ══ v3.2 ① 좌측 '🧭 파도 Chat' 행 고정 — 500단어를 내려도 사라지지 않는다(그 아래 검색·필터 띠가 차례로 쌓인다). 띠 높이는 폭마다 패딩이 달라 JS(stickyLeftSync)가 실측해 --wg-h·--ws-h로 준다. 태블릿 가로 칩 줄에선 left:0으로 같은 뜻 ══ */
+  #word-list .w-item.global{position:sticky;top:0;left:0;z-index:4;background:var(--card);}
+  #word-list .w-search{top:var(--wg-h,46px);}
+  #word-list .w-filter{top:calc(var(--wg-h,46px) + var(--ws-h,44px));}
+  @media (min-width:1001px){ #word-list .w-item.global{background:#fbfbfd;} #word-list .w-item.global.active{background:var(--accent-soft);} }
+  /* ══ v3.2 ② 부드럽게 흐르는 답 + ↓ 끝으로 — 글자는 도착하는 대로 조금씩 드러나고 보고 있는 영역은 움직이지 않는다. 다 써진 뒤 답의 끝이 화면 아래에 있을 때만 ↓ 하나(PC·폰 공통, 위치는 JS가 로그 실측으로) ══ */
+  .more-below{display:inline-flex;position:fixed;z-index:60;width:38px;height:38px;align-items:center;justify-content:center;transform:translateX(-50%);border:1px solid var(--border);border-radius:50%;background:var(--card);color:var(--text-soft);font:inherit;font-size:1.05rem;line-height:1;padding:0;box-shadow:var(--shadow-md);cursor:pointer;}
+  .more-below[hidden]{display:none;} .more-below:hover,.more-below:focus-visible{color:var(--accent-deep);border-color:var(--accent);}
+  /* ══ v3.2 ⑤ 🎙 듣는 중 한 줄(#mic-line) — 입력칸 아래 고정 22px: 상태·경과·중간 결과(흐리게)·[끝내기][취소]. 폰에선 빠른 줄 자리에 칩 꼴 ══ */
+  .mic-line{display:flex;align-items:center;gap:8px;height:22px;padding:0 10px;font-size:.74rem;color:var(--text-soft);overflow:hidden;white-space:nowrap;}
+  .mic-line[hidden]{display:none;}
+  .mic-dot{width:7px;height:7px;border-radius:50%;background:#c0392b;animation:micPulse 1.2s infinite;flex:none;}
+  .mic-st{flex:none;} .mic-tmp{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;color:var(--text-mute);font-style:italic;}
+  .mic-end,.mic-x{border:0;background:transparent;color:var(--accent-deep);font:inherit;font-size:.74rem;padding:0 4px;cursor:pointer;flex:none;} .mic-x{color:var(--text-mute);}
+  .mic-end:hover,.mic-x:hover{text-decoration:underline;}
+  @media (prefers-reduced-motion:reduce){ .mic-dot{animation:none;} }
+  @media (max-width:768px){ .mic-line{height:auto;min-height:48px;flex-wrap:wrap;padding:4px 12px;} .mic-end,.mic-x{min-height:44px;padding:0 14px;border-radius:9px;background:var(--card-soft);} .mic-end{background:var(--accent-soft);font-weight:700;} .mic-tmp{flex-basis:100%;} body.mic-on #qa-row{display:none;} } /* 폰: 듣는 동안 빠른 줄 대신 이 한 줄 — 엄지로 '끝내기' */
+  /* ══ v3.2 ④ 🗣 목소리 선택 줄 ══ */
+  .voice-row{align-items:center;gap:8px;margin-top:6px;} .voice-tag{flex:none;width:52px;font-size:.8rem;color:var(--text-soft);} .voice-row select{flex:1;min-width:0;margin:0;}
+  .voice-try{flex:none;border:1px solid var(--border);background:var(--card-soft);color:var(--text-soft);border-radius:8px;padding:6px 10px;font:inherit;font-size:.76rem;cursor:pointer;white-space:nowrap;} .voice-try:hover,.voice-try.speaking{color:var(--accent-deep);border-color:var(--accent);}
+  /* ══ v3.2 ③ 진단실 — 문제(사실·수치·심각도 막대) → 실행 카드([실행]) → 오늘의 카드. 이모지 대신 숫자, 빨강 없음(심각 3은 진한 자주) ══ */
+  .dx-head{display:flex;align-items:center;gap:8px;margin:2px 0 10px;} .dx-date{flex:1;min-width:0;font-size:.8rem;color:var(--text-mute);font-variant-numeric:tabular-nums;}
+  .dx-refresh{padding:5px 10px;font-size:.76rem;} .dx-refresh:disabled{opacity:.5;cursor:default;}
+  .dx-problems{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+  .dx-prob{border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:10px 12px;background:var(--card);} .dx-prob.s3{border-left-color:#b23a52;} .dx-prob.s2{border-left-color:#c27a1e;} .dx-prob.s0{border-left-color:var(--green);}
+  .dx-what{font-weight:700;font-size:.95rem;} .dx-ev{font-size:.8rem;color:var(--text-mute);margin-top:2px;font-variant-numeric:tabular-nums;}
+  .dx-src{display:inline-block;margin-left:6px;font-size:.62rem;font-weight:700;color:var(--accent-deep);background:var(--accent-soft);border-radius:5px;padding:0 5px;vertical-align:middle;}
+  .dx-thin{font-size:.86rem;color:var(--text-soft);padding:10px 12px;border:1px dashed var(--border);border-radius:12px;margin-bottom:10px;}
+  .dx-note{font-size:.76rem;color:var(--text-mute);margin:2px 0 6px;} .dx-link{border:0;background:none;color:var(--accent-deep);font:inherit;font-size:inherit;cursor:pointer;padding:0;text-decoration:underline;}
+  .dx-praise{font-size:.82rem;color:#1f7a4d;margin:2px 0 6px;}
+  .dx-actions{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+  .dx-act{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:12px;padding:8px 10px;background:var(--card);}
+  .dx-n{flex:none;width:22px;height:22px;border-radius:50%;background:var(--card-soft);color:var(--text-soft);font-size:.74rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;}
+  .dx-lbl{flex:1;min-width:0;} .dx-t{font-weight:600;font-size:.9rem;} .dx-why{font-size:.76rem;color:var(--text-mute);margin-top:1px;}
+  .dx-act .g-btn{flex:none;min-width:56px;}
+  @media (max-width:768px){ .dx-act .g-btn,.dx-refresh{min-height:44px;} .dx-what{font-size:1rem;} }
+  /* ══ v4.0 「흐름(Flow)」 — 토큰. 기존 변수명을 그대로 재정의해 v3 규칙이 자동으로 새 팔레트를 받는다. 모든 선택자 html[data-design="v4"] 접두(클래식은 1바이트도 안 바뀐다) ══ */
+  html[data-design="v4"]{ color-scheme:light;
+    --bg:#f5f4f0; --card:#ffffff; --card-soft:#efeeea; --rail:#f1f0ec;
+    --text:#1d1c1a; --text-soft:#4a4845; --text-mute:#6f6c67; --border:#e4e2dc; --border-soft:#edebe6;
+    --accent:#4d55e0; --accent-soft:#e9ebff; --accent-deep:#3b42c9; --on-accent:#ffffff;
+    --ok:#1f7a4d; --ok-soft:#e5f6ec; --warn:#9a4f00; --warn-soft:#fff0df; --rec:#c0392b; --rec-soft:#fde8e8; --scrim:rgba(29,28,26,.35);
+    --green:var(--ok); --red:var(--rec); --orange:var(--warn); --purple:var(--accent-deep);
+    --fs-0:.72rem; --fs-1:.8rem; --fs-2:.875rem; --fs-3:1rem; --fs-4:1.2rem; --fs-5:1.6rem; --lh-ui:1.4; --lh-read:1.75; --measure:700px;
+    --r-1:8px; --r-2:12px; --r-3:16px; --r-4:22px; --radius:var(--r-2);
+    --shadow-sm:0 1px 2px rgba(29,28,26,.05); --shadow-md:0 10px 30px rgba(29,28,26,.10); --shadow-lg:0 20px 60px rgba(29,28,26,.16);
+    --ease:cubic-bezier(.2,.7,.2,1); --dur-1:120ms; --dur-2:220ms; --dur-3:320ms; }
+  @media (prefers-color-scheme:dark){ html[data-design="v4"]:not([data-theme="light"]){ color-scheme:dark;
+    --bg:#141416; --card:#1c1c1f; --card-soft:#242428; --rail:#18181b; --text:#ecebe8; --text-soft:#c4c2bd; --text-mute:#9c9993; --border:#303035; --border-soft:#28282c;
+    --accent:#8b90ff; --accent-soft:#2a2c52; --accent-deep:#b3b7ff; --on-accent:#141416; --ok:#6fd49a; --ok-soft:#173a2a; --warn:#f1b26b; --warn-soft:#3d2a12; --rec:#ff7b70; --rec-soft:#4a1f1c; --scrim:rgba(0,0,0,.6);
+    --shadow-sm:0 1px 2px rgba(0,0,0,.4); --shadow-md:0 12px 36px rgba(0,0,0,.55); --shadow-lg:0 24px 64px rgba(0,0,0,.6); } }
+  html[data-design="v4"][data-theme="dark"]{ color-scheme:dark;
+    --bg:#141416; --card:#1c1c1f; --card-soft:#242428; --rail:#18181b; --text:#ecebe8; --text-soft:#c4c2bd; --text-mute:#9c9993; --border:#303035; --border-soft:#28282c;
+    --accent:#8b90ff; --accent-soft:#2a2c52; --accent-deep:#b3b7ff; --on-accent:#141416; --ok:#6fd49a; --ok-soft:#173a2a; --warn:#f1b26b; --warn-soft:#3d2a12; --rec:#ff7b70; --rec-soft:#4a1f1c; --scrim:rgba(0,0,0,.6);
+    --shadow-sm:0 1px 2px rgba(0,0,0,.4); --shadow-md:0 12px 36px rgba(0,0,0,.55); --shadow-lg:0 24px 64px rgba(0,0,0,.6); }
+  html[data-design="v4"] body{background:var(--bg);color:var(--text);font-size:16px;line-height:var(--lh-ui);}
+  html[data-design="v4"] :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  html[data-design="v4"] ::selection{background:var(--accent-soft);}
+  @media (prefers-reduced-motion:reduce){ html[data-design="v4"] *{transition-duration:0s !important;animation-duration:0s !important;} }
+  /* 하드코딩 색 → 토큰 (라이트·다크 공용) */
+  html[data-design="v4"] .chat-log{background:var(--card);} html[data-design="v4"] .msg.ai{border-color:transparent;}
+  html[data-design="v4"] aside.words,html[data-design="v4"] aside.right,html[data-design="v4"] .w-search,html[data-design="v4"] .w-filter,html[data-design="v4"] .w-usage{background:var(--rail);}
+  html[data-design="v4"] #word-list .w-item.global{background:var(--rail);} html[data-design="v4"] #word-list .w-item.global.active{background:var(--accent-soft);}
+  html[data-design="v4"] #today-pill{background:transparent;color:var(--text-mute);height:28px;} html[data-design="v4"] #today-pill:hover{background:var(--card-soft);} html[data-design="v4"] #today-pill.done{background:transparent;color:var(--ok);}
+  html[data-design="v4"] .td-step.done .td-n{background:var(--ok-soft);color:var(--ok);}
+  html[data-design="v4"] #acct-chip .dot{background:var(--ok);} html[data-design="v4"] #acct-chip.warn .dot{background:var(--warn);}
+  html[data-design="v4"] #mic-btn.on,html[data-design="v4"] .composer #mic-btn.on{background:var(--rec-soft);color:var(--rec);border-color:transparent;}
+  html[data-design="v4"] .mic-dot{background:var(--rec);}
+  html[data-design="v4"] .lr-warn{color:var(--warn);background:var(--warn-soft);border-color:var(--warn-soft);} html[data-design="v4"] .fm-x{color:var(--warn);} html[data-design="v4"] .fm-o{color:var(--ok);}
+  html[data-design="v4"] .ob-err,html[data-design="v4"] .pw-err{color:var(--warn);}
+  html[data-design="v4"] .msg.user .md code{background:var(--card);border:1px solid var(--border-soft);}
+  html[data-design="v4"] .modal{border-radius:var(--r-4);box-shadow:var(--shadow-lg);} html[data-design="v4"] .modal h2{font-size:var(--fs-4);} html[data-design="v4"] .modal input,html[data-design="v4"] .modal select,html[data-design="v4"] .modal textarea{background:var(--card-soft);border-radius:var(--r-2);color:var(--text);border-color:var(--border);}
+  html[data-design="v4"] .modal-bg{background:var(--scrim);backdrop-filter:none;} html[data-design="v4"] #m-scrim{background:var(--scrim);}
+  html[data-design="v4"] .send-btn,html[data-design="v4"] .g-btn.primary,html[data-design="v4"] .modal .row button.primary,html[data-design="v4"] .es-btn.primary,html[data-design="v4"] .mp-chip.active,html[data-design="v4"] .dm-n{color:var(--on-accent);}
+  html[data-design="v4"] .send-btn,html[data-design="v4"] .g-btn.primary,html[data-design="v4"] .modal .row button.primary{background:var(--accent);border-color:var(--accent);}
+  html[data-design="v4"] #we-toast{border-radius:var(--r-2);box-shadow:var(--shadow-md);}
+  html[data-design="v4"] .dx-prob.s3{border-left-color:var(--warn);} html[data-design="v4"] .dx-prob.s2{border-left-color:var(--warn);} html[data-design="v4"] .dx-praise{color:var(--ok);}
+  html[data-design="v4"] .rv-rate button{border:0;border-radius:var(--r-2);flex:1 1 0;font-size:var(--fs-2);min-height:40px;} html[data-design="v4"] .rv-rate [data-srs-ok]{background:var(--ok-soft);color:var(--ok);} html[data-design="v4"] .rv-rate [data-srs-hazy]{background:var(--warn-soft);color:var(--warn);} html[data-design="v4"] .rv-rate [data-srs-again]{background:var(--card-soft);color:var(--text-soft);}
+  html[data-design="v4"] .rv-card{border:1px solid var(--border);border-radius:var(--r-3);padding:18px 20px;} html[data-design="v4"] .rv-q{font-size:var(--fs-3);line-height:1.7;} html[data-design="v4"] .srs-box{border-color:var(--border);}
+  /* 흐름 줄 */
+  html[data-design="v4"] .chat-box{display:flex;flex-direction:column;} html[data-design="v4"] .chat-head{order:-2;} html[data-design="v4"] #flow-bar{order:-1;}
+  html[data-design="v4"] #flow-bar{display:flex;align-items:center;gap:8px;flex:none;height:36px;width:min(var(--measure),calc(100% - 32px));margin:4px auto 0;padding:0 4px;box-sizing:border-box;} html[data-design="v4"] #flow-bar[hidden]{display:none;}
+  html[data-design="v4"] .fb-step{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border:0;border-radius:999px;background:transparent;color:var(--text-mute);font:inherit;font-size:var(--fs-1);cursor:pointer;white-space:nowrap;transition:background var(--dur-1) var(--ease),color var(--dur-1) var(--ease);}
+  html[data-design="v4"] .fb-step:hover{background:var(--card-soft);color:var(--text);} html[data-design="v4"] .fb-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex:none;transition:background var(--dur-2) var(--ease);}
+  html[data-design="v4"] .fb-step.done{color:var(--text-soft);} html[data-design="v4"] .fb-step.done .fb-dot{background:var(--ok);}
+  html[data-design="v4"] .fb-step[aria-current="step"]{background:var(--accent-soft);color:var(--accent-deep);font-weight:700;} html[data-design="v4"] .fb-step[aria-current="step"] .fb-dot{background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  html[data-design="v4"] .fb-step.na{opacity:.45;} html[data-design="v4"] .fb-step + .fb-step::before{content:"";width:14px;height:1px;background:var(--border);margin-right:6px;}
+  html[data-design="v4"] .fb-meta{margin-left:auto;display:inline-flex;gap:10px;font-size:var(--fs-0);color:var(--text-mute);font-variant-numeric:tabular-nums;} html[data-design="v4"] .fb-t b{font-variant-numeric:tabular-nums;}
+  /* 본문 타이포 — 읽기 폭 700 · 어절 보존 · 굵게=밑줄 하나 · 인용=결의 함정 콜아웃 · 선 없는 표 */
+  html[data-design="v4"] .msg.ai .md,html[data-design="v4"] .msg.ai .md-body{font-size:var(--fs-3);line-height:var(--lh-read);word-break:keep-all;overflow-wrap:anywhere;}
+  html[data-design="v4"] .msg.ai .md b,html[data-design="v4"] .msg.ai .md strong{font-weight:700;box-shadow:inset 0 -2px 0 var(--card),inset 0 -4px 0 var(--accent-soft);}
+  html[data-design="v4"] .msg.ai .md blockquote{border-left:2px solid var(--warn);background:var(--warn-soft);color:var(--text);border-radius:0 var(--r-2) var(--r-2) 0;padding:8px 14px;}
+  html[data-design="v4"] .msg.ai .md h1,html[data-design="v4"] .msg.ai .md h2,html[data-design="v4"] .msg.ai .md h3{font-size:var(--fs-3);font-weight:700;color:var(--text);margin:16px 0 6px;padding-left:10px;border-left:2px solid var(--accent);}
+  html[data-design="v4"] .msg.ai .md table th{background:transparent;color:var(--text-mute);font-size:var(--fs-1);border:0;border-bottom:1px solid var(--border);} html[data-design="v4"] .msg.ai .md table td{border:0;border-bottom:1px solid var(--border-soft);padding:8px 10px;}
+  html[data-design="v4"] .msg.ai .md code{background:var(--card-soft);color:var(--accent-deep);border-radius:6px;}
+  html[data-design="v4"] .msg.user{background:var(--card-soft);color:var(--text);border-radius:14px 14px 4px 14px;padding:9px 14px;font-size:.95rem;}
+  html[data-design="v4"] .msg.notice{border-radius:var(--r-2);} html[data-design="v4"] .typing-t{color:var(--text-mute);}
+  html[data-design="v4"] .more-below{background:var(--text);color:var(--card);border:0;box-shadow:var(--shadow-md);} html[data-design="v4"] .more-below:hover{color:var(--card);}
+  /* PC ≥1001 */
+  @media (min-width:1001px){
+    html[data-design="v4"] header.top{height:44px;background:var(--bg);border-bottom:0;padding:0 10px 0 6px;}
+    html[data-design="v4"] .top-btn,html[data-design="v4"] #rail-toggle,html[data-design="v4"] #top-more{height:30px;font-size:var(--fs-1);} html[data-design="v4"] #btn-settings{background:transparent;} html[data-design="v4"] header.top .build{background:transparent;border:0;opacity:.6;}
+    html[data-design="v4"] .panes{grid-template-columns:236px minmax(380px,1fr) 8px minmax(360px, var(--right-w, 34%));} html[data-design="v4"] body.rail-off .panes{grid-template-columns:minmax(380px,1fr) 8px minmax(360px, var(--right-w, 34%));}
+    html[data-design="v4"] #h-resizer .hr-grip{opacity:0;} html[data-design="v4"] #h-resizer:hover .hr-grip{opacity:1;}
+    html[data-design="v4"] aside.words{border-right:1px solid var(--border-soft);padding:0 8px;} html[data-design="v4"] #word-list .w-item.global{border-bottom:1px solid var(--border-soft);}
+    html[data-design="v4"] .w-search input,html[data-design="v4"] .w-pos-sel{border-radius:var(--r-2);background:var(--card);border:1px solid var(--border-soft);}
+    html[data-design="v4"] .w-item{min-height:40px;border-radius:var(--r-2);padding:5px 10px;} html[data-design="v4"] .w-item.active{background:var(--accent-soft);box-shadow:none;}
+    html[data-design="v4"] main.center,html[data-design="v4"] .chat-box{background:var(--card);} html[data-design="v4"] .chat-head{border-bottom:0;} html[data-design="v4"] .ch-title b{font-size:var(--fs-4);} html[data-design="v4"] .ch-title span{font-size:var(--fs-2);}
+    html[data-design="v4"] .chat-log{padding:20px max(20px, calc((100% - var(--measure)) / 2)) 12px;gap:20px;}
+    html[data-design="v4"] .msg.ai{padding:0 30px 0 0;border:0;} html[data-design="v4"] .msg.user{max-width:72%;}
+    html[data-design="v4"] .composer{width:min(var(--measure), calc(100% - 32px));border-radius:var(--r-3);box-shadow:none;border:1px solid var(--border);} html[data-design="v4"] .composer:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+    html[data-design="v4"] .composer .chat-input textarea{min-height:44px;font-size:var(--fs-3);}
+    html[data-design="v4"] .composer .qa-btn,html[data-design="v4"] .composer .qa-row .qa-sel,html[data-design="v4"] .qa-more-btn{font-size:var(--fs-1);border-radius:var(--r-1);}
+    html[data-design="v4"] .composer .send-btn{width:32px;height:32px;border-radius:10px;}
+    html[data-design="v4"] .composer .mic-btn.on{background:var(--accent-soft);color:var(--accent-deep);}
+    html[data-design="v4"] .composer-hint{font-size:var(--fs-0);} html[data-design="v4"] body.mic-on .composer-hint{color:var(--warn);}
+    html[data-design="v4"] aside.right{border-left:1px solid var(--border-soft);} html[data-design="v4"] .r-tab{height:28px;border-radius:999px;background:transparent;} html[data-design="v4"] .r-tab.active{background:var(--accent-soft);} html[data-design="v4"] .r-tab[data-rtab="analysis"]{background:var(--rail);}
+    html[data-design="v4"] .wave-quote{border-left:2px solid var(--border);background:transparent;font-size:var(--fs-2);} html[data-design="v4"] .wave-pane .chat-input{border-radius:var(--r-3);box-shadow:none;background:var(--card);}
+    html[data-design="v4"] .rb-tab{border-radius:999px;}
+    html[data-design="v4"] body.rb-layer .rb-body{border-radius:var(--r-4);box-shadow:var(--shadow-lg);border:0;} html[data-design="v4"] body.rb-layer #rb-head{border-bottom:1px solid var(--border-soft);} html[data-design="v4"] #rb-scrim{background:rgba(29,28,26,.14);}
+    html[data-design="v4"] #review-modal{width:min(94vw,880px);}
+    html[data-design="v4"] #today-modal .td-step{border-radius:var(--r-3);border-color:var(--border-soft);}
+    html[data-design="v4"] #top-more-pop,html[data-design="v4"] .qa-more-pop,html[data-design="v4"] #sel-chips{border-radius:var(--r-3);box-shadow:var(--shadow-md);border-color:var(--border-soft);}
+  }
+  /* 태블릿 769~1000: 토큰만 + 흐름 줄 PC 모양 */
+  @media (min-width:769px) and (max-width:1000px){ html[data-design="v4"] header.top{background:var(--bg);} }
+  /* 폰 ≤768 */
+  @media (max-width:768px){
+    html[data-design="v4"] #m-top{background:var(--bg);border-bottom:1px solid var(--border-soft);} html[data-design="v4"] #m-top button{color:var(--text-mute);}
+    html[data-design="v4"] #m-top #m-thread{height:34px;border-radius:999px;background:var(--card-soft);font-weight:600;font-size:var(--fs-2);}
+    html[data-design="v4"] #mp-row{background:var(--bg);border-bottom-color:var(--border-soft);}
+    html[data-design="v4"] #flow-bar{height:32px;width:auto;margin:0;padding:0 8px;gap:0;border-bottom:1px solid var(--border-soft);} html[data-design="v4"] .fb-t{display:none;} html[data-design="v4"] .fb-step[aria-current="step"] .fb-t{display:inline;} html[data-design="v4"] .fb-step{min-width:44px;height:32px;justify-content:center;} html[data-design="v4"] .fb-meta{display:none;} html[data-design="v4"] body.kb-open #flow-bar{display:none;}
+    html[data-design="v4"] body[data-mtab="chat"] .chat-log{padding:10px 14px 8px;gap:16px;}
+    html[data-design="v4"] .msg.ai{background:transparent;border:0;padding:0 2px;} html[data-design="v4"] .msg.ai .md{font-size:var(--fs-3);line-height:1.7;} html[data-design="v4"] .msg.user{max-width:88%;border-radius:14px 14px 4px 14px;}
+    html[data-design="v4"] .chat-input{margin:6px 8px 0;padding:4px 4px 4px 10px;border:1px solid var(--border);border-radius:20px;background:var(--card);align-items:flex-end;} html[data-design="v4"] .chat-input:focus-within{border-color:var(--accent);}
+    html[data-design="v4"] .chat-input textarea{border:0;background:transparent;box-shadow:none;min-height:40px;padding:9px 6px;font-size:16px;}
+    html[data-design="v4"] .send-btn{min-width:40px;width:40px;height:40px;border-radius:50%;} html[data-design="v4"] .mic-btn{min-width:40px;width:40px;height:40px;border:0;background:transparent;border-radius:50%;}
+    html[data-design="v4"] body[data-mtab="chat"] .qa-row{padding-top:6px;} html[data-design="v4"] .qa-btn,html[data-design="v4"] .qa-sel{border-radius:999px;font-size:var(--fs-1);}
+    html[data-design="v4"] #m-drawer{width:min(86vw,340px);background:var(--card);box-shadow:var(--shadow-lg);} html[data-design="v4"] #dr-head{border-bottom-color:var(--border-soft);}
+    html[data-design="v4"] .dm{height:40px;border-color:transparent;background:var(--card-soft);border-radius:999px;font-size:var(--fs-2);}
+    html[data-design="v4"] #dr-words #word-list .w-item.global{background:var(--card);border-bottom:1px solid var(--border-soft);} html[data-design="v4"] #dr-words .w-item.active{background:var(--accent-soft);}
+    html[data-design="v4"] #right-bottom{border-radius:16px 16px 0 0;box-shadow:var(--shadow-lg);} html[data-design="v4"] .rb-tabs{position:relative;padding-top:10px;} html[data-design="v4"] .rb-tabs::before{content:"";position:absolute;top:4px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:2px;background:var(--border);}
+    html[data-design="v4"] .rb-tab{border-radius:999px;min-height:36px;} html[data-design="v4"] #m-sheet-x{width:44px;height:36px;}
+    html[data-design="v4"] #review-modal{top:auto;bottom:0;left:0;right:0;transform:none;width:100%;max-width:none;max-height:92dvh;border-radius:var(--r-4) var(--r-4) 0 0;padding:12px 14px calc(12px + env(safe-area-inset-bottom));}
+    html[data-design="v4"] .rv-tabs{overflow-x:auto;gap:6px;border-bottom:0;} html[data-design="v4"] .rv-tab{flex:none;min-height:40px;border:0;border-radius:999px;top:0;background:transparent;} html[data-design="v4"] .rv-tab.active{background:var(--accent-soft);}
+    html[data-design="v4"] .rv-rate button{min-height:44px;}
+  }
 </style>
 </head>
 <body>
@@ -1227,7 +1376,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v3.1</span>
+    <span class="build">pAdo · v4.0</span>
     <button id="today-pill" type="button" title="오늘의 파도 — 오늘 할 세 걸음을 앱이 정해 드려요"><i class="ico">🌊</i> <span class="lbl">오늘</span> <b id="today-n"></b></button><!-- v3.0 -->
     <span class="spacer"></span>
     <select id="level-select" title="내 학습 단계 — 모든 대화의 설명·예문·문제 난이도가 이 단계에 맞춰져요"></select><!-- v3.0: 옵션은 LEVELS(7단계)에서 렌더 -->
@@ -1239,6 +1388,7 @@
     <div id="top-more-pop"><!-- v3.0: PC는 ⋯를 눌러야 펼쳐지는 묶음, 태블릿은 그대로 나열(display:contents) -->
       <button class="top-btn" id="btn-qh" type="button" title="내가 던진 모든 질문을 날짜별로 모아 복습 — 누르면 그 대화로 이동"><i class="ico">🗓</i> <span class="lbl">질문 내역</span></button>
       <button class="top-btn" id="btn-memo" type="button" title="메모 — 글과 그림, 자동 저장"><i class="ico">📝</i> <span class="lbl">메모</span></button>
+      <button class="top-btn" id="design-toggle" type="button" aria-pressed="false" title="화면 모양 — 새 모양(흐름)과 클래식을 오가요"><i class="ico">🎨</i> <span class="lbl">새 모양</span></button><!-- v4 -->
       <a class="top-btn" id="link-old" href="#" title="신버전 이전의 pAdo로 돌아가기 — 기록은 그대로 이어져요"><i class="ico">↩</i> <span class="lbl">이전 판으로</span></a>
     </div>
     <button class="top-btn" id="acct-chip" type="button" title="계정 — 같은 아이디로 로그인하면 PC와 폰이 이어져요"><i class="ico">👤</i> <span class="lbl" id="acct-chip-t">로그인</span></button><!-- v3.0 -->
@@ -1274,7 +1424,7 @@
         <div class="q-index" id="q-index" hidden></div>
         <div class="chat-log" id="chat-log"></div>
         <div class="composer" id="composer"><!-- v3.0: PC는 클로드형 입력 상자(입력칸 위 · 도구 줄 아래), 모바일은 display:contents로 없는 것처럼 -->
-        <button class="more-below" id="more-below" type="button" hidden>↓ 아래에 이어지고 있어요</button><!-- v3.1: 답이 보이는 영역 아래로 이어질 때(스크롤은 안 움직이므로) — 누를 때만 이동 -->
+        <button class="more-below" id="more-below" type="button" hidden aria-label="답의 끝으로 내려가기" title="답의 끝으로 내려가기">↓</button><!-- v3.2: 답이 다 써진 뒤 끝이 화면 아래에 있을 때만(PC·폰) — 누를 때만 움직인다. 흐르는 중엔 쭉 써내려간다 -->
         <div class="img-prev" id="img-prev" hidden><!-- v2.35: 붙여넣은 이미지 첨부 미리보기 -->
           <img id="img-prev-img" alt="첨부한 이미지 미리보기">
           <span class="ip-hint">이미지 첨부됨 — 질문과 함께 전송돼요</span>
@@ -1283,13 +1433,15 @@
         <div class="chat-input">
           <textarea id="chat-input" rows="1" placeholder="이 단어에 대해 무엇이든 물어보세요 (Shift+Enter = 줄바꿈)"></textarea>
           <button class="mic-btn" id="mic-lang" type="button" title="말할 언어 (지금: 한국어) — 누르면 영어로" aria-label="말할 언어 바꾸기">한</button><!-- v3.1: 🎙 말로 묻기 · 🗣 말하기 튜터 -->
-          <button class="mic-btn" id="mic-btn" type="button" title="말로 묻기 — 누르고 말하면 글로 바뀌어요(보내는 건 ↑)" aria-label="말로 묻기" aria-pressed="false">🎙</button>
+          <button class="mic-btn" id="mic-btn" type="button" title="말로 묻기 — 누르고 말하면 글로 바뀌어요. 끝내려면 '여기까지' 또는 🎙을 다시(보내는 건 ↑)" aria-label="말로 묻기" aria-pressed="false">🎙</button>
           <button class="mic-btn" id="voice-mode" type="button" title="말하기 튜터 — 켜면 답을 소리로도 읽어 주고 짧게 답해요" aria-label="말하기 튜터" aria-pressed="false">🗣</button>
           <button class="send-btn" id="chat-send" type="button">↑</button>
         </div>
+        <div class="mic-line" id="mic-line" hidden><span class="sr-only" id="mic-sr" aria-live="polite"></span><span class="mic-dot" aria-hidden="true"></span><span class="mic-st" id="mic-st"></span><span class="mic-tmp" id="mic-tmp"></span><button type="button" class="mic-end" id="mic-end">끝내기</button><button type="button" class="mic-x" id="mic-x" title="듣기 취소 — 말한 글은 입력칸에 남아요">취소</button></div><!-- v3.2 ⑤: 듣는 동안만 -->
         <div class="qa-row" id="qa-row"></div><!-- v2.51: 입력창 아래로 — 클로드처럼 옵션이 입력창 밑에 깔리고, 입력창이 바닥에 붙지 않는다 (사용자 요청. v2.46의 "엄지 거리 안"은 아래에서도 성립) -->
         </div><!-- /.composer -->
         <div class="composer-hint" id="composer-hint" aria-hidden="true">Enter 보내기 · Shift+Enter 줄바꿈 · AI 답은 틀릴 수 있어요</div><!-- v3.0 3차 렌즈: PC에서 좌·우 띠와 바닥선을 맞추는 자리를 빈 여백이 아니라 도움말 한 줄로 -->
+        <nav id="flow-bar" hidden role="group" aria-label="오늘의 흐름"></nav><!-- v4: 머리줄 아래 오늘의 흐름(CSS order) — 클래식은 hidden -->
       </section>
       <div id="rb-scrim"></div><!-- v3.1: 자료 레이어가 떠 있는 동안 중앙 대화만 살짝 가린다(누르면 닫힘) — 입력 상자·우측 파도는 그대로 -->
     </main>
@@ -1373,7 +1525,10 @@
   <div style="display:flex;justify-content:flex-end;margin-top:6px"><button class="g-btn" id="rules-close" type="button">닫기</button></div>
 </div>
 <div class="modal" id="review-modal">
-  <h2>🧠 복습</h2>
+  <h2 id="dx-title">🧠 복습 · 진단실</h2>
+  <div class="dx-head" id="dx-head"><span class="dx-date" id="dx-date"></span><button type="button" class="g-btn dx-refresh" id="dx-refresh" data-dx-refresh>↻ 다시 진단</button></div><!-- v3.2 ③ -->
+  <section class="dx-problems" id="dx-problems" aria-live="polite" aria-label="지금 문제는 이것"></section>
+  <section class="dx-actions" id="dx-actions" aria-label="지금 바로 할 것"></section>
   <div class="rv-tabs" id="rv-tabs"><button class="rv-tab active" data-rvtab="today" type="button">🔔 오늘</button><button class="rv-tab" data-rvtab="all" type="button">📚 전체</button><button class="rv-tab" data-rvtab="log" type="button">🗂 내역</button></div>
   <div id="review-body"></div>
   <div style="display:flex;justify-content:flex-end;margin-top:6px"><button class="g-btn" id="review-close" type="button">닫기</button></div>
@@ -1428,6 +1583,19 @@
   <div class="row" style="justify-content:flex-start;margin-top:8px"><button type="button" id="prof-edit">학습 설정 다시 정하기</button></div>
   <label class="share-row" id="share-row" hidden><input type="checkbox" id="set-share" style="width:auto;margin:0"> 🤝 함께 배우기</label>
   <div class="hint" id="share-hint" hidden></div><!-- v3.0 3차 렌즈: 문구는 SHARE_FACTS(첫 설정 ④와 같은 다섯 줄)에서 채운다 -->
+  <label style="margin-top:16px" id="set-look">🎨 화면 모양</label><!-- v4 -->
+  <select id="set-design"><option value="classic">클래식 모양</option><option value="v4">새 모양 — 오늘의 흐름</option></select>
+  <select id="set-theme" style="margin-top:6px"><option value="auto">밝기 자동(기기 설정)</option><option value="light">밝게</option><option value="dark">어둡게</option></select>
+  <div class="hint">새 모양은 오늘 할 일(복습 → 새 파도 → 써 보기 → 확인)이 대화 위에 보여요. 기록·설정은 두 모양이 같이 써요. 밝기는 새 모양에서만 바뀌어요. 이 설정은 이 기기에만 저장돼요.</div>
+  <div id="set-voice-box"><!-- v3.2 ④: 기기별 목소리 선택 — speechSynthesis가 없으면 JS가 숨긴다 -->
+  <label style="margin-top:16px" id="set-voice">🗣 말하기 목소리 — 답을 읽어 주는 목소리(이 기기에만 저장)</label>
+  <div class="hint" id="voice-hint">이 브라우저에 설치된 목소리 중에서 골라요 — 기기마다 달라요. "인터넷 필요"는 소리를 만들 때 브라우저 회사 서버를 쓰는 목소리예요. 윈도우에선 엣지 브라우저의 목소리(SunHi·Aria)가 가장 자연스러워요.</div>
+  <div class="acct-row voice-row"><span class="voice-tag">한국어</span><select id="voice-ko"></select><button type="button" class="voice-try" data-try="ko" title="들어 보기">▶ 들어 보기</button></div>
+  <div class="acct-row voice-row"><span class="voice-tag">영어</span><select id="voice-en"></select><button type="button" class="voice-try" data-try="en" title="들어 보기">▶ 들어 보기</button></div>
+  <div class="hint" id="voice-note" hidden></div>
+  </div>
+  <label style="margin-top:16px;display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="set-mic-hold" style="width:auto;margin:0"> 🎙 뜸 들여도 기다리기</label><!-- v3.2 ⑤ -->
+  <div class="hint">켜면(기본) 말을 멈추고 생각해도 듣기를 끝내지 않아요 — "여기까지"·"이상입니다"(영어는 "that's all")라고 하거나 🎙을 다시 누를 때만 마무리돼요. 끄면 이전 방식: 말이 잠깐 끊기면 자동으로 마무리(말하기 튜터는 1.5초 뒤 보내요). 이 설정은 이 기기에만 저장돼요.</div>
   <label style="margin-top:16px" id="set-acct">👥 계정 — 같은 아이디로 로그인하면 PC와 폰이 이어져요</label><!-- v2.58: 계정 코드 → 아이디·비밀번호 회원가입/로그인 (사용자: "아이디랑 비밀번호를 입력해서 생성한 뒤 같은 도메인으로 접속") -->
   <div class="hint" id="acct-hint">가입하면 학습 기록·대화·설정이 <b>계정에 저장</b>되고, 어느 기기에서든 같은 아이디로 로그인하면 그대로 이어져요. API 키가 없어도 <b>계정으로 AI를 쓸 수 있어요</b>(서버에 키가 있을 때). <b>비밀번호·API 키는 다른 기기로 전송되지 않아요.</b> 새 계정은 빈 기록으로 시작해요.</div>
   <div id="acct-status" class="acct-status"></div>
@@ -4111,12 +4279,14 @@ function systemBlocks(system){ // v3.1: 지시문을 [고정 앞부분(캐시) +
   if(i < 0 || i < 1800) return str.replace(/\u0000/g, ""); // 앞부분이 캐시 최소 길이(512~1024 토큰)에 못 미치면 문자열 그대로
   return [{ type: "text", text: str.slice(0, i), cache_control: { type: "ephemeral" } }, { type: "text", text: str.slice(i + 1) }];
 }
+let _mainStreamN = 0; // v4: 본 대화 호출만(가벼운 배경 호출 제외) — 모양 토글 잠금 판정용
 async function* streamClaude(o){ // v3.1(QA 재검): 모든 AI 호출(대화·일지·요약·복습 포인트·승격)을 진행 중 수로 센다 — 동기화 보류 판정
-  _streamN++; _streamSince = Date.now();
-  try { for await (const c of streamClaudeRaw(o)){ _streamSince = Date.now(); yield c; } } finally { _streamN = Math.max(0, _streamN - 1); } // 청크마다 시각 갱신 — "무소식 5분"만 멈춘 것으로 본다
+  _streamN++; _streamSince = Date.now(); const main = !(o && o.light); if(main){ _mainStreamN++; if(typeof designUiSync === "function") setTimeout(designUiSync, 0); } // 시작·끝 모두 모양 토글 잠금을 맞춘다
+  try { for await (const c of streamClaudeRaw(o)){ _streamSince = Date.now(); yield c; } } finally { _streamN = Math.max(0, _streamN - 1); if(main) _mainStreamN = Math.max(0, _mainStreamN - 1); if(typeof designUiSync === "function") setTimeout(designUiSync, 0); } // 청크마다 시각 갱신 — "무소식 5분"만 멈춘 것으로 본다 · 끝나면 모양 토글 잠금 해제
 }
 function streaming(){ return _streamN > 0 && Date.now() - _streamSince < 5 * 60000; } // 5분 넘게 멈춘 스트림은 바쁨으로 치지 않는다(망 단절 등으로 영영 안 끝나도 push가 막히지 않게)
-async function* streamClaudeRaw({ system, messages, signal, light, maxTokens, voice }){
+const STREAM_TIMEOUTS = { head: 60000, first: 240000, idle: 90000 }; // v3.2: 무응답 한계(ms) — 응답 머리 · 첫 글자 전(생각 포함) · 글이 오다 끊김
+async function* streamClaudeRaw({ system, messages, signal, light, maxTokens, voice, status }){ // status: 호출자가 준 객체에 단계(thinking/text)를 적어 준다(화면의 "생각하는 중" 표시용)
   const key = String(localStorage.getItem(LS_KEY) || "").replace(/[\s​-‍﻿]+/g, ""); // v2.41: 이미 공백 섞여 저장된 키도 방어 (구버전에서 저장된 키 백필)
   const acct = syncCfg(); // v2.57: 키가 없으면 계정 서버가 대신 호출(/ai/messages) — 키는 서버에만, 클라이언트는 계정 코드만 보낸다. 키가 있으면 예전처럼 직접 호출
   const viaAcct = !key && acct.on;
@@ -4127,26 +4297,30 @@ async function* streamClaudeRaw({ system, messages, signal, light, maxTokens, vo
   const mkBody = (m) => {
     const meta = metaOf(m), sys = light || voice ? String(system || "").replace(/\u0000/g, "") : systemBlocks(system);
     const b = light ? { model: m, max_tokens: maxTokens || 300, stream: true, system: sys, messages }
-      : voice ? { model: m, max_tokens: maxTokens || 700, stream: true, system: sys, messages }
-      : { model: m, max_tokens: 16000, stream: true, system: sys, messages };
+      : voice ? { model: m, max_tokens: maxTokens || 4000, stream: true, system: sys, messages } // v3.2: 생각(thinking) 토큰이 한도에 포함된다 — 700이면 생각만 하다 끝나 글이 한 글자도 안 왔다(사용자 보고 "답변이 멈춤")
+      : { model: m, max_tokens: 32000, stream: true, system: sys, messages }; // v3.2: 긴 시험·채점 + 생각 분량 여유
     if(!light && meta.thinking) b.thinking = { type: "adaptive" };
     if(!light && meta.effort) b.output_config = { effort: voice ? "low" : "medium" };
     return b;
   };
   const callOnce = (m) => fetch(viaAcct ? acct.url + "/ai/messages" : "https://api.anthropic.com/v1/messages", {
     method: "POST",
-    signal, // v1.9: ⏹ 답변 중단
+    signal: ac.signal, // v1.9: ⏹ 답변 중단(바깥 signal과 연결) · v4: 타임아웃도 이 줄로 끊는다
     headers: viaAcct
       ? { "Content-Type": "application/json", "Authorization": "Bearer " + acct.code, "anthropic-version": "2023-06-01" } // 계정 코드만 — x-api-key 없음
       : { "Content-Type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
     body: JSON.stringify(mkBody(m))
   });
-  let res = await callOnce(model);
+  const STALL_MSG = "답이 오지 않아 멈췄어요 — 인터넷 상태를 확인하고 다시 시도해 주세요."; // v3.2: 무응답 타임아웃(그 전엔 "답변을 쓰는 중"이 영영 남았다) — 시간은 STREAM_TIMEOUTS(가드가 줄여 검증)
+  const ac = new AbortController(); if(signal){ if(signal.aborted) ac.abort(); else signal.addEventListener("abort", () => ac.abort(), { once: true }); } // 검수 [12]: 타임아웃이 요청을 실제로 끊는다(과금·중복 호출 방지) — 사용자 ⏹도 같은 줄로
+  const withTimeout = (p, ms) => new Promise((ok, no) => { const t = setTimeout(() => { no(new Error(STALL_MSG)); try { ac.abort(); } catch(e){} }, ms); p.then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); }); });
+  const callOnceT = (m) => { const fp = callOnce(m); fp.catch(() => {}); return withTimeout(fp, STREAM_TIMEOUTS.head); }; // 응답 머리(헤더)까지 60초
+  let res = await callOnceT(model);
   if(!res.ok && kind === "main"){ // v3.1 폴백: 모델을 못 찾거나 받지 않으면(404·모델 관련 400) 사슬의 다음 모델로 한 번
-    let d0 = ""; try { const j = await res.clone().json(); d0 = j && j.error ? String(j.error.message || j.error.type || "") : ""; } catch(e){}
+    let d0 = ""; try { const j = await res.clone().json(); d0 = j && j.error ? String((typeof j.error === "object" ? (j.error.message || j.error.type) : j.error) || "") : ""; if(j && j.type) d0 += " " + String(j.type); } catch(e){} // 검수 [34]: 계정 서버는 {error:"upstream", type} 꼴 — type도 본다
     const notFound = res.status === 404 || (res.status === 400 && /model/i.test(d0)) || (viaAcct && res.status === 502 && /not_found/i.test(d0));
     const next = MODEL_CHAIN[MODEL_CHAIN.indexOf(priceKey(model)) + 1] || (priceKey(model) !== MODEL_CHAIN[0] ? MODEL_CHAIN[0] : "");
-    if(notFound && next && next !== model){ model = next; res = await callOnce(model); if(res.ok && _modelFellBack !== model){ _modelFellBack = model; weToast(`🧠 고른 모델을 쓸 수 없어 ${modelKo(model)} 모델로 답했어요 — ⚙️ 설정에서 모델을 확인해 주세요`); } }
+    if(notFound && next && next !== model){ model = next; res = await callOnceT(model); if(res.ok && _modelFellBack !== model){ _modelFellBack = model; weToast(`🧠 고른 모델을 쓸 수 없어 ${modelKo(model)} 모델로 답했어요 — ⚙️ 설정에서 모델을 확인해 주세요`); } }
   }
   if(!res.ok){
     let detail = "";
@@ -4165,7 +4339,7 @@ async function* streamClaudeRaw({ system, messages, signal, light, maxTokens, vo
   const use = { i: 0, o: 0, cw: 0, cr: 0 }; let useGot = false, chars = 0; // v2.57: 💳 요금 집계 재료 (message_start=입력·캐시, message_delta=출력 누계)
   try {
     while(true){
-      const { done, value } = await reader.read();
+      const { done, value } = await withTimeout(reader.read(), chars ? STREAM_TIMEOUTS.idle : STREAM_TIMEOUTS.first).catch(e => { try { const c = reader.cancel(); if(c && c.catch) c.catch(() => {}); } catch(e2){} throw e; }); // v3.2: 첫 글자 전엔 4분(생각이 길 수 있다), 그 뒤엔 90초 무소식이면 멈춘 것으로
       if(done) break;
       buf += dec.decode(value, { stream: true });
       let idx;
@@ -4176,12 +4350,14 @@ async function* streamClaudeRaw({ system, messages, signal, light, maxTokens, vo
           const payload = line.slice(5).trim();
           if(!payload) continue;
           let ev; try{ ev = JSON.parse(payload); }catch(e){ continue; }
-          if(ev.type === "content_block_delta" && ev.delta && ev.delta.type === "text_delta"){ chars += ev.delta.text.length; yield ev.delta.text; }
+          if(ev.type === "content_block_delta" && ev.delta && ev.delta.type === "text_delta"){ chars += ev.delta.text.length; if(status) status.phase = "text"; yield ev.delta.text; }
+          else if(ev.type === "content_block_start" && ev.content_block){ if(status) status.phase = ev.content_block.type === "thinking" ? "thinking" : "text"; } // v3.2: 생각 블록이 시작되면 화면에 "생각하는 중"
           else if(ev.type === "error"){ console.error("[claude-stream]", ev.error); throw new Error("답변이 중간에 끊겼어요. 다시 시도해 주세요."); }
           else if(ev.type === "message_start" && ev.message && ev.message.usage){ const us = ev.message.usage; use.i = us.input_tokens || 0; use.cw = us.cache_creation_input_tokens || 0; use.cr = us.cache_read_input_tokens || 0; useGot = true; }
           else if(ev.type === "message_delta"){
             if(ev.usage && typeof ev.usage.output_tokens === "number"){ use.o = ev.usage.output_tokens; useGot = true; }
-            if(ev.delta && ev.delta.stop_reason === "refusal"){ yield "\n\n*(안전상 답변이 중단됐어요 — 질문을 바꿔 다시 시도해 주세요.)*"; }
+            if(ev.delta && ev.delta.stop_reason === "refusal"){ if(!chars) throw new Error("안전상 답변이 중단됐어요 — 질문을 바꿔 다시 시도해 주세요."); yield "\n\n*(안전상 답변이 중단됐어요 — 질문을 바꿔 다시 시도해 주세요.)*"; }
+            if(ev.delta && ev.delta.stop_reason === "max_tokens"){ if(!chars) throw new Error("생각하느라 한도를 다 써서 답이 비었어요 — 다시 보내 주세요. 같은 일이 반복되면 ⚙️ 설정에서 모델을 바꾸거나 단계를 낮춰 보세요."); yield "\n\n*(답이 길어 여기서 끊겼어요 — \"이어서\"라고 보내면 계속해요.)*"; } // v3.2: 조용히 잘리던 것 · 검수 [11]: 글 0자면 꼬리 대신 오류(빈 답 가드를 우회하지 않게 — 질문은 초안으로)
           }
         }
       }
@@ -4194,11 +4370,12 @@ async function* streamClaudeRaw({ system, messages, signal, light, maxTokens, vo
 /* 공용 전송기: thread(메시지 배열)에 user 추가 → 스트리밍으로 assistant 채움 → 렌더 콜백 */
 /* 히스토리 트림: 화면·localStorage에는 전체 기록을 남기되, API에는 최근 턴만 보낸다 (긴 대화 토큰 비용 방지) */
 const HISTORY_MAX_MSGS = 16; // user+assistant 합산 — 최근 8문답
+function apiText(m){ return m.role === "assistant" ? String(m.content || "").replace(/\n\n\*\((?:답이 길어 여기서 끊겼어요|안전상 답변이 중단됐어요|⏹ 여기까지 받고 중단했어요|⚠️ )[^\n]*\)\*\s*$/, "") : m.content; } // 검수 [33]: 화면용 안내 꼬리는 모델에게 되돌려 보내지 않는다
 function trimForApi(thread){
   // v2.35: 이미지 첨부 메시지는 API 형식(image+text 블록 배열)으로 변환 — 내부 저장은 문자열 content + img 필드 그대로
   const toApi = (m) => ({ role: m.role, content: m.img
     ? [{ type: "image", source: { type: "base64", media_type: m.img.media, data: m.img.data } }].concat(m.content ? [{ type: "text", text: m.content }] : [])
-    : m.content });
+    : apiText(m) });
   let msgs = thread.map(toApi);
   if(msgs.length <= HISTORY_MAX_MSGS) return { msgs, trimmed: false };
   msgs = msgs.slice(-HISTORY_MAX_MSGS);
@@ -4281,6 +4458,9 @@ async function memoRefresh(thread, key){
   finally { _memoBusy.delete(key); }
 }
 /* v3.1: 답은 문장 2~3개·문단 단위로 드러내되 스크롤은 움직이지 않는다(위 chunkPlan 주석). v2.58 이력: 답변은 다 오면 한 번에 — 흐르는 동안은 진행 표시만 제자리에서 갱신 (사용자: "한 문장씩 밀릴 때마다 스크롤이 툭툭 끊기는 게 신경 쓰여 — 다 되면 한 번에"). 스크롤 이동은 부드럽게 */
+/* ── v3.2 ②(사용자 재요청): "코딩이 노출되듯 써지는 대로 부드럽게" — 덩어리(2~3문장·1초) 대신 펌프(requestAnimationFrame, 40ms마다 밀린 양의 1/6·2자 이상)가 도착한 글자를 조금씩 드러낸다.
+   아직 안 닫힌 **·`·끝나지 않은 표 줄·목록 머리는 displaySafe가 잠시 감춘다(닫히면 그 자리에서 굵게·표로 — 글자 위치는 그대로). 스크롤은 여전히 건드리지 않고(질문을 위로 올리고 아래 여백), 흐르는 중엔 ↓를 보이지 않으며 다 써진 뒤 끝이 화면 아래에 있을 때만 ↓ 하나.
+   아래 chunkPlan·safeLen은 단위 가드·옛 경로 호환으로 남긴다. ── */
 /* ── v3.1 ③ 답을 끊어 보이기 — 사용자: "2~3문장씩 깔끔하게 끊어 보여 주되 흔들리거나 불안정해 보이는 건 싫다" + v2.58 이력 "한 문장씩 밀릴 때마다 스크롤이 툭툭 끊기는 게 신경 쓰여".
    규칙 — 흐르는 동안 스크롤을 움직이지 않는다(전송 때 질문을 로그 위로 올리고 아래에 여백을 두어 답이 그 빈 자리를 채운다) ·
    덩어리는 mdRender 최상위 블록 단위로 재조정(앞 블록의 DOM은 그대로, 마지막 블록만 자람) → 완료 때의 전체 렌더와 글자 위치가 같다 ·
@@ -4329,7 +4509,16 @@ function renderProgressive(mdEl, visible, n){ // .md 안: .md-body(블록들) + 
   for(let i = k; i < want.length; i++) body.appendChild(want[i]);
   const tn = mdEl.querySelector(".typing-n"); if(tn) tn.textContent = n ? `${n}자` : "";
 }
-function partialHTML(content){ const c = String(content || ""); return `<div class="md-body">${mdRender(visibleCut(c).slice(0, safeLen(c)))}</div>` + typingHTML(c.length); } // 재렌더 때의 부분 답(스레드를 떠났다 돌아와도 드러낸 만큼 그대로)
+function displaySafe(t){ // v3.2: 흐르는 중 화면에 둘 글 — 아직 안 닫힌 마크다운 표식·끝나지 않은 표 줄·목록/제목 머리만 있는 마지막 줄을 잠시 감춘다(닫히면 그 자리에서 굵게·표로 바뀐다 — 글자 위치는 그대로)
+  let x = String(t || "");
+  x = x.replace(/(^|\n)[ \t]*\|[^\n]*$/, "$1"); // 마지막 줄이 표 줄이면 줄바꿈이 올 때까지 감춘다(검수 [14]: 닫힘 여부로 보였다 숨겼다 하면 깜빡인다 — 보이는 글은 줄지 않는다)
+  x = x.replace(/(^|\n)[ \t]*(?:[-*+•]|\d+[.)]|#{1,3})?[ \t]*$/, "$1"); // 목록·제목 머리만 있는 마지막 줄
+  x = x.replace(/[*_`\[]+$/, ""); // 끝에 걸린 표식 조각(*·_·`·[)은 먼저 떼고 — 그 뒤에 짝을 센다(닫힌 **가 글 끝이면 닫는 쪽이 떨어져 나가 여는 **가 남는 것을 막는다)
+  if(((x.match(/\*\*/g) || []).length % 2) === 1){ const i = x.lastIndexOf("**"); x = x.slice(0, i) + x.slice(i + 2); } // 안 닫힌 ** — 표식 없이 글자만
+  if(((x.match(/`/g) || []).length % 2) === 1){ const i = x.lastIndexOf("`"); x = x.slice(0, i) + x.slice(i + 1); }
+  return x.replace(/\s+$/, "");
+}
+function partialHTML(content){ const c = String(content || ""); return `<div class="md-body">${mdRender(displaySafe(visibleCut(c)))}</div>` + typingHTML(c.length); } // 재렌더 때의 부분 답(스레드를 떠났다 돌아와도 받은 만큼 그대로 · v3.2: 안전한 전부)
 function typingHTML(n){ return `<span class="typing" aria-live="polite"><span class="typing-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="typing-t">답변을 쓰는 중</span><span class="typing-n" aria-hidden="true">${n ? n + "자" : ""}</span></span>`; } // 글자 수는 스크린리더 낭독 제외(접근성 렌즈)
 function smoothBottom(log){ if(!log) return; const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; try { log.scrollTo({ top: log.scrollHeight, behavior: reduce ? "auto" : "smooth" }); } catch(e){ log.scrollTop = log.scrollHeight; } } // OS "동작 줄이기"면 즉시
 async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfgKey, typed }){
@@ -4374,27 +4563,35 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
     return md ? { md, log: l } : null;
   };
   let acc = "", committed = false; // committed: assistant 턴이 실제로 기록됐는가 (실패 롤백과 구분)
-  let reveal = { len: 0, at: 0 }; // v3.1: 드러낸 길이·시각
+  // v3.2 ②: 펌프 — 도착한 글자를 프레임마다(40ms 간격) 밀린 양의 1/6씩(2자 이상) 드러낸다. 늘 도착 지점 가까이 따라가되 한 번에 튀지 않는다. 스크롤은 건드리지 않는다. 읽어 주기(🗣)는 문장이 끝날 때마다
+  let shown = 0, ttsLen = 0, drawAt = 0, pumpId = 0, done = false, finish = null;
+  const pumpTag = `${aIdx}:${Date.now()}`; mdEl.dataset.pump = pumpTag;
+  const st = { phase: "", at: Date.now() }; // v3.2: 호출 단계(생각/글) — 첫 글자 전 "생각하는 중 · N초"
+  const ttsTick = (text, all) => { if(typeof ttsOnReveal !== "function") return; let upto = text.length; if(!all){ const ends = sentenceEnds(text.slice(0, shown)); upto = ends.length ? ends[ends.length - 1] : 0; } if(upto > ttsLen){ ttsOnReveal(ownerKey, text.slice(ttsLen, upto)); ttsLen = upto; } };
+  const pump = () => { pumpId = 0; const t = liveTarget(); const text = visibleCut(acc); const target = text.length;
+    if(t && t.md.dataset.pump !== pumpTag){ t.md.dataset.pump = pumpTag; shown = Math.max(shown, target); if(shown) renderProgressive(t.md, displaySafe(text.slice(0, shown)), acc.length); } // 다른 대화창에 갔다 돌아와 재렌더된 말풍선(partialHTML) — 받은 만큼에서 이어 간다(줄어들지 않게)
+    else if(t && shown < target){ const now = Date.now(); if(now - drawAt >= 40){ shown = Math.min(target, shown + Math.max(2, Math.ceil((target - shown) / 6))); if(shown < target){ const cc = text.charCodeAt(shown - 1); if(cc >= 0xD800 && cc <= 0xDBFF) shown--; } renderProgressive(t.md, displaySafe(text.slice(0, shown)), acc.length); drawAt = now; ttsTick(text, false); } } // 서러게이트 쌍은 가르지 않는다
+    else if(t && !shown){ const n = t.md.querySelector(".typing-n"), tt = t.md.querySelector(".typing-t"); if(n){ const sec = Math.floor((Date.now() - st.at) / 1000); if(tt){ const want = st.phase === "thinking" ? "생각하는 중" : "답변을 쓰는 중"; if(tt.textContent !== want) tt.textContent = want; } const nv = acc.length ? `${acc.length}자` : (sec >= 3 ? `${sec}초` : ""); if(n.textContent !== nv) n.textContent = nv; } else if(!t.md.querySelector(".md-body")) t.md.innerHTML = typingHTML(acc.length); } // v3.2: 첫 글자 전에도 살아 있음을 보인다(생각 중·경과 초)
+    if(done && shown >= target){ if(finish){ finish(); finish = null; } return; }
+    pumpId = requestAnimationFrame(pump); };
+  const pumpStop = () => { done = true; if(pumpId){ cancelAnimationFrame(pumpId); pumpId = 0; } };
+  pumpId = requestAnimationFrame(pump); // v3.2: 첫 글자 전부터 돈다(경과 초·생각 중 표시)
   let lastLive = 0; // v2.4: 관련 콘텐츠 실시간 갱신 스로틀
   liveRelatedTick(ownerKey, text); // 질문을 보내는 즉시 관련 콘텐츠부터 반응
   const trimNote = recordsNote(ownerKey, text, cfg) + memoNote(ownerKey, trimmed); // v2.53: 두 겹 기억 (기록 → 요약)
   const rollback = () => { thread.splice(aIdx - 1, 2); saveState(); }; // 답변 자리 + 질문 턴 제거
   try {
-    for await (const chunk of streamClaude({ system: buildSystemParts((systemExtra || "") + trimNote, cfg, ownerKey), messages: msgs, signal: ctrl.signal, voice: (typeof _voiceMode !== "undefined" && _voiceMode && isCenter && ownerKey !== GLOBAL_ID) })){ // 파도 Chat(진단·계획)은 짧은 답 상한을 두지 않는다 — 읽어 주기는 그대로 // v3.1: 캐시 블록으로 · 말하기 모드는 빠른 모델·짧은 답
+    for await (const chunk of streamClaude({ system: buildSystemParts((systemExtra || "") + trimNote, cfg, ownerKey), messages: msgs, signal: ctrl.signal, voice: (typeof _voiceMode !== "undefined" && _voiceMode && isCenter && ownerKey !== GLOBAL_ID), status: st })){ // 파도 Chat(진단·계획)은 짧은 답 상한을 두지 않는다 — 읽어 주기는 그대로 // v3.1: 캐시 블록으로 · 말하기 모드는 빠른 모델·짧은 답
       acc += chunk;
       aMsg.content = acc; // 스로틀 저장·창 이탈 플러시(visibilitychange)가 집어갈 최신 내용
-      const t = liveTarget();
-      if(t){ // v3.1: 1초에 한 번, 문장 2~3개·문단이 완성된 만큼 드러낸다 — 스크롤은 건드리지 않는다
-        const now = Date.now();
-        let drew = false;
-        if(now - reveal.at >= (reveal.len ? 1000 : 0)){ const len = chunkPlan(acc, reveal.len); if(len > reveal.len){ renderProgressive(t.md, visibleCut(acc).slice(0, len), acc.length); if(isCenter) moreBelowSync(); if(typeof ttsOnReveal === "function") ttsOnReveal(ownerKey, visibleCut(acc).slice(reveal.len, len)); reveal = { len, at: now }; drew = true; } }
-        if(!drew){ const n = t.md.querySelector(".typing-n"); if(n) n.textContent = `${acc.length}자`; else if(!t.md.querySelector(".md-body")) t.md.innerHTML = typingHTML(acc.length); }
-      }
+      if(!pumpId && !done) pumpId = requestAnimationFrame(pump); // v3.2: 그리기는 펌프가(프레임마다 조금씩) — 스트림 루프는 모으기만. 숨은 탭에선 프레임이 멈추고 돌아오면 따라잡는다
       // v2.4: 답이 흐르는 동안에도 관련 콘텐츠가 주제를 따라간다 (1.2초에 한 번, 화면에 보이는 스레드만)
       const now = Date.now();
       if(now - lastLive > 1200){ lastLive = now; liveRelatedTick(ownerKey, text + "\n" + acc); saveState(); } // v2.26: 진행분 주기 저장
     }
-    { const t = liveTarget(); if(t){ const vis = visibleCut(acc); const len = vis.length; renderProgressive(t.md, vis, acc.length); if(isCenter) moreBelowHide(); if(typeof ttsOnReveal === "function" && len > reveal.len) ttsOnReveal(ownerKey, vis.slice(reveal.len, len)); reveal = { len, at: Date.now() }; } } // v3.1: 스트림이 끝나면 남은 덩어리를 바로 드러낸다(기다리지 않는다)
+    if(!visibleCut(acc).trim()){ acc = ""; throw new Error("답이 비어서 왔어요 — 다시 보내 주세요. 같은 일이 반복되면 ⚙️ 설정에서 모델을 바꾸거나 🗣 말하기 튜터를 잠시 꺼 보세요."); } // v3.2: 빈 답(생각만 하다 한도·오류)은 조용히 빈 말풍선으로 남지 않는다 — 질문은 초안으로 되돌아간다
+    done = true; await new Promise(res => { finish = res; if(!pumpId) pumpId = requestAnimationFrame(pump); setTimeout(res, 500); }); // v3.2: 남은 글자는 펌프가 같은 속도로 마저 드러낸다(숨은 탭이면 500ms 뒤 그냥 간다)
+    pumpStop(); { const t = liveTarget(); if(t){ const vis = visibleCut(acc); renderProgressive(t.md, vis, acc.length); ttsTick(vis, true); } if(isCenter) moreBelowHide(); } // 끝: 전부(마커 조각 없이) 드러내고 남은 문장을 읽는다
     aMsg.content = acc;
     delete aMsg.partial;
     // v2.27: 작문 채점 블록 — 대화에서는 떼어 숨기고, 연습 기록(PRACTICE)으로 적립
@@ -4433,6 +4630,7 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
     saveState(); // v2.58: 완성된 답은 onDone의 재렌더가 한 번에 그린다 (그 전에 그리면 onDone의 '아래 근처' 판정이 어긋난다)
     memoRefresh(thread, ownerKey); // v2.53: 밀려난 턴을 뒤에서 조용히 요약 (답변 속도에 영향 없음)
   } catch(err){
+    pumpStop(); // v3.2: 펌프는 멈춘다(중단·오류 말풍선을 덮어쓰지 않게)
     // v2.42: 오류 말풍선도 liveTarget으로 — 전송 직후 재렌더가 끼면 mdEl이 분리된 노드가 되어
     // 안내(키 없음·중단·오류)가 보이지 않는 간헐 결함(하네스에서 관찰). 스트리밍 경로와 같은 재조회 원칙.
     const errT = liveTarget();
@@ -4479,7 +4677,9 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
       }
     }
   } finally {
+    pumpStop();
     ACTIVE.delete(thread);
+    if(typeof designUiSync === "function") setTimeout(designUiSync, 0); // v4: 답이 끝나면 모양 토글 복귀
     setSendBtn(logEl, false, ownerKey); // 현재 화면이 이 스레드일 때만 버튼 복원
     aDiv.classList.remove("streaming");
     liveRelatedTick(ownerKey, text + "\n" + acc); // v2.4: 답이 끝난 시점의 최종 주제로 한 번 더
@@ -4732,7 +4932,16 @@ function renderWordList(){
   if(inp && wsFocus){ inp.focus(); try { inp.setSelectionRange(wsPos, wsPos); } catch(e){} }
   // v2.56: 모바일 상단 대화 상대 셀렉트(🧭 파도 Chat · 📘 단어 · 🌊 파도)를 현재 스레드로 동기화
   renderMThread();
+  stickyLeftWatch(); // v3.2 ①: 고정 띠 높이 실측(재렌더마다 요소가 새로 생긴다)
 }
+let _wgRO = null;
+function stickyLeftSync(){ // v3.2 ①: 고정 띠 세 겹(🧭 파도 Chat → 검색 → 필터)의 높이를 실측해 아래 띠의 top으로 — 폭마다 패딩이 달라 CSS 상수로는 겹치거나 뜬다. 숨겨진(0px) 동안은 건드리지 않는다
+  const el = document.getElementById("word-list"); if(!el) return;
+  const g = el.querySelector(".w-item.global"), sr = el.querySelector(".w-search");
+  const gh = g ? Math.round(g.getBoundingClientRect().height) : 0, sh = sr ? Math.round(sr.getBoundingClientRect().height) : 0;
+  if(gh) el.style.setProperty("--wg-h", gh + "px"); if(sh) el.style.setProperty("--ws-h", sh + "px");
+}
+function stickyLeftWatch(){ stickyLeftSync(); if(!("ResizeObserver" in window)) return; if(_wgRO) _wgRO.disconnect(); _wgRO = new ResizeObserver(() => stickyLeftSync()); const g = document.querySelector("#word-list .w-item.global"), sr = document.querySelector("#word-list .w-search"); if(g) _wgRO.observe(g); if(sr) _wgRO.observe(sr); }
 /* ── v2.30: 좌측 단어 검색 — 등록 단어 즉시 필터 + 미등록 단어는 미니 사전으로 뜻 (사용자: "언제든 단어만 검색") ── */
 function applyWordFilter(){ // 검색어 + 품사 필터(v2.58) — 둘 다 만족하는 단어만
   const inp = document.getElementById("word-search");
@@ -4814,7 +5023,7 @@ const QA_CTX = {
 function voiceChipsHTML(){ // v3.1 모바일(검수 반영): 🗣 말하기 모드·🎙 언어는 입력줄이 아니라 빠른 줄의 칩 — 입력줄은 🎙·↑만(↑ 옆 오탭 방지, 입력칸 폭 확보). PC는 CSS가 숨긴다(입력칸 안 버튼이 있다)
   try { if(!isMobileView() || typeof micSupported !== "function" || !micSupported() || inAppBrowser() || !window.isSecureContext) return ""; } catch(e){ return ""; } // 폰 폭일 때만 그린다(PC는 입력칸 안 버튼 — 숨은 버튼이 도구 줄 셈에 끼지 않게)
   const on = !!(typeof _voiceMode !== "undefined" && _voiceMode);
-  return `<button class="qa-btn m-voice${on ? " on" : ""}" data-voice-toggle type="button" aria-pressed="${on}" title="말하기 튜터 — 켜면 말이 끝나면 바로 보내고, 답을 소리로 읽어 줘요">🗣 말하기</button>`
+  return `<button class="qa-btn m-voice${on ? " on" : ""}" data-voice-toggle type="button" aria-pressed="${on}" title="말하기 튜터 — 켜면 '여기까지'라고 하면 보내고, 답을 소리로 읽어 줘요">🗣 말하기</button>`
     + (on ? `<button class="qa-btn m-voice" data-mic-lang type="button" title="말할 언어 — 누르면 바꿔요">${micLangNow() === "en" ? "🎙 영어로" : "🎙 한국어로"}</button>` : "");
 }
 function qaCtxHTML(cfg, msgs){
@@ -4834,6 +5043,7 @@ function roomFit(log){ // v3.1: 답이 끝난 뒤 — 마지막 질문이 로그
 }
 function renderChatLog(){
   const log = document.getElementById("chat-log");
+  moreBelowHide(); // v3.2: 다시 그리면 ↓는 일단 숨긴다(완료 경로가 필요하면 다시 보인다)
   if(log.dataset.room !== undefined && log.dataset.room !== String(state.activeWord)){ log.classList.remove("has-room"); log.style.paddingBottom = ""; delete log.dataset.room; } // v3.1: 전송 때 둔 아래 여백은 그 대화창에서만 — 다른 대화창에는 빈 여백을 남기지 않는다
   const chat = curChat();
   if(!chat.length){
@@ -6425,8 +6635,10 @@ function rvStageLabel(it){
   return `${it.stage + 1}번째 만남 · ${d <= 0 ? "오늘" : `${d}일 뒤`}`;
 }
 function rvKindLabel(it){ return { manual: "✋ 직접 담음", grade: "✏️ 채점 오답", ai: "✨ 기록 종합" }[srsKindOf(it)] || ""; }
-function rvStartSession(){
-  const due = srsDue();
+function rvStartSession(opts){ // v3.2 ③: opts{overdueFirst, limit} — 진단실의 "밀린 것부터"·"3장만"(인자 없으면 기존 그대로)
+  let due = srsDue();
+  if(opts && opts.overdueFirst) due = due.slice().sort((a, b) => (Number(a.next) || 0) - (Number(b.next) || 0));
+  if(opts && opts.limit) due = due.slice(0, opts.limit);
   _rvSession = { ids: due.map(x => x.id), idx: 0, flipped: false, ok: 0, hazy: 0, no: 0 };
 }
 function rvTodayHTML(){
@@ -6529,7 +6741,7 @@ document.getElementById("review-body").addEventListener("click", (e) => {
     const r = ok ? "ok" : hz ? "hazy" : "no";
     srsRate(it, r);
     if(_rvSession){ _rvSession[r]++; _rvSession.idx++; _rvSession.flipped = false; }
-    saveSrs(); updateSrsBadge(); renderReview();
+    saveSrs(); updateSrsBadge(); renderReview(); dxRender(); // v3.2 ③: 수치 즉시 갱신(AI 재호출 없음)
     return;
   }
   const now = e.target.closest("[data-srs-now]");
@@ -6562,8 +6774,117 @@ document.getElementById("review-body").addEventListener("click", (e) => {
   weToast(`🔔 오늘의 복습 ${n}개가 기다리고 있어요 — 🧠 복습에서 확인`);
 })();
 updateSrsBadge();
-function openReview(){ rvStartSession(); _rvTab = "today"; renderReview(); document.getElementById("review-modal").classList.add("show"); modalBg.classList.add("show"); }
-function closeReview(){ document.getElementById("review-modal").classList.remove("show"); modalBg.classList.remove("show"); }
+/* ── v3.2 ③ 진단실 — 사용자: "복습 포인트를 — 무엇이 문제인지 정확히 짚고, 무엇을 바로 실행할지 알려 주는 AGI 같은 공간으로".
+   열면 맨 위에 ① 지금 문제는 이것(앱이 기록에서 계산 — 즉시, 근거 수치·심각도 1~3) ② 지금 바로 할 것([실행] = 기존 기능으로 바로 진입: 밀린 복습·태그 집중 작문·문장 3개·틀린 것만 시험·점검·단계 낮추기…) → 그 아래 오늘의 카드(기존).
+   AI 정밀 진단(가벼운 모델, JSON만, 하루 1회 자동 — 재료가 바뀌었을 때 — + ↻ 수동)은 화면과 같은 수치를 받고, 화이트리스트 action·실제 있는 태그·담백한 말투(빈 칭찬 문장 삭제)로 검증한 것만 남긴다.
+   표본이 적으면(채점 5회 미만·복습 5회 미만·습관 표본 부족) 단정하지 않고 호출도 하지 않는다. 캐시 state.diagV4 — 동기화는 더 새로운 쪽(mergeState). 실패는 조용히(복습을 방해하지 않는다). ── */
+const DX_ACTIONS = ["review_overdue", "review_short", "write_tag", "sentences", "exam_wrong", "exam_recall", "listen", "pron", "level_down", "check", "journal_srs", "keep"];
+const DX_BAN = /(와,|정말 (좋|잘)|훌륭|대단|멋져|볼까요\?|드릴까요\?|화이팅|파이팅)/; // 화면 문구에도 [말투] 규칙
+const DX_SYSTEM = `[학습 진단 — JSON만] 아래 수치는 앱이 기록에서 계산한 사실이다. 여기 없는 약점을 지어내지 않는다.
+문제 1~3개를 고르되 근거 수치가 있는 것만. 각 문제에 "지금 바로 할 것" 하나를 action 목록에서 고른다.
+action은 반드시 다음 중 하나: review_overdue | review_short | write_tag | sentences | exam_wrong | exam_recall | listen | pron | level_down | check | journal_srs | keep
+params: write_tag{tag, word?} · sentences{word} · listen{text} · pron{text} · 그 외 {}. tag는 [최근 채점]에 실제로 나온 것만.
+말투: 감탄·칭찬·인사·"~해 볼까요?" 금지. 사실 + 할 일만. what 40자, evidence 60자, label 24자 이내 한국어(영어는 단어 자체만).
+praise는 기록에 실제로 있는 잘한 지점 한 줄만, 없으면 빈 문자열. 표본이 적으면 problems를 비우고 note에 "표본 부족"이라고만 적는다.
+형식(다른 글 없이): {"problems":[{"what":"","evidence":"","severity":1,"fix":{"action":"","label":"","params":{}}}],"praise":"","note":""}`;
+let _dxBusy = false, _dxNote = "", _dxPrev = null, _dxFailAt = 0;
+function dxHist(){ return SRS.reduce((n, it) => n + ((it.hist || []).length), 0); }
+function dxThin(){ let hb = { enough: false }; try { hb = habitStats(); } catch(e){} return PRACTICE.length < 5 && dxHist() < 5 && !hb.enough; }
+function dxWordFewest(){ const ks = Object.keys(state.chats || {}).filter(k => k !== GLOBAL_ID && WORDS.some(w => w.base === k) && (state.chats[k] || []).some(m => m.role === "user")); if(!ks.length) return todayWord().base; const q = (k) => (state.chats[k] || []).filter(m => m.role === "user").length; ks.sort((a, b) => q(a) - q(b)); return ks[0]; }
+function dxWordForTag(tag){ const cnt = {}; PRACTICE.forEach(r => { if((r.errors || []).some(e => e && e.tag === tag) && WORDS.some(w => w.base === r.key)) cnt[r.key] = (cnt[r.key] || 0) + 1; }); const ks = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a]); return ks[0] || todayWord().base; }
+function dxLocalProblems(){ // 앱이 계산한 문제 — learnActions와 같은 조건식, 문장은 사실 + 수치만. 심각도 3·2·1
+  const s = learnStats(); const out = [];
+  if(s.overdue >= 3 || s.overdueMax >= 3) out.push({ what: "복습이 밀려 있어요", evidence: `밀린 카드 ${s.overdue}개 · 가장 오래된 것 ${s.overdueMax}일`, severity: 3, fix: { action: "review_overdue", label: `밀린 복습 ${Math.min(s.overdue, 5)}개 시작`, params: {} }, src: "app" });
+  if(s.weak[0] && s.weak[0].recent >= 2) out.push({ what: `"${s.weak[0].tag}" 자리에서 반복해서 틀려요`, evidence: `최근 2주 ${s.weak[0].recent}번 · 전체 ${s.weak[0].n}번${s.weak[0].note ? " — " + String(s.weak[0].note).slice(0, 40) : ""}`, severity: 3, fix: { action: "write_tag", label: `"${s.weak[0].tag}"만 골라 작문 3문제`, params: { tag: s.weak[0].tag } }, src: "app" });
+  if(s.trend === "하락") out.push({ what: "점수가 내려가는 중이에요", evidence: `최근 ${s.recentAvg}점 · 그 전 ${s.prevAvg}점`, severity: 2, fix: { action: "level_down", label: "단계 한 칸 낮춰 정확도부터", params: {} }, src: "app" });
+  if(s.recall !== null && s.recall < 60) out.push({ what: "복습에서 기억해 내는 비율이 낮아요", evidence: `회상 ${s.recall}%`, severity: 2, fix: { action: "review_short", label: "오늘 3장만 천천히", params: {} }, src: "app" });
+  if(s.words >= 8 && s.depth < 2){ const w = dxWordFewest(); out.push({ what: "폭이 깊이를 앞섰어요", evidence: `단어 ${s.words}개 · 단어당 질문 ${s.depth}회`, severity: 1, fix: { action: "sentences", label: `"${w}" 단어로 문장 3개`, params: { word: w } }, src: "app" }); }
+  if(s.gap !== null && s.gap >= 3) out.push({ what: "리듬이 끊겼어요", evidence: `마지막 학습 ${s.gap}일 전 · 최근 30일 중 ${s.active30}일`, severity: 2, fix: { action: "review_short", label: "오늘 5분 — 카드 3장", params: {} }, src: "app" });
+  const p = state.plan; if(p && p.at && Date.now() - Number(p.at) >= 3 * DAY_MS){ const since = Number(p.at); const rv = SRS.reduce((n, it) => n + (it.hist || []).filter(h => Number(h.ts) >= since).length, 0), gr = PRACTICE.filter(r => Number(r.t) >= since).length; if(!rv && !gr) out.push({ what: "지난 점검에서 정한 것을 아직 안 했어요", evidence: `${jrDate(since)} 정함: ${((p.items || [])[0] || {}).t || "-"} · 그 뒤 복습 0회 · 채점 0회`, severity: 2, fix: { action: "check", label: "이번 주 점검", params: {} }, src: "app" }); }
+  out.sort((a, b) => b.severity - a.severity);
+  return { items: out.slice(0, 3), more: Math.max(0, out.length - 3), stats: s };
+}
+function dxSig(){ const s = learnStats(); return [PRACTICE.length, dxHist(), (state.journal || []).length, srsDue().length, s.overdue].join("|"); }
+function dxBrief(){ // AI에 넘기는 압축 재료 — 화면과 같은 수치. 질문·답 원문은 싣지 않는다(태그·점수만)
+  const errs = PRACTICE.slice(-10).map(r => `(${jrDate(r.t)}) ${r.w || r.key}·${r.kind} ${r.score}점 ✗${(r.errors || []).map(e => String((e && e.tag) || "").slice(0, 12)).filter(Boolean).join(",") || "-"}`);
+  const fails = SRS.map(it => ({ it, f: (it.hist || []).filter(h => !h.ok).length })).filter(x => x.f > 0).sort((a, b) => b.f - a.f).slice(0, 5).map(x => `${(x.it.kind === "grade" ? String(x.it.title).split(":")[0].slice(0, 20) : learnMask(String(x.it.title)).slice(0, 40))} (stage ${x.it.stage || 0}, ✗${x.f}/${(x.it.hist || []).length})`); // 검수 [26]: 채점 카드는 태그만, 그 밖은 가림 규칙 통과
+  return `[학습 상태 — 앱이 계산한 수치]\n${learnBrief()}${habitNote()}${planNote()}\n\n[최근 채점 — 틀린 곳만]\n${errs.join("\n") || "없음"}\n\n[복습 카드 — 실패 많은 순]\n${fails.join("\n") || "없음"}`.slice(0, 3500);
+}
+function dxScrub(t, max){ let x = String(t || "").replace(/\s+/g, " ").trim(); if(DX_BAN.test(x)) x = x.split(/[.!?。]\s+/).filter(seg => seg && !DX_BAN.test(seg)).join(". "); return x.slice(0, max); } // 빈 칭찬 문장만 지운다(남은 사실은 쓴다)
+function dxValidate(j){ // 화이트리스트·실제 태그·단어·길이·말투 — 통과 못 한 항목은 버린다
+  const out = []; const tags = new Set(); PRACTICE.forEach(r => (r.errors || []).forEach(e => { if(e && e.tag) tags.add(e.tag); }));
+  (Array.isArray(j && j.problems) ? j.problems : []).slice(0, 3).forEach(p => { if(!p || typeof p !== "object") return; const fix = p.fix || {}; const action = String(fix.action || ""); if(DX_ACTIONS.indexOf(action) < 0) return;
+    const raw = (fix.params && typeof fix.params === "object" && !Array.isArray(fix.params)) ? fix.params : {}; const str = (v, n) => (typeof v === "string" ? v.trim().slice(0, n) : ""); // 검수 [19]: action별로 새 객체 — 임의 키·타입·길이는 버린다
+    const params = action === "write_tag" ? { tag: str(raw.tag, 20), word: str(raw.word, 40) } : action === "sentences" ? { word: str(raw.word, 40) } : (action === "listen" || action === "pron") ? { text: str(raw.text, 120) } : {};
+    if(action === "write_tag"){ if(!tags.has(params.tag)) return; if(!params.word || !WORDS.some(w => w.base === params.word)) delete params.word; }
+    if(action === "sentences" && (!params.word || !WORDS.some(w => w.base === params.word))) delete params.word;
+    if(action === "listen" || action === "pron"){ const t = params.text; if(!t || !/^[A-Za-z]/.test(t) || !insightTextOk(t, 120)) return; }
+    const what = dxScrub(p.what, 60), evidence = dxScrub(p.evidence, 90), label = dxScrub(fix.label, 30); if(!what || !label || !/[가-힣]/.test(what) || !/[가-힣]/.test(label)) return; // 학습자 화면 문구는 한국어
+    out.push({ what, evidence, severity: Math.max(1, Math.min(3, Math.round(Number(p.severity)) || 1)), fix: { action, label, params }, src: "ai" }); });
+  return { items: out, praise: dxScrub(j && j.praise, 60), note: String((j && j.note) || "").slice(0, 60) };
+}
+async function dxRun(force){ // AI 정밀 진단 — 하루 1회 자동(재료가 바뀌었을 때) + ↻ 수동. 실패는 조용히
+  if(_dxBusy || dxThin()) return false;
+  if(!force && _dxFailAt && Date.now() - _dxFailAt < 30 * 60000) return false; // 검수 [20]: 실패 뒤 30분은 자동 재호출 안 함
+  let hasKey = false; try { hasKey = !!(localStorage.getItem(LS_KEY) || syncCfg().on); } catch(e){}
+  if(!hasKey) return false;
+  const sig = dxSig(), d = state.diagV4;
+  if(!force){ if(streaming()) return false; if(d && d.at && (new Date(Number(d.at)).toDateString() === new Date().toDateString() || (d.sig === sig && Date.now() - Number(d.at) < 7 * DAY_MS))) return false; }
+  _dxBusy = true; _dxNote = ""; dxRender();
+  try {
+    let out = "";
+    for await (const c of streamClaude({ system: DX_SYSTEM, messages: [{ role: "user", content: dxBrief() }], light: true, maxTokens: 700 })) out += c;
+    const m = out.match(/\{[\s\S]*\}/); if(!m) throw new Error("no json");
+    const v = dxValidate(JSON.parse(m[0]));
+    state.diagV4 = { at: Date.now(), sig, items: v.items, praise: v.praise, note: v.note, model: resolveModel("light") }; saveState();
+  } catch(e){ _dxFailAt = Date.now(); _dxNote = "AI 진단은 잠시 뒤에 — 앱이 계산한 결과만 보여 드려요"; }
+  finally { _dxBusy = false; dxRender(); }
+  return true;
+}
+function dxMerge(){ const loc = dxLocalProblems(); const d = state.diagV4; const key = (p) => p.fix.action + "|" + ((p.fix.params || {}).tag || "");
+  let ai = (d && Array.isArray(d.items)) ? d.items : [];
+  if(ai.length && d.sig !== dxSig()){ ai = ai.map(p => { const l = loc.items.find(x => key(x) === key(p)); return l ? Object.assign({}, p, { evidence: l.evidence, severity: l.severity }) : null; }).filter(Boolean); } // 검수 [1][17]: 재료가 바뀐 뒤의 AI 항목은 지금도 있는 문제만, 수치는 앱 것(낡은 "밀린 카드 8개"가 남지 않게)
+  const seen = new Set(); const items = [];
+  ai.concat(loc.items).forEach(p => { const k = key(p); if(seen.has(k)) return; seen.add(k); items.push(p); }); // 같은 종류면 AI 문구 우선
+  items.sort((a, b) => b.severity - a.severity);
+  return { items: items.slice(0, 3), more: Math.max(0, items.length - 3) + loc.more, stats: loc.stats, praise: state.diagV4 ? state.diagV4.praise : "" };
+}
+function dxActHTML(acts){ return acts.map((a, i) => `<div class="dx-act"><span class="dx-n">${i + 1}</span><div class="dx-lbl"><div class="dx-t">${esc(a.label)}</div>${a.why ? `<div class="dx-why">${esc(a.why)}</div>` : ""}</div><button type="button" class="g-btn${i === 0 ? " primary" : ""}" data-dx-act="${esc(a.action)}" data-dx-params="${esc(JSON.stringify(a.params || {}))}">실행</button></div>`).join(""); }
+function dxRender(){
+  const head = document.getElementById("dx-head"), pb = document.getElementById("dx-problems"), ac = document.getElementById("dx-actions"); if(!head || !pb || !ac) return;
+  const d = new Date(); let streak = 0; try { streak = learnStats().streak; } catch(e){}
+  const dt = document.getElementById("dx-date"); if(dt) dt.textContent = `${d.getMonth() + 1}월 ${d.getDate()}일${streak ? ` · 연속 ${streak}일` : ""}${state.diagV4 && state.diagV4.at ? ` · AI 진단 ${jrDate(state.diagV4.at)}` : ""}`;
+  const thin = dxThin(); const rb = document.getElementById("dx-refresh"); if(rb){ rb.disabled = _dxBusy || thin; rb.textContent = _dxBusy ? "진단 중… (5~10초)" : "↻ 다시 진단"; rb.title = thin ? "채점 5회·복습 5회부터 AI 진단을 해요" : "AI 정밀 진단을 지금 다시 — 앱 계산은 항상 즉시"; }
+  if(thin){ const n = PRACTICE.length, m = dxHist(), due = srsDue().length, w = todayWord().base; pb.innerHTML = `<div class="dx-thin">아직 단정할 수 없어요 — 채점 ${n}회 · 복습 ${m}회. 5회부터 패턴이 보여요.</div>`; ac.innerHTML = dxActHTML([{ action: "sentences", label: `"${w}" 단어로 문장 3개 써 보기`, why: "첫 근거가 돼요", params: { word: w } }].concat(due ? [{ action: "review_short", label: `오늘 카드 ${due}장`, why: "복습 기록도 근거예요", params: {} }] : [])); return; }
+  const m = dxMerge();
+  pb.innerHTML = (m.items.length ? m.items.map(p => `<div class="dx-prob s${p.severity}"><div class="dx-what">${esc(p.what)}${p.src === "ai" ? ' <span class="dx-src" title="AI 정밀 진단">AI</span>' : ""}</div><div class="dx-ev">${esc(p.evidence)}</div></div>`).join("") : `<div class="dx-prob s0"><div class="dx-what">지금 막힌 데는 없어요</div><div class="dx-ev">밀린 복습 ${m.stats.overdue}개 · 흐름 ${esc(m.stats.trend)} · 연속 ${m.stats.streak}일</div></div>`)
+    + (m.more ? `<div class="dx-note">그 밖에 ${m.more}개 — <button type="button" class="dx-link" data-dx-more>📈 연습 기록</button>에서</div>` : "") + (m.praise ? `<div class="dx-praise">${esc(m.praise)}</div>` : "") + (_dxNote ? `<div class="dx-note">${esc(_dxNote)}</div>` : "");
+  ac.innerHTML = dxActHTML(m.items.length ? m.items.map(p => ({ action: p.fix.action, label: p.fix.label, why: p.what, params: p.fix.params })) : [{ action: "keep", label: "지금 리듬 유지 — 새 단어 하나", why: "막힌 데가 없어요", params: {} }]);
+}
+function dxAct(action, params){ // [실행] — 기존 기능으로 바로. 발화는 "~요청" 명사형
+  params = params || {};
+  const targetKey = action === "write_tag" ? ((params.word && WORDS.some(w => w.base === params.word)) ? params.word : dxWordForTag(String(params.tag || ""))) : action === "sentences" ? ((params.word && WORDS.some(w => w.base === params.word)) ? params.word : dxWordFewest()) : ["exam_wrong", "exam_recall", "pron", "check"].includes(action) ? GLOBAL_ID : action === "keep" ? pickTodayWord() : null;
+  if(targetKey && ACTIVE.has((state.chats || {})[targetKey] || [])){ weToast("그 대화는 답변 중이에요 — ⏹로 먼저 멈춰 주세요"); return; } // 검수 [18]: 실행 대상 스레드가 배경에서 답을 쓰는 중이면 창을 닫기 전에 막는다
+  const lvl = (k) => { const l = lvLabel(effLevel(k)); return l ? l + " " : ""; };
+  if(action === "review_overdue" || action === "review_short"){ rvStartSession(action === "review_overdue" ? { overdueFirst: true, limit: 5 } : { limit: 3 }); _rvTab = "today"; renderReview(); const t = document.getElementById("rv-tabs"); if(t) t.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
+  if(action === "listen"){ if(params.text) speakMixed(params.text); return; }
+  if(action === "journal_srs"){ const jrNew = (state.journal || []).slice(-3).filter(x => !SRS.some(it => it.key === "journal|" + x.line)); const added = srsAdd(jrNew.map(x => ({ title: x.line, key: "journal|" + x.line, why: `"${x.w}" 대화에서 짚은 것`, drill: x.q ? `그때 질문: ${x.q}` : "" })), Date.now(), { kind: "manual", src: "journal" }); weToast(added ? `🧠 ${added}줄을 복습에 담았어요 — 내일부터 카드로 나와요` : "이미 복습에 있어요"); dxRender(); return; }
+  if(action === "level_down"){ const cur = myLv(); if(cur <= 1){ weToast("이미 가장 낮은 단계예요"); return; } if(!confirm(`학습 단계를 ${cur}단계에서 ${cur - 1}단계로 낮출까요? 모든 대화의 설명·문제 난이도가 바뀌어요.`)) return; setProfile({ lv: cur - 1 }); levelChanged(true); if(!ACTIVE.has(curChat())) renderChatLog(); dxRender(); weToast(`📉 한 칸 낮췄어요 — 지금 단계: ${cur - 1}단계`); return; }
+  closeReview();
+  if(action === "write_tag"){ const tag = String(params.tag || ""); const word = (params.word && WORDS.some(w => w.base === params.word)) ? params.word : dxWordForTag(tag); goWord(word); setThreadCfg(word, { mode: "we" }); learnNote("mode", word, { mode: "we" }); renderChatLog(); sendMainText(`"${word}" 단어를 활용한 ${lvl(word)}작문 문제 3개 요청 — 한 번에 하나씩, 특히 "${tag}" 유형이 드러나는 문장으로. 내가 답하면 다음 문제.`); return; }
+  if(action === "sentences"){ const word = (params.word && WORDS.some(w => w.base === params.word)) ? params.word : dxWordFewest(); goWord(word); startWriteMode("we", 3); return; }
+  if(action === "exam_wrong" || action === "exam_recall"){ goWord(GLOBAL_ID); startExam(action === "exam_wrong" ? "wrong" : "recall"); return; }
+  if(action === "pron"){ goWord(GLOBAL_ID); sendMainText(`"${String(params.text || "")}" 발음 안내 요청 — 소리 나는 대로와 「한글 소리」로.`); return; }
+  if(action === "check"){ goWord(GLOBAL_ID); sendMainText((state.plan && state.plan.at && Date.now() - Number(state.plan.at) < 18 * 3600000 ? "이번 주 점검 요청 — " : "이번 주 점검 요청 — [지난 점검]에서 정한 것을 했는지부터 짚고, ") + "최근 7일 기록·학습 일지·공부 습관을 근거로 잘된 것과 막힌 것, 다음 주에 할 일을 알려 주세요.", "", null, false, { planAfter: true }); return; }
+  if(action === "keep"){ goWord(pickTodayWord()); focusChatInput(); return; }
+}
+document.getElementById("review-modal").addEventListener("click", (e) => { // 진단실 위임 — 기존 #review-body 리스너는 손대지 않는다
+  const a = e.target.closest("[data-dx-act]"); if(a){ let pr = {}; try { pr = JSON.parse(a.dataset.dxParams || "{}"); } catch(err){} dxAct(a.dataset.dxAct, pr); return; }
+  if(e.target.closest("[data-dx-refresh]")){ dxRun(true); return; }
+  if(e.target.closest("[data-dx-more]")){ closeReview(); openPractice(); return; }
+});
+function openReview(){ _dxPrev = document.activeElement; rvStartSession(); _rvTab = "today"; renderReview(); document.getElementById("review-modal").classList.add("show"); modalBg.classList.add("show"); dxRender(); dxRun(false); setTimeout(() => { const f = document.querySelector("#review-modal [data-dx-act], #review-close"); if(f && document.getElementById("review-modal").classList.contains("show")) f.focus(); }, 0); } // v3.2 ③: 진단실 — 열면 문제·실행부터
+function closeReview(){ document.getElementById("review-modal").classList.remove("show"); modalBg.classList.remove("show"); if(_dxPrev && _dxPrev.focus && document.contains(_dxPrev)){ try { _dxPrev.focus(); } catch(e){} } _dxPrev = null; }
 document.getElementById("btn-review").addEventListener("click", openReview);
 document.getElementById("review-close").addEventListener("click", closeReview);
 document.getElementById("review-body").addEventListener("click", (e) => { if(e.target.closest("#review-make")) makeReview(); }); // 내역 탭 안에서 렌더되므로 위임
@@ -6662,7 +6983,7 @@ document.querySelector("aside.right").addEventListener("click", (e) => {
     return;
   }
   const sendBtn = e.target.closest("#wave-send");
-  if(sendBtn){ sendWave(); return; }
+  if(sendBtn){ sendWave(true); return; }
   if(e.target.closest("[data-ans]")){ // 📝답안/📖풀이 확인 (작문 연습 파도)
     const ansWv = state.waves.find(x => x.id === state.activeRight);
     if(ansWv) sendWaveText(ansWv, threadCfg(ansWv.id).mode === "ew" ? "풀이 보기" : "답안 보기");
@@ -6793,15 +7114,15 @@ function waveDone(wv){
       const room = wlog && wlog.classList.contains("has-room") ? { pb: wlog.style.paddingBottom, owner: wlog.dataset.room } : null; // v3.1: 전송 때 둔 여백을 새 로그에 되살려 keep이 잘리지 않게(완료 순간 점프 없음)
       renderRight();
       const nl = document.getElementById("wave-log");
-      if(nl){ if(room){ nl.classList.add("has-room"); nl.style.paddingBottom = room.pb; if(room.owner !== undefined) nl.dataset.room = room.owner; } nl.scrollTop = keep; roomFit(nl); } // v3.1: 완료 때도 움직이지 않는다
+      if(nl){ if(room){ nl.classList.add("has-room"); nl.style.paddingBottom = room.pb; if(room.owner !== undefined) nl.dataset.room = room.owner; } nl.scrollTop = keep; roomFit(nl); if(typeof moreBelowSync === "function") moreBelowSync("wave-log"); } // v3.1: 완료 때도 움직이지 않는다 · 검수 [6]: 파도 칸에도 ↓
     } else renderRightTabs();
   };
 }
-function sendWave(){
+function sendWave(viaButton){
   const wv = state.waves.find(x => x.id === state.activeRight);
   const inp = document.getElementById("wave-input");
   if(!wv || !inp) return;
-  if(ACTIVE.has(wv.msgs)){ abortThread(wv.msgs); return; } // 스트리밍 중엔 ⏹ 중단 (입력값 보존)
+  if(ACTIVE.has(wv.msgs)){ if(viaButton === true) abortThread(wv.msgs); else weToast("답이 끝나면 보낼 수 있어요 — 멈추려면 ⏹ 버튼"); return; } // 스트리밍 중: 버튼 = ⏹ 중단(입력값 보존) · Enter = 기다림(검수 [28])
   const text = inp.value.trim();
   if(!text) return;
   inp.value = "";
@@ -6829,10 +7150,11 @@ function waveExtra(wv){
 }
 
 /* 중앙 대화 */
-function sendMain(){
-  if(typeof ttsStopAll === "function") ttsStopAll(); if(typeof micCancelSend === "function") micCancelSend(); // v3.1: 새 전송·⏹ 때 읽기·자동 전송 중단
+function sendMain(viaButton){ // viaButton: ⏹ 중단은 버튼 클릭으로만(검수 [28]: 흐르는 중 다음 질문을 쳐 두다 Enter를 치면 답이 끊기던 것 — 보고된 "자꾸 멈춤"의 재현 조건)
   const cur = curChat();
-  if(ACTIVE.has(cur)){ abortThread(cur); return; } // 스트리밍 중엔 ⏹ 중단 버튼 (입력값은 보존)
+  if(ACTIVE.has(cur)){ if(viaButton === true){ if(typeof ttsStopAll === "function") ttsStopAll(); if(typeof micCancelSend === "function") micCancelSend(); abortThread(cur); } else weToast("답이 끝나면 보낼 수 있어요 — 멈추려면 ⏹ 버튼"); return; } // 스트리밍 중: 버튼 = ⏹ 중단(입력값 보존) · Enter = 기다림
+  if(typeof ttsStopAll === "function") ttsStopAll(); if(typeof micCancelSend === "function") micCancelSend(); // v3.1: 새 전송 때 읽기·자동 전송 중단
+  if(typeof _mic !== "undefined" && _mic.on) micFinish("send"); // v3.2 ⑤: ↑ = 마무리 — 중간 결과까지 입력칸에 올린 뒤 아래가 읽는다
   const inp = document.getElementById("chat-input");
   const text = inp.value.trim();
   const img = _pendImg; // v2.35: 첨부 이미지 — 텍스트 없이 이미지만도 전송 가능
@@ -6950,13 +7272,23 @@ document.addEventListener("keydown", (e) => { // 접근성: 창이 떠 있는 �
    받아쓰기가 기본(알아들은 글은 입력칸에 — 보내는 건 ↑). 🗣을 켜면 말이 끝난 1.5초 뒤 자동 전송(그 사이 취소·고치기), 답은 덩어리가 드러날 때마다 ko/en 목소리로 읽는다.
    처음 쓸 때 확인창(소리가 브라우저 회사 서버로 갈 수 있다)을 거친다. 지원 안 하는 브라우저·앱 안 브라우저는 버튼을 비활성 + 한국어 안내. ── */
 let _micLang = "", _micLangManual = false, _rec = null, _voiceMode = false, _micBase = "", _micSend = null;
-const VOICE_RULE_BASE = `\n\n[말하기 모드 — [발음 표기]·마크다운 규칙보다 우선하되 [기록] 채점 블록은 그대로] 학습자가 말로 묻고 답을 소리로 듣는다. 너는 소리를 듣지 못한다 — 받은 것은 음성 인식이 적은 글이다. 발음을 평가하지 않는다. 글이 어색하면 인식 오류일 수 있으니 한 줄로 되묻는다. 한국어로 말한 영어 단어는 한글로 적힌다(온=on, 더=the) — 이 대화의 단어로 헤아려 읽는다. 표·목록·굵게·제목을 쓰지 않는다. 빈 칭찬을 쓰지 않는다.`;
-function voiceRule(lvl){ const n = lvNum(lvl); if(n >= 1 && n <= 2) return VOICE_RULE_BASE + ` 1~2문장. 한 번에 새 소리(단어) 하나. 영어 뒤 「한글 소리」는 화면에 남긴다.`; if(n > 0 && n <= 4) return VOICE_RULE_BASE + ` 2~4문장. 한글 소리 표기는 새 단어에만.`; return VOICE_RULE_BASE + ` 3~5문장, 한 문장은 짧게. 영어 문장은 한 줄에 하나씩 따로 두고 바로 아랫줄에 한국어 뜻. IPA·한글 소리 표기는 생략한다(소리로 들려준다). 더 깊은 설명은 되물으면 한다.`; }
+const VOICE_RULE_BASE = `\n\n[말하기 모드 — [발음 표기]·마크다운 규칙보다 우선하되 [기록] 채점 블록은 그대로] 학습자는 말로 묻고, 네 답은 화면에 보이면서 동시에 소리로 읽힌다(한국어 목소리와 영어 목소리가 번갈아 읽는다). 그래서 이렇게 쓴다.
+① 설명은 한국어로. 영어 예문은 한 줄에 한 문장만 따로 두고, 바로 다음 줄에 한국어 뜻을 한 문장으로. 한국어 문장 안에 영어 문장을 끼워 넣지 않는다(단어 하나는 괜찮다).
+② 한국어 문장은 짧게(20자 안팎), 영어 문장은 8단어 안팎. 한 호흡에 하나.
+③ 소리로 읽을 수 없는 것은 쓰지 않는다: 표·목록·굵게·제목·이모지·괄호 설명·화살표·등호·빗금·약어(e.g., i.e., etc., vs). 대신 말로 푼다("예를 들어", "즉", "그리고", "또는").
+④ 너는 소리를 듣지 못한다 — 받은 것은 음성 인식이 적은 글이다. 발음을 평가하지 않는다. 한국어로 말한 영어 단어는 한글로 적힌다(온=on, 더=the) — 이 대화의 단어로 헤아려 읽는다. 글이 어색하면 "~라고 하신 거죠?" 한 줄로 되묻고 나머지는 그 뜻으로 이어 간다.
+⑤ 학습자가 영어로 말했으면: 알아들은 문장을 자연스러운 영어 한 문장으로 먼저 돌려주고(고칠 게 없으면 그대로), 다음 줄에 무엇이 달라졌는지 한국어 한 줄. 세 군데 이상 고치지 않는다 — 가장 중요한 하나.
+⑥ 마지막 줄은 늘 되묻기 한 줄: 학습자가 영어 한 문장으로 답할 수 있는 질문 하나(예·아니오 질문은 피한다). 그 앞줄까지 설명을 끝낸다.
+⑦ 빈 칭찬·인사·"~해 볼까요?"는 쓰지 않는다(아래 [말투] 규칙).`; // v3.2 ④: 한국어 설명 + 영어 한 줄 + 한국어 뜻 + 되묻기 — 목소리가 번갈아 읽기 좋은 구조
+function voiceRule(lvl){ const n = lvNum(lvl);
+  if(n >= 1 && n <= 2) return VOICE_RULE_BASE + `\n[이 학습자: 1~2단계] 전체 1~2문장에 되묻기 한 줄. 한 번에 새 영어 단어 하나. 영어 단어 뒤에는 「한글 소리」를 붙인다(예: on「온」) — 화면에 남고 소리는 그 한글로 읽힌다. 영어 예문은 3~5단어. 되묻기는 상황을 주고 묻는다("버스에 타고 있어요, 영어로 어떻게 말해요?").`;
+  if(n > 0 && n <= 4) return VOICE_RULE_BASE + `\n[이 학습자: 3~4단계] 전체 2~4문장에 되묻기 한 줄. 영어 예문 1~2개, 각 5~8단어. 「한글 소리」는 이 대화에서 처음 나온 단어에만. 되묻기는 예문을 조금 바꿔 말해 보게 한다(주어·시간·장소 하나만 바꿔서).`;
+  return VOICE_RULE_BASE + `\n[이 학습자: 5단계 이상] 전체 3~5문장에 되묻기 한 줄, 한 문장은 짧게. 영어 예문 2~3개까지. IPA·「한글 소리」는 쓰지 않는다(소리로 들려준다). 설명보다 예문을 앞세우고, 더 깊은 설명은 되물으면 한다. 되묻기는 학습자의 상황으로 옮겨 묻는다("오늘 어디에 있었어요? on을 써서요.").`; }
 function micSupported(){ return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
 function inAppBrowser(){ return /KAKAOTALK|NAVER\(inapp|Instagram|FBAN|FBAV|Line\//i.test(navigator.userAgent || ""); }
 function micLangNow(){ if(_micLangManual) return _micLang || "ko"; const m = threadCfg(state.activeWord).mode; return ["tutor", "we", "role"].includes(m) ? "en" : "ko"; } // 모드에 따라: 튜터·작문·상황극은 영어로 말하기
 function micConsent(){ try { if(localStorage.getItem("we_mic_ok_v1") === "1") return true; } catch(e){} const ok = confirm("🎙 말소리는 이 브라우저(크롬은 구글, 엣지는 마이크로소프트, 사파리는 애플)가 글로 바꿔 줘요 — 그 회사 서버로 소리가 전송될 수 있어요.\npAdo 서버에는 소리를 보내지도 저장하지도 않아요. 글로 바뀐 말은 직접 친 글처럼 AI(Anthropic)에 전해지고 대화 기록에 남아요(로그인한 계정이면 그 기록은 계정 기록으로 서버에 저장돼요).\n\n마이크를 쓸까요?"); if(ok){ try { localStorage.setItem("we_mic_ok_v1", "1"); } catch(e){} } return ok; }
-function micCancelSend(){ if(_micSend){ clearTimeout(_micSend); _micSend = null; const b = document.getElementById("mic-btn"); b.classList.remove("sending"); b.title = "말로 묻기 — 누르고 말하면 글로 바뀌어요(보내는 건 ↑)"; } }
+function micCancelSend(){ if(_micSend){ clearTimeout(_micSend); _micSend = null; const b = document.getElementById("mic-btn"); b.classList.remove("sending"); b.title = "말로 묻기 — 누르고 말하면 글로 바뀌어요. 끝내려면 '여기까지' 또는 🎙을 다시(보내는 건 ↑)"; } }
 function voiceSend(){ // 🗣 모드의 자동 전송 — 답이 흐르는 중이면 보내지 않는다(입력칸에 남긴다)
   micCancelSend();
   const inp = document.getElementById("chat-input"), text = inp.value.trim(); if(!text) return;
@@ -6964,53 +7296,239 @@ function voiceSend(){ // 🗣 모드의 자동 전송 — 답이 흐르는 중�
   inp.value = ""; autoGrow(inp); setDraft(state.activeWord, ""); clearImgPrev();
   sendMainText(text, "", null, "voice"); // typed:"voice" — 일지엔 남고, 함께 배우기엔 모으지 않는다(동의 문구에 음성이 없다)
 }
-function micToggle(){
-  micCancelSend();
-  if(_rec){ try { _rec.stop(); } catch(e){} return; }
+/* ── v3.2 ⑤ 🎙 뜸 들여도 기다리기 — 사용자: "고민하는 동안 입력이 끝나 버리면 흐름이 끊긴다. '여기까지'·'이상입니다' 또는 클릭으로 마무리하기 전엔 입력하지 않게".
+   마무리 신호('여기까지'·'이상입니다'·'끝'·"that's all"·🎙 다시 누름·[끝내기]·↑) 전까지 계속 듣는다 — 브라우저가 침묵으로 세션을 끊어도(크롬은 7~10초) 150ms 뒤 다시 듣고 확정된 글을 이어 붙인다.
+   입력칸에는 확정된 글만, 그 아래 한 줄(#mic-line)에 중간 결과를 흐리게 + 경과 시간 + [끝내기][취소]. 받아쓰기 모드: 마무리 = 듣기 중단(↑는 학습자). 🗣 모드: 마무리 = 곧 전송.
+   설정 '뜸 들여도 기다리기'(we_mic_hold_v1, 기기별)를 끄면 옛 방식(침묵이면 끝, 🗣은 1.5초 뒤 자동 전송). 안드로이드 크롬은 continuous가 사실상 안 돼 짧은 세션 재시작 루프, iOS는 재시작 3회 상한. 룩비하인드 없음. ── */
+const LS_MIC_HOLD = "we_mic_hold_v1";
+const MIC_MAX_MS = 10 * 60 * 1000, MIC_RESTART_GAP = 150; // 10분 상한(배터리·브라우저 회사 서버로 가는 소리) · onend→start 틈
+const MIC_ANDROID = /Android/i.test(navigator.userAgent || ""), MIC_IOS = /iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+function micHoldOn(){ try { return localStorage.getItem(LS_MIC_HOLD) !== "0"; } catch(e){ return true; } } // 기본 켬
+const _mic = { on: false, hold: true, ending: "", owner: null, lang: "ko", base: "", fin: "", tmp: "", startedAt: 0, sessions: 0, fastEnds: 0, netErrs: 0, timer: null, restartT: null, conf: 1, gotFinal: false, resumeNote: false }; // base=누적 확정 글 · fin=이번 세션 확정 · tmp=중간 · ending=끝내는 이유("" = 듣는 중)
+const MIC_END_STRONG = /(^|[\s,.!?…])(?:여기\s*까지(?:\s*(?:요|입니다|이에요|예요|야|임))?|이상\s*(?:입니다|이에요|이요|임|이예요)|끝\s*(?:입니다|이에요|이요)|that['’]?s\s+all)[\s.!?,。…~]*$/i; // 문장 끝에 붙어도 마무리 — 검수 [16]: '끝났어요'·"I'm done"·"the end" 같은 평범한 말은 여기서 뺐다(곡선 따옴표도 받는다)
+const MIC_END_WEAK = /^(?:이상|끝|done|finished|끝났어요|끝났습니다|끝이야|that['’]?s\s+it|i['’]?m\s+(?:done|finished)|the\s+end)[\s.!?,。…~]*$/i; // 혼자 말한 마지막 토막일 때만("The work is done"·"안 끝났어요"는 아님)
+function micJoin(a, b){ a = String(a || ""); b = String(b || ""); if(!a) return b; if(!b) return a; return a + ((/\s$/.test(a) || /^\s/.test(b)) ? "" : " ") + b; } // 토막 사이 띄어쓰기 — 기기마다 앞 공백을 붙이기도, 안 붙이기도 한다
+function micFinishSignal(text, lastSeg){ // 마무리 키워드 — 문장 끝에서만 인식하고 본문에서 뗀다. {done, text, kw}
+  const t = String(text || "").replace(/\s+$/, "");
+  const m = t.match(MIC_END_STRONG);
+  if(m) return { done: true, text: t.slice(0, m.index + m[1].length).replace(/[\s,.!?…~]+$/, ""), kw: m[0].trim() };
+  const seg = String(lastSeg == null ? t : lastSeg).trim();
+  if(seg && MIC_END_WEAK.test(seg) && t.toLowerCase().endsWith(seg.toLowerCase())) return { done: true, text: t.slice(0, t.length - seg.length).replace(/[\s,.!?…~]+$/, ""), kw: seg };
+  return { done: false, text: t, kw: "" };
+}
+function micStart(){
   if(!micSupported()){ weToast("이 브라우저는 음성 입력을 지원하지 않아요 — 크롬·엣지·사파리에서 열어 주세요"); return; }
   if(!micConsent()) return;
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const inp = document.getElementById("chat-input"), btn = document.getElementById("mic-btn"), owner = state.activeWord;
-  let r; try { r = new SR(); } catch(e){ weToast("마이크를 켤 수 없어요"); return; }
-  const lang = micLangNow();
-  r.lang = lang === "en" ? "en-US" : "ko-KR"; r.interimResults = true; r.continuous = false; r.maxAlternatives = 1;
-  _micBase = inp.value ? inp.value.replace(/\s+$/, "") + " " : "";
-  let conf = 1, gotFinal = false;
-  r.onresult = (ev) => { if(state.activeWord !== owner){ try { r.abort(); } catch(e){} return; } let fin = "", tmp = ""; for(let i = ev.resultIndex; i < ev.results.length; i++){ const t = ev.results[i][0].transcript; if(ev.results[i].isFinal){ fin += t; const c = ev.results[i][0].confidence; if(typeof c === "number" && c > 0) conf = Math.min(conf, c); } else tmp += t; } inp.value = _micBase + (fin || tmp); autoGrow(inp); if(fin){ gotFinal = true; _micBase = inp.value.replace(/\s+$/, "") + " "; } };
-  r.onerror = (ev) => { const c = ev && ev.error; if(c === "aborted") return; weToast(c === "not-allowed" || c === "service-not-allowed" ? "마이크 사용이 막혀 있어요 — 브라우저 주소창의 자물쇠(🔒)에서 마이크를 허용해 주세요(사파리는 받아쓰기 켜기)" : c === "audio-capture" ? "마이크를 찾지 못했어요" : c === "no-speech" ? "말소리를 못 들었어요 — 다시 눌러 말해 주세요" : c === "network" ? "음성 인식 서버에 연결할 수 없어요 — 인터넷을 확인해 주세요" : "음성 인식에 문제가 있었어요"); };
-  r.onend = () => { _rec = null; btn.classList.remove("on"); btn.setAttribute("aria-pressed", "false"); if(typeof mSyncInputHints === "function") mSyncInputHints(); else inp.placeholder = "이 단어에 대해 무엇이든 물어보세요 (Shift+Enter = 줄바꿈)"; setDraft(state.activeWord, inp.value);
-    if(_voiceMode && gotFinal && inp.value.trim().length >= 2 && !ACTIVE.has(curChat())){
-      if(conf < 0.6){ weToast("잘 못 알아들었을 수 있어요 — 확인하고 ↑로 보내 주세요"); inp.focus(); return; }
-      btn.classList.add("sending"); btn.title = "1.5초 뒤 보내요 — 누르면 취소"; _micSend = setTimeout(() => { _micSend = null; btn.classList.remove("sending"); voiceSend(); }, 1500); // 그 사이 고치거나 취소할 수 있다
-    } };
-  ttsStopAll();
-  _rec = r; btn.classList.add("on"); btn.setAttribute("aria-pressed", "true"); inp.placeholder = lang === "en" ? "듣고 있어요… (영어로 말해요)" : "듣고 있어요…";
-  try { r.start(); } catch(e){ _rec = null; btn.classList.remove("on"); btn.setAttribute("aria-pressed", "false"); weToast("마이크를 켤 수 없어요"); }
+  const inp = document.getElementById("chat-input"), btn = document.getElementById("mic-btn"), lang = micLangNow(), hold = micHoldOn();
+  Object.assign(_mic, { on: true, hold, ending: "", owner: state.activeWord, lang, base: inp.value ? inp.value.replace(/\s+$/, "") + " " : "", fin: "", tmp: "", startedAt: Date.now(), sessions: 0, fastEnds: 0, netErrs: 0, conf: 1, gotFinal: false, resumeNote: false });
+  ttsStopAll(); micCancelSend();
+  btn.classList.add("on"); btn.setAttribute("aria-pressed", "true"); document.body.classList.add("mic-on"); if(typeof micHintSync === "function") micHintSync(true);
+  const kw = lang === "en" ? "'that's all'" : "'여기까지'"; btn.title = hold ? (_voiceMode ? `듣는 중 — 누르면 끝내고 보내요(말로는 ${kw})` : `듣는 중 — 누르면 끝내요(말로는 ${kw})`) : "듣는 중 — 누르면 멈춰요"; // 검수 [2]: 안내는 말하는 언어를 따른다
+  inp.placeholder = hold ? (lang === "en" ? "말해요 — 끝내려면 'that's all' 또는 🎙" : "말해요 — 끝내려면 '여기까지' 또는 🎙") : (lang === "en" ? "듣고 있어요… (영어로 말해요)" : "듣고 있어요…");
+  micLineShow(); _mic.timer = setInterval(micTick, 1000);
+  { const sr = document.getElementById("mic-sr"); if(sr) sr.textContent = hold ? `듣는 중 — 끝내려면 ${kw}라고 말하거나 🎙을 다시 눌러요` : "듣는 중"; } // 검수 [30]: 읽어 주기는 상태가 바뀔 때 한 줄만(매초 전체 줄을 읽지 않게)
+  micSession();
 }
+function micSession(){ // 한 번의 인식 세션 — hold면 onend에서 다시 부른다(브라우저가 침묵으로 끊어도 학습자는 모른다)
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition; let r;
+  try { r = new SR(); } catch(e){ micFinish("fail"); weToast("마이크를 켤 수 없어요"); return; }
+  r.lang = _mic.lang === "en" ? "en-US" : "ko-KR"; r.interimResults = true; r.maxAlternatives = 1;
+  r.continuous = _mic.hold && !MIC_ANDROID; // PC·iOS: 긴 세션(재시작 적음) · 안드로이드 크롬: 짧은 세션 + 재시작 루프
+  const t0 = Date.now(); _mic.sessions++;
+  r.onresult = (ev) => {
+    if(_rec !== r || _mic.ending === "voice") return; // 검수 [5][15]: 키워드로 마무리한 뒤 늦게 오는 결과는 버린다(같은 글이 두 번 붙지 않게)
+    let fin = "", tmp = "", lastSeg = "";
+    for(let i = 0; i < ev.results.length; i++){ // resultIndex가 아니라 0부터 전부 — 같은 결과를 다시 보내는 기기라도 한 세션 안에서는 중복이 생기지 않는다
+      const res = ev.results[i], t = res[0].transcript;
+      if(res.isFinal){ fin = micJoin(fin, t); lastSeg = t; const c = res[0].confidence; if(typeof c === "number" && c > 0) _mic.conf = Math.min(_mic.conf, c); } else tmp = micJoin(tmp, t);
+    }
+    _mic.fin = fin; _mic.tmp = tmp; if(fin) _mic.gotFinal = true;
+    if(fin && _mic.hold){ const sig = micFinishSignal(micJoin(_mic.base, fin), lastSeg); if(sig.done){ _mic.base = sig.text; _mic.fin = ""; _mic.tmp = ""; micPaint(); micFinish("voice"); return; } }
+    micPaint();
+  };
+  r.onerror = (ev) => { const c = ev && ev.error; if(c === "aborted") return;
+    if(c === "no-speech"){ if(!_mic.hold) weToast("말소리를 못 들었어요 — 다시 눌러 말해 주세요"); return; } // hold: 침묵은 오류가 아니다 — onend에서 그냥 다시 듣는다
+    if(c === "not-allowed" || c === "service-not-allowed"){ _mic.ending = "error"; weToast("마이크 사용이 막혀 있어요 — 브라우저 주소창의 자물쇠(🔒)에서 마이크를 허용해 주세요(사파리는 받아쓰기 켜기)"); return; }
+    if(c === "audio-capture"){ _mic.ending = "error"; weToast("마이크를 찾지 못했어요"); return; }
+    if(c === "network"){ if(++_mic.netErrs >= 2){ _mic.ending = "error"; weToast("음성 인식 서버에 연결할 수 없어요 — 인터넷을 확인해 주세요"); } return; } // 한 번은 재시작으로 넘긴다
+    _mic.ending = "error"; weToast("음성 인식에 문제가 있었어요"); };
+  r.onend = () => {
+    if(_rec !== r) return;
+    const all = micJoin(_mic.base, _mic.fin).replace(/\s+$/, ""); _mic.base = all + (all ? " " : ""); _mic.fin = ""; // 이번 세션 확정분을 누적 — 다음 세션이 이어 붙는다
+    _mic.fastEnds = (Date.now() - t0 < 600) ? _mic.fastEnds + 1 : 0;
+    const tooLong = Date.now() - _mic.startedAt >= MIC_MAX_MS, iosCap = MIC_IOS && _mic.sessions >= 4;
+    if(_mic.hold && !_mic.ending && !tooLong && !iosCap && _mic.fastEnds < 3 && state.activeWord === _mic.owner){
+      _rec = null; _mic.restartT = setTimeout(micSession, MIC_RESTART_GAP); micPaint(); return; // 학습자가 끝내지 않았다 → 계속 듣는다
+    }
+    if(!_mic.ending){ _mic.ending = tooLong ? "timeout" : iosCap ? "ios" : _mic.fastEnds >= 3 ? "error" : "end"; if(_mic.fastEnds >= 3) weToast("마이크가 계속 끊겨요 — 다른 앱이 마이크를 쓰고 있는지 확인해 주세요"); }
+    micDone();
+  };
+  _rec = r;
+  try { r.start(); } catch(e){ _rec = null; if(_mic.sessions > 1 && !_mic.ending){ _mic.restartT = setTimeout(micSession, 400); } else { micFinish("fail"); weToast("마이크를 켤 수 없어요"); } }
+}
+function micTick(){ // 1초마다: 경과 시간 · 10분 상한 · 다른 대화로 옮겼는지
+  if(!_mic.on) return;
+  if(state.activeWord !== _mic.owner){ micFinish("leave"); return; }
+  if(Date.now() - _mic.startedAt >= MIC_MAX_MS){ micFinish("timeout"); return; }
+  micPaint();
+}
+function micFinish(reason){ // "voice"|"click"|"send"|"cancel"|"edit"|"hidden"|"leave"|"timeout"|"fail"
+  if(!_mic.on) return false;
+  _mic.ending = reason; if(_mic.restartT){ clearTimeout(_mic.restartT); _mic.restartT = null; }
+  const r = _rec; if(!r){ micDone(); return true; }
+  if(reason === "voice" || reason === "click"){ try { r.stop(); } catch(e){ micDone(); } } // stop: 말꼬리의 마지막 확정을 받은 뒤 onend → micDone
+  else { try { r.abort(); } catch(e){} micDone(); } // abort: 지금 당장 — 늦게 오는 onresult/onend는 _rec 불일치로 버려진다
+  return true;
+}
+function micDone(){
+  if(!_mic.on) return;
+  const inp = document.getElementById("chat-input"), btn = document.getElementById("mic-btn");
+  const text = micJoin(micJoin(_mic.base, _mic.fin), _mic.tmp).replace(/\s+$/, ""), owner = _mic.owner, reason = _mic.ending || "end"; // 확정이 안 온 중간 결과도 글로 올린다(iOS·abort 직후)
+  _mic.on = false; _rec = null; clearInterval(_mic.timer); _mic.timer = null; if(_mic.restartT){ clearTimeout(_mic.restartT); _mic.restartT = null; }
+  btn.classList.remove("on"); btn.setAttribute("aria-pressed", "false"); btn.title = "말로 묻기 — 누르고 말하면 글로 바뀌어요. 끝내려면 '여기까지' 또는 🎙을 다시(보내는 건 ↑)"; document.body.classList.remove("mic-on"); micLineHide(); { const sr = document.getElementById("mic-sr"); if(sr) sr.textContent = "듣기를 끝냈어요"; } if(typeof micHintSync === "function") micHintSync(false);
+  if(typeof mSyncInputHints === "function") mSyncInputHints(); else inp.placeholder = "이 단어에 대해 무엇이든 물어보세요 (Shift+Enter = 줄바꿈)";
+  if(state.activeWord === owner){ inp.value = text; autoGrow(inp); } setDraft(owner, text); // 다른 대화로 옮겼으면 원래 대화의 임시 글로만 남긴다
+  if(reason === "timeout") weToast("10분이 지나 듣기를 멈췄어요 — 말한 글은 남아 있어요");
+  else if(reason === "ios") weToast("아이폰은 듣기가 스스로 멈출 수 있어요 — 🎙을 다시 눌러 이어 말해요");
+  else if(reason === "edit") weToast("고치기 시작해서 듣기를 멈췄어요");
+  else if(reason === "hidden") _mic.resumeNote = true;
+  if(reason === "voice" || reason === "click"){
+    if(!text.trim()){ weToast("말한 내용이 없어요 — 듣기만 멈췄어요"); return; } // 키워드만 말함
+    if(_voiceMode && state.activeWord === owner){ if(_mic.conf < 0.6){ weToast("잘 못 알아들었을 수 있어요 — 확인하고 ↑로 보내 주세요"); inp.focus(); return; } voiceSend(); } // 🗣: 마무리 = 전송
+  } else if(reason === "end" && !_mic.hold && _voiceMode && _mic.gotFinal && text.trim().length >= 2 && !ACTIVE.has(curChat())){ // 설정 끔 = 옛 방식(침묵 1.5초 자동)
+    if(_mic.conf < 0.6){ weToast("잘 못 알아들었을 수 있어요 — 확인하고 ↑로 보내 주세요"); inp.focus(); return; }
+    btn.classList.add("sending"); btn.title = "1.5초 뒤 보내요 — 누르면 취소"; _micSend = setTimeout(() => { _micSend = null; btn.classList.remove("sending"); voiceSend(); }, 1500);
+  }
+}
+function micPaint(){ const inp = document.getElementById("chat-input"); if(!_mic.on) return; if(state.activeWord !== _mic.owner){ micFinish("leave"); return; } // 검수 [21]: 옮긴 대화의 입력칸에 쓰지 않는다
+  const shown = micJoin(_mic.base, _mic.fin); if(inp.value !== shown){ inp.value = shown; autoGrow(inp); } // 확정분만 입력칸에
+  const sec = Math.floor((Date.now() - _mic.startedAt) / 1000), mm = Math.floor(sec / 60), ss = String(sec % 60).padStart(2, "0");
+  const kw = _mic.lang === "en" ? "'that's all'" : "'여기까지'";
+  const st = document.getElementById("mic-st"), tm = document.getElementById("mic-tmp");
+  if(st) st.textContent = _mic.hold ? `듣는 중 ${mm}:${ss} · 끝내려면 ${kw} 또는 🎙` : `듣는 중 ${mm}:${ss}`;
+  if(tm && tm.textContent !== _mic.tmp) tm.textContent = _mic.tmp; }
+function micLineShow(){ const l = document.getElementById("mic-line"); if(l) l.hidden = false; micPaint(); }
+function micLineHide(){ const l = document.getElementById("mic-line"); if(l) l.hidden = true; const tm = document.getElementById("mic-tmp"); if(tm) tm.textContent = ""; }
+function micToggle(){ micCancelSend(); if(_mic.on){ micFinish("click"); return; } micStart(); }
 function micLangToggle(){ _micLangManual = true; _micLang = micLangNow() === "en" ? "ko" : "en"; micLangSync(); weToast(_micLang === "en" ? "🎙 영어로 알아들어요 — 발음 연습에 좋아요(점수는 아니에요)" : "🎙 한국어로 알아들어요"); }
 function micLangSync(){ const b = document.getElementById("mic-lang"); if(!b) return; const en = micLangNow() === "en"; b.textContent = en ? "영" : "한"; b.title = en ? "말할 언어 (지금: 영어) — 누르면 한국어로" : "말할 언어 (지금: 한국어) — 누르면 영어로"; }
 function voiceModeSet(on){
   _voiceMode = !!on; const b = document.getElementById("voice-mode"); b.classList.toggle("on", _voiceMode); b.setAttribute("aria-pressed", _voiceMode ? "true" : "false"); document.body.classList.toggle("voice-on", _voiceMode);
-  if(_voiceMode){ try { if("speechSynthesis" in window){ speechSynthesis.speak(new SpeechSynthesisUtterance("")); const vs = speechSynthesis.getVoices(); if(vs.length && !vs.some(v => String(v.lang).indexOf("ko") === 0)) weToast("이 기기에는 한국어 목소리가 없어 영어 문장만 읽어요"); } } catch(e){} } // 사파리: 첫 재생은 손가락이 닿은 안에서
+  if(_voiceMode){ try { if("speechSynthesis" in window){ speechSynthesis.speak(new SpeechSynthesisUtterance("")); const vs = ttsVoices(); if(vs.length && !vs.some(v => ttsNormLang(v.lang).indexOf("ko") === 0)) weToast("이 기기에는 한국어 목소리가 없어 영어 문장만 읽어요"); else if(!localStorage.getItem("we_tts_pick_note_v1")){ localStorage.setItem("we_tts_pick_note_v1", "1"); setTimeout(() => weToast("🗣 목소리는 ⚙️ 설정에서 고를 수 있어요"), 2600); } } } catch(e){} } // 사파리: 첫 재생은 손가락이 닿은 안에서 · v3.2: 목소리 고르는 곳 안내 1회
   else { ttsStopAll(); micCancelSend(); }
   micLangSync();
-  weToast(_voiceMode ? "🗣 말하기 튜터 켬 — 말이 끝나면 1.5초 뒤 보내고, 답을 소리로 읽어 줘요" : "🗣 말하기 튜터 끔");
+  weToast(_voiceMode ? (micHoldOn() ? `🗣 말하기 튜터 켬 — ${micLangNow() === "en" ? "'that's all'" : "'여기까지'"}라고 하거나 🎙을 다시 누르면 보내고, 답을 소리로 읽어 줘요` : "🗣 말하기 튜터 켬 — 말이 끝나면 1.5초 뒤 보내고, 답을 소리로 읽어 줘요") : "🗣 말하기 튜터 끔");
 }
-/* 읽어 주기 큐 — 덩어리마다 ko/en으로 나눠 차례로. ⏹·새 전송·마이크 시작·화면 전환·숨김 때 멈춘다 */
-const _tts = { q: [] };
-function ttsStopAll(){ try { if("speechSynthesis" in window) speechSynthesis.cancel(); } catch(e){} _tts.q = []; document.querySelectorAll(".tts-btn.speaking, .sg-word.speaking").forEach(x => x.classList.remove("speaking")); }
-function speakPlain(md){ // 읽을 글 정제: 코드·표·'당신:'·✗ 줄·URL·IPA(/…/)·「한글 소리」·마크다운 기호·이모지 제거
-  return String(md || "").replace(/```[\s\S]*?```/g, " ").split("\n").filter(l => !/^\s*\|/.test(l) && !/^\s*(?:당신|학습자|나)\s*:/.test(l) && !/[✗❌✕]/.test(l)).join("\n")
-    .replace(/https?:\/\/\S+|www\.\S+/gi, " ").replace(/\/[^\/\n]{2,60}\//g, (m) => /[ˈˌːəɪʊɒæʃʒθðŋɑɔɛʌɜɡɹ]/.test(m) ? " " : m).replace(/「[^」]*」/g, " ").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_#>`|]+/g, " ").replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, " ").replace(/[ \t]+/g, " ").trim();
+/* ── v3.2 ④ 읽어 주기 — 사용자: "튜터 말하기가 매우 어색하다. 한글과 영문을 자연스럽게 오가는 새 목소리와 말투로".
+   ① 목소리는 이름이 아니라 점수표로 고른다(Online/Natural·Neural·Enhanced·Google 우선 — 전엔 localService 우선이라 엣지의 SunHi 대신 기계음 Heami를 골랐다). ko를 먼저 고르고 같은 성별의 en을 짝지어 한 튜터처럼.
+   ② 문장 단위로 줄 세우고 사이에 쉼(ko→en 250ms · en→ko 뜻 350~600ms(단계별) · 되묻기 앞 500ms), 콜백이 안 오는 결함(크롬 Windows 2025-04)은 감시 타이머가 넘긴다.
+   ③ 읽기 전처리 ttsPrep: 「한글 소리」는 영어 단어 자리에 넣어 읽고(the「더」를 → 더를), = → ·/ 는 쉼, e.g.→예를 들어, 이모지·줄머리 기호·밑줄 빈칸 처리. 보이는 글은 건드리지 않는다.
+   ④ 학습자가 ⚙️ 설정에서 목소리를 고르고 들어 본다(we_tts_voice_v1 — 기기별, 동기화·이사 코드 제외). ── */
+const TTS_LANG = { ko: "ko-KR", en: "en-US" };
+const TTS_NAMES = { ko: ["SunHi", "InJoon", "Google 한국의", "Yuna", "Sora", "Suhyun", "ko-kr-x", "Korean"], en: ["Aria", "Jenny", "Guy", "Christopher", "Michelle", "Eric", "Google US English", "Samantha", "Ava", "Zoe", "Allison", "Evan", "Tom", "Nicky", "en-us-x", "English (United States)"] }; // 앞일수록 선호(부분 일치)
+const TTS_ROBOT = /Heami|Zira|David|Mark|eSpeak|Server Speech|compact|Fred|Albert|Bad News|Bells|Zarvox|Trinoids|Bubbles|Boing|Cellos|Whisper|Wobble|Junior|Ralph|Kathy/i; // 기계음·장난 목소리
+const TTS_KID = /\bAna\b/; // 아이 목소리(엣지 Ana) — 튜터로 부적합
+const TTS_GENDER = { f: /SunHi|Aria|Jenny|Michelle|Yuna|Sora|Suhyun|Samantha|Ava|Zoe|Allison|Nicky|Zira|Heami|Google 한국의|Google US English/i, m: /InJoon|Guy|Christopher|Eric|Evan|Tom|Aaron|David|Mark/i };
+function ttsNormLang(l){ return String(l || "").replace("_", "-").toLowerCase(); } // 안드로이드 ko_KR → ko-kr
+function ttsVoiceName(v){ const n = String((v && v.name) || ""); return (/undefined/.test(n) || !n) ? String((v && v.voiceURI) || "").replace(/^urn:[^:]*:/, "") : n; } // 엣지 150 결함(name이 undefined) — voiceURI에서 복원
+function ttsTier(v){ const n = ttsVoiceName(v); if(TTS_ROBOT.test(n)) return "robot"; if(/Natural|Neural|Enhanced|Premium|network|Google/i.test(n)) return "natural"; return "ok"; }
+function ttsTierKo(t){ return t === "natural" ? "자연스러움" : t === "robot" ? "기계음" : "보통"; }
+function ttsPickVoice(list, lang, saved, opts){ // 순수 함수 — 점수표. 반환 {voice, score, tier, name} | null
+  opts = opts || {}; const online = opts.online !== false; const want = TTS_LANG[lang].toLowerCase();
+  const scored = (list || []).map(v => {
+    const n = ttsVoiceName(v), l = ttsNormLang(v.lang); let sc = 0;
+    if(l === want) sc += 40; else if(l.indexOf(lang) === 0) sc += 20; else return null; // 언어가 다르면 후보 아님
+    if(saved && (v.voiceURI === saved || n === saved || v.name === saved)) sc += 1000; // 학습자가 고른 것
+    if(/Natural|Neural/i.test(n)) sc += 50; else if(/Enhanced|Premium/i.test(n)) sc += 35; else if(/network/i.test(n)) sc += 15;
+    const i = TTS_NAMES[lang].findIndex(k => n.toLowerCase().indexOf(k.toLowerCase()) >= 0); if(i >= 0) sc += Math.max(5, 30 - i * 3);
+    if(TTS_ROBOT.test(n)) sc -= 40; if(TTS_KID.test(n)) sc -= 60;
+    if(v.localService) sc += 5; if(!online && !v.localService) sc -= 100; if(!online && v.localService) sc += 30; // 오프라인이면 기기 목소리
+    if(opts.pairWith && TTS_GENDER[opts.pairWith] && TTS_GENDER[opts.pairWith].test(n)) sc += 8; // 한 튜터처럼 — ko와 같은 성별의 en
+    if(v.default) sc += 1;
+    return { voice: v, score: sc, tier: ttsTier(v), name: n };
+  }).filter(Boolean).sort((x, y) => y.score - x.score);
+  return scored[0] || null;
 }
+function ttsGenderOf(v){ const n = ttsVoiceName(v); return TTS_GENDER.f.test(n) ? "f" : TTS_GENDER.m.test(n) ? "m" : ""; }
+let _ttsVoiceCache = null;
+function ttsVoices(){ try { if(!("speechSynthesis" in window)) return []; const vs = speechSynthesis.getVoices() || []; if(vs.length) _ttsVoiceCache = vs; return _ttsVoiceCache || vs; } catch(e){ return _ttsVoiceCache || []; } }
+function ttsSaved(){ try { const j = JSON.parse(localStorage.getItem("we_tts_voice_v1") || "{}"); return { ko: String(j.ko || ""), en: String(j.en || "") }; } catch(e){ return { ko: "", en: "" }; } }
+function ttsShortName(v){ return ttsVoiceName(v).replace(/^Microsoft\s+/, "").replace(/\s+Online\s*\(Natural\)/i, "").replace(/\s+-\s+.*$/, "").replace(/\s*\((?:Natural|Enhanced|Premium)\)/gi, "").trim(); }
+function ttsVoiceLabel(v){ const t = ttsTier(v); return `${ttsShortName(v)} — ${ttsTierKo(t)}${v.localService ? "" : " · 인터넷 필요"}`; }
+function ttsRate(lang, tier){ const n = lvNum(globalLevel()); if(lang === "ko") return tier === "natural" ? 1.05 : 1.0; let r = (n >= 1 && n <= 2) ? 0.85 : (n > 0 && n <= 4) ? 0.9 : 0.95; if(tier === "natural") r += 0.03; return Math.round(r * 100) / 100; }
+const _tts = { q: [], cur: null, timer: 0, koGender: "" }; // q: {u, gapBefore} — 참조를 쥐고 있어 크롬 GC 끊김도 막는다
+function ttsStopAll(){ clearTimeout(_tts.timer); _tts.q = []; if(_tts.cur){ try { _tts.cur.onend = null; _tts.cur.onerror = null; } catch(e){} } _tts.cur = null; try { if("speechSynthesis" in window) speechSynthesis.cancel(); } catch(e){} document.querySelectorAll(".tts-btn.speaking, .sg-word.speaking, .voice-try.speaking").forEach(x => x.classList.remove("speaking")); }
+function ttsEnqueue(text, lang, gapBefore){ if(!("speechSynthesis" in window) || !text) return; const u = new SpeechSynthesisUtterance(text);
+  const pick = ttsPickVoice(ttsVoices(), lang, ttsSaved()[lang], { online: navigator.onLine !== false, pairWith: lang === "en" ? _tts.koGender : "" });
+  if(pick){ try { u.voice = pick.voice; } catch(e){} u.lang = pick.voice.lang || TTS_LANG[lang]; if(lang === "ko") _tts.koGender = ttsGenderOf(pick.voice); } else u.lang = TTS_LANG[lang];
+  u.rate = ttsRate(lang, pick && pick.tier); u.pitch = 1; u.volume = 1;
+  _tts.q.push({ u, gapBefore: gapBefore || 0 }); if(!_tts.cur) ttsNext(); }
+function ttsNext(){ clearTimeout(_tts.timer); const it = _tts.q.shift(); if(!it){ _tts.cur = null; return; } _tts.cur = it.u;
+  const go = () => { if(_tts.cur !== it.u) return; let ended = false; const fin = () => { if(ended) return; ended = true; if(_tts.cur !== it.u) return; clearTimeout(_tts.timer); setTimeout(ttsNext, 0); }; /* 검수 [22]: 낡은 콜백은 새 큐를 건드리지 않는다 */ it.u.onend = it.u.onerror = fin;
+    const est = Math.max(1500, it.u.text.length * (String(it.u.lang).indexOf("ko") === 0 ? 120 : 75) / (it.u.rate || 1)) + 1500;
+    _tts.timer = setTimeout(() => { let sp = false; try { sp = speechSynthesis.speaking; } catch(e){} if(!sp) fin(); else _tts.timer = setTimeout(() => { try { speechSynthesis.cancel(); } catch(e){} fin(); }, est); }, est); // 콜백이 안 오는 결함·멈춤 감시
+    try { speechSynthesis.speak(it.u); } catch(e){ fin(); } };
+  if(it.gapBefore) _tts.timer = setTimeout(go, it.gapBefore); else go(); }
+const TTS_ABBR_KO = [[/\be\.g\./gi, "예를 들어"], [/\bi\.e\./gi, "즉"], [/\betc\.?/gi, "등"], [/\bvs\.?/gi, "대"]], TTS_ABBR_EN = [[/\be\.g\./gi, "for example"], [/\bi\.e\./gi, "that is"], [/\betc\.?/gi, "and so on"], [/\bvs\.?/gi, "versus"]];
+function ttsPrep(md, lang){ // 읽을 글 정제(보이는 글은 그대로) — 코드·표·'당신:'·✗ 줄·URL·IPA(/…/)·마크다운·이모지 제거, 「한글 소리」는 영어 자리에, 기호는 쉼으로
+  let t = String(md || "").replace(/```[\s\S]*?```/g, " ").split("\n").filter(l => !/^\s*\|/.test(l) && !/^\s*(?:당신|학습자|나)\s*:/.test(l) && !/[✗❌✕]/.test(l)).map(l => l.replace(/^\s*(?:[-*+•]|\d+[.)]|#{1,6}|>)\s+/, "")).join("\n");
+  t = t.replace(/https?:\/\/\S+|www\.\S+/gi, " ").replace(/\/[^\/\n]{2,60}\//g, (m) => /[ˈˌːəɪʊɒæʃʒθðŋɑɔɛʌɜɡɹ]/.test(m) ? " " : m)
+    .replace(/([A-Za-z][A-Za-z'’-]*)\s*「([^」]*)」/g, "$2").replace(/「[^」]*」/g, " ") // the「더」를 → 더를 · 홀로 선 「…」는 지운다
+    .replace(/([가-힣]+)\(([A-Za-z][A-Za-z' -]*)\)/g, "$1") // 온(on) → 온
+    .replace(/_{2,}/g, lang === "en" ? " blank " : " 빈칸 ").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_#>`|]+/g, " ")
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F900}-\u{1F9FF}\u{2B00}-\u{2BFF}]\uFE0F?|\uFE0F|\u200D/gu, " ")
+    .replace(/([A-Za-z])\/(?=[A-Za-z])/g, "$1, ").replace(/\s*[→⇒➜⟶—–]\s*/g, ", ").replace(/\s*[=＝]\s*/g, lang === "en" ? " equals " : " 는 ").replace(/·/g, ", ").replace(/…/g, ". ").replace(/[“”"‘’]/g, "")
+    .replace(/\(/g, ", ").replace(/\)/g, ", ");
+  (lang === "en" ? TTS_ABBR_EN : TTS_ABBR_KO).forEach(p => { t = t.replace(p[0], p[1]); });
+  return t.replace(/[ \t]+/g, " ").replace(/\s*,\s*,+/g, ", ").replace(/\n[ \t]+/g, "\n").trim();
+}
+function speakPlain(md){ return ttsPrep(md); } // 옛 이름 호환
 function ttsRuns(plain){ // 영어 "문장"(3단어 이상이거나 문장부호로 끝남)만 en 목소리로 — 한국어 문장 속 짧은 영어 단어(on은, the를)는 한국어 흐름대로 읽는다
   const raw = []; const re = /[A-Za-z][A-Za-z0-9' ,.!?;:-]*[A-Za-z0-9.!?]|[A-Za-z]|[^A-Za-z]+/g; let m; // 한 글자 영어(a·I)도 버리지 않는다(한국어 흐름으로 읽힌다)
   while((m = re.exec(plain))){ const t = m[0].trim(); if(!t) continue; const enWords = (t.match(/[A-Za-z][A-Za-z'-]*/g) || []).length; const en = /^[A-Za-z]/.test(t) && (enWords >= 3 || (enWords >= 1 && /[.!?]$/.test(t) && enWords >= 2)); raw.push({ lang: en ? "en" : "ko", text: m[0] }); }
-  const runs = []; raw.forEach(r => { if(runs.length && runs[runs.length - 1].lang === r.lang) runs[runs.length - 1].text += r.text; else runs.push({ lang: r.lang, text: r.text }); }); // 원래 글자 그대로 이어 붙인다(a는·in/on/at이 벌어지지 않게)
+  const runs = []; raw.forEach(r => { if(runs.length && runs[runs.length - 1].lang === r.lang) runs[runs.length - 1].text += r.text; else runs.push({ lang: r.lang, text: r.text }); }); // 원래 글자 그대로 이어 붙인다(a는·in, on, at이 벌어지지 않게)
   return runs.map(r => ({ lang: r.lang, text: r.text.trim() })).filter(r => /[A-Za-z가-힣0-9]/.test(r.text)); }
-function ttsEnqueue(text, lang){ if(!("speechSynthesis" in window) || !text) return; const u = new SpeechSynthesisUtterance(text); u.lang = lang === "en" ? "en-US" : "ko-KR"; u.rate = lang === "en" ? (lvNum(globalLevel()) <= 2 && lvNum(globalLevel()) > 0 ? 0.8 : 0.95) : 1.0; const vs = speechSynthesis.getVoices(); const v = vs.find(x => x.lang === u.lang && x.localService) || vs.find(x => x.lang === u.lang) || vs.find(x => String(x.lang).indexOf(lang) === 0); if(v) u.voice = v; _tts.q.push(u); u.onend = () => { const i = _tts.q.indexOf(u); if(i >= 0) _tts.q.splice(i, 1); }; speechSynthesis.speak(u); }
-function speakMixed(text, dry){ const runs = ttsRuns(speakPlain(text)); if(dry) return runs; runs.forEach(r => ttsEnqueue(r.text, r.lang)); return runs; }
-function ttsOnReveal(ownerKey, piece){ if(!_voiceMode || ownerKey !== state.activeWord || !piece) return; speakMixed(piece); } // 덩어리가 드러날 때마다 읽는다 — 첫 소리까지의 지연이 짧다
+function ttsSplit(text, lang){ // 토막을 문장으로 — 문장 끝·줄바꿈. 길면(ko 180·en 220) 쉼표·세미콜론에서
+  const cap = lang === "ko" ? 180 : 220, out = [];
+  String(text || "").split(/\n+/).forEach(line => { let rest = line.trim(); if(!rest) return;
+    const ends = sentenceEnds(rest); let p = 0; const parts = [];
+    ends.forEach(e => { const seg = rest.slice(p, e).trim(); if(seg) parts.push(seg); p = e; }); const tail = rest.slice(p).trim(); if(tail) parts.push(tail);
+    parts.forEach(seg => { while(seg.length > cap){ let cut = -1; [", ", "; "].forEach(d => { const i = seg.lastIndexOf(d, cap); if(i > 20 && i > cut) cut = i + d.length; }); if(cut < 0) cut = cap; out.push(seg.slice(0, cut).trim()); seg = seg.slice(cut).trim(); } if(seg) out.push(seg); }); });
+  return out;
+}
+function ttsPlan(piece, lvl){ // 순수 함수 — [{lang, text, rate, gapBefore}]
+  const n = lvNum(lvl || globalLevel()); const enKoGap = (n >= 1 && n <= 2) ? 600 : (n > 0 && n <= 4) ? 450 : 350;
+  const plan = []; let prev = "";
+  ttsRuns(ttsPrep(piece)).forEach(r => { ttsSplit(r.text, r.lang).forEach(sent => { let gap = 0;
+    if(prev){ if(prev === "ko" && r.lang === "ko") gap = /\?$/.test(sent) ? 500 : 150; else if(prev === "ko" && r.lang === "en") gap = 250; else if(prev === "en" && r.lang === "ko") gap = enKoGap; else gap = 300; }
+    plan.push({ lang: r.lang, text: sent, rate: ttsRate(r.lang, "ok"), gapBefore: gap }); prev = r.lang; }); });
+  return plan;
+}
+function speakMixed(text, dry){ if(dry) return ttsRuns(ttsPrep(text)); const plan = ttsPlan(text); plan.forEach(p => ttsEnqueue(p.text, p.lang, p.gapBefore)); return plan; }
+function ttsOnReveal(ownerKey, piece){ if(!_voiceMode || ownerKey !== state.activeWord || !piece) return; speakMixed(piece); } // 문장이 끝날 때마다 읽는다 — 첫 소리까지의 지연이 짧다
+const TTS_TRY = { ko: "안녕하세요, 저는 파도 튜터예요. on은 표면에 닿아 있다는 느낌이에요.", en: "I am on the bus. The bus is on the bridge." };
+function voiceRenderSettings(){ // ⚙️ 설정 — 한국어/영어 목소리 select(자동 추천 + 점수순) · 안내줄
+  const box = document.getElementById("set-voice-box"); if(!box) return;
+  if(!("speechSynthesis" in window)){ box.hidden = true; return; } box.hidden = false;
+  const vs = ttsVoices(), saved = ttsSaved(); const koPick = ttsPickVoice(vs, "ko", saved.ko, { online: true }); // 영어 추천은 고른(또는 추천된) 한국어 목소리와 같은 성별로
+  ["ko", "en"].forEach(lang => { const sel = document.getElementById("voice-" + lang); if(!sel) return;
+    const pick = ttsPickVoice(vs, lang, "", { online: true, pairWith: lang === "en" && koPick ? ttsGenderOf(koPick.voice) : "" });
+    const cands = vs.map(v => ({ v, p: ttsPickVoice([v], lang, "", { online: true }) })).filter(x => x.p).sort((x, y) => y.p.score - x.p.score);
+    const cur = saved[lang] && cands.some(x => x.v.voiceURI === saved[lang] || ttsVoiceName(x.v) === saved[lang]) ? saved[lang] : "";
+    sel.innerHTML = `<option value="">${esc(pick ? `자동 (추천: ${ttsShortName(pick.voice)} · ${ttsTierKo(pick.tier)})` : (lang === "ko" ? "자동 (이 기기엔 한국어 목소리가 없어요)" : "자동 (이 기기엔 영어 목소리가 없어요)"))}</option>` + cands.map(x => `<option value="${esc(x.v.voiceURI || ttsVoiceName(x.v))}">${esc(ttsVoiceLabel(x.v))}</option>`).join("");
+    sel.value = cur; if(sel.value !== cur) sel.value = "";
+    if(vs.length && saved[lang] && !cur && !sel.dataset.warned){ sel.dataset.warned = "1"; weToast(lang === "ko" ? "저장해 둔 한국어 목소리가 이 기기에 없어 자동으로 골라요" : "저장해 둔 영어 목소리가 이 기기에 없어 자동으로 골라요"); } });
+  const note = document.getElementById("voice-note"); if(note){ const ua = navigator.userAgent || ""; let msg = "";
+    if(!vs.some(v => ttsNormLang(v.lang).indexOf("ko") === 0)) msg = "이 기기에는 한국어 목소리가 없어 영어 문장만 읽어요.";
+    else if(koPick && koPick.tier === "robot" && /Windows/i.test(ua) && /Chrome\//.test(ua) && !/Edg\//.test(ua)) msg = "엣지 브라우저에서 열면 더 자연스러운 한국어 목소리(SunHi)를 쓸 수 있어요.";
+    else if(/iPhone|iPad|iPod/i.test(ua)) msg = "아이폰은 설정 › 손쉬운 사용 › 음성 콘텐츠 › 음성에서 한국어 '향상됨' 목소리를 받으면 더 자연스러워요(사파리가 목록에 안 보여 줄 수도 있어요).";
+    note.hidden = !msg; note.textContent = msg; }
+}
+(function initVoiceSettings(){
+  const box = document.getElementById("set-voice-box"); if(!box) return;
+  box.addEventListener("change", (e) => { const sel = e.target.closest("#voice-ko, #voice-en"); if(!sel) return; const saved = ttsSaved(); saved[sel.id === "voice-ko" ? "ko" : "en"] = sel.value; try { localStorage.setItem("we_tts_voice_v1", JSON.stringify(saved)); } catch(err){} _tts.koGender = ""; voiceRenderSettings(); }); // 즉시 저장 — en 자동 추천이 ko 성별을 따라 바뀐다
+  box.addEventListener("click", (e) => { const b = e.target.closest(".voice-try"); if(!b) return; if(b.classList.contains("speaking")){ ttsStopAll(); return; } ttsStopAll(); const lang = b.dataset.try; b.classList.add("speaking"); ttsEnqueue(TTS_TRY[lang], lang, 0); const u = _tts.cur || (_tts.q[0] && _tts.q[0].u); if(u){ const done = () => b.classList.remove("speaking"); const f1 = u.onend, f2 = u.onerror; u.onend = (ev) => { done(); if(f1) f1(ev); }; u.onerror = (ev) => { done(); if(f2) f2(ev); }; } setTimeout(() => b.classList.remove("speaking"), 15000); });
+})();
 (function initVoice(){
   const mb = document.getElementById("mic-btn"), vb = document.getElementById("voice-mode"), lb = document.getElementById("mic-lang");
   if(!micSupported() || inAppBrowser() || !window.isSecureContext){ mb.disabled = true; mb.title = inAppBrowser() ? "카카오톡·인스타 같은 앱 안 브라우저에서는 말하기를 쓸 수 없어요 — 오른쪽 위 메뉴에서 '다른 브라우저로 열기'" : "이 브라우저에서는 말하기를 쓸 수 없어요 — 크롬·엣지·사파리에서 열어 주세요"; }
@@ -7018,12 +7536,14 @@ function ttsOnReveal(ownerKey, piece){ if(!_voiceMode || ownerKey !== state.acti
   mb.addEventListener("click", micToggle);
   lb.addEventListener("click", micLangToggle);
   vb.addEventListener("click", () => voiceModeSet(!_voiceMode));
-  document.getElementById("chat-input").addEventListener("keydown", () => micCancelSend()); // 고치기 시작하면 자동 전송 취소
+  document.getElementById("chat-input").addEventListener("keydown", (e) => { micCancelSend(); if(_mic.on && !e.ctrlKey && !e.metaKey && !e.altKey && !["Enter", "Escape", "Shift", "Control", "Alt", "Meta", "Tab", "CapsLock"].includes(e.key)) micFinish("edit"); }); // 고치기 시작하면 자동 전송 취소 · 듣기도 멈춤(글은 유지)
+  document.getElementById("chat-input").addEventListener("input", (e) => { if(e.isTrusted && typeof _mic !== "undefined" && _mic.on && e.inputType && e.inputType !== "insertCompositionText") micFinish("edit"); }); // 검수 [21]: 붙여넣기 같은 직접 수정도 듣기 중단(글 유지)
+  ["mic-end", "mic-x"].forEach(id => { const b = document.getElementById(id); if(!b) return; b.addEventListener("mousedown", (e) => e.preventDefault()); b.addEventListener("click", () => micFinish(id === "mic-end" ? "click" : "cancel")); }); // v3.2 ⑤
   ["chat-input", "wave-input"].forEach(id => { const el = document.getElementById(id); if(el) el.addEventListener("input", () => { _lastTypedAt = Date.now(); }); }); // 동기화 보류 판정용
-  document.addEventListener("keydown", (e) => { if(e.key === "Escape") micCancelSend(); });
-  document.addEventListener("visibilitychange", () => { if(document.visibilityState === "hidden") ttsStopAll(); });
-  window.addEventListener("pagehide", ttsStopAll);
-  try { if("speechSynthesis" in window) speechSynthesis.addEventListener("voiceschanged", () => speechSynthesis.getVoices()); } catch(e){}
+  document.addEventListener("keydown", (e) => { if(e.key === "Escape"){ micCancelSend(); micFinish("cancel"); } });
+  document.addEventListener("visibilitychange", () => { if(document.visibilityState === "hidden"){ ttsStopAll(); micFinish("hidden"); } else if(_mic.resumeNote){ _mic.resumeNote = false; weToast("화면을 떠나 듣기를 멈췄어요 — 말한 글은 남아 있어요"); } });
+  window.addEventListener("pagehide", () => { ttsStopAll(); micFinish("hidden"); });
+  try { if("speechSynthesis" in window) speechSynthesis.addEventListener("voiceschanged", () => { ttsVoices(); if(modal && modal.classList.contains("show")) voiceRenderSettings(); }); } catch(e){} // v3.2 ④: 목록이 늦게 오면 설정창도 다시 채운다
 })();
 /* 텍스트로 직접 중앙 대화 시작 — 입력창 경유 없이 (📖 뜻 해석 · v2.7 빠른 실행 버튼) */
 function sendMainText(text, extra, img, typed, opts){
@@ -7045,6 +7565,7 @@ function sendMainText(text, extra, img, typed, opts){
       renderChatLog();
       logEl.scrollTop = keep; // v3.1: 완료 때도 스크롤을 움직이지 않는다 — 덩어리 DOM이 최종 렌더와 같은 블록이라 글자 위치가 그대로(흔들림 없음)
       roomFit(logEl); // 질문이 위에 머무는 데 필요한 만큼만 여백을 남긴다
+      moreBelowSync(); // v3.2: 답의 끝이 화면 아래에 있으면 ↓ 하나
       renderRelated();
     }
     else { renderQIndex(); const cx = document.querySelector("#qa-row .qa-ctx"), c = threadCfg(state.activeWord); if(cx && QA_CTX[c.mode]) cx.innerHTML = qaCtxHTML(c, chat); } // 실패(롤백)·⏹ 중단 → 오류 말풍선은 남기고 질문 카운트 정정 + 흐려 둔 도우미를 되살린다(v3.0 2차 렌즈)
@@ -7054,7 +7575,7 @@ function sendMainText(text, extra, img, typed, opts){
   renderRelated();
   { const cx = document.querySelector("#qa-row .qa-ctx"), c = threadCfg(state.activeWord); if(cx && QA_CTX[c.mode]) cx.innerHTML = qaCtxHTML(c, chat); } // v3.0: 답이 오는 동안 도우미는 흐리게
 }
-document.getElementById("chat-send").addEventListener("click", sendMain);
+document.getElementById("chat-send").addEventListener("click", () => sendMain(true)); // 버튼만 ⏹ 중단
 /* v2.7: 빠른 실행 버튼 — 모드 설정 + 즉시 출제 (사용자 확정: 한 클릭으로 연습 시작) */
 function qaMore(on){ // v3.0: ＋ 더 보기 묶음(PC) 열고 닫기
   const row = document.getElementById("qa-row"), btn = row && row.querySelector("[data-qa-more]"), pop = document.getElementById("qa-more-pop");
@@ -7112,13 +7633,13 @@ function qaAct(act0){ // v3.0: 빠른 실행 — 도구 줄 · 빈 대화창 시
   if(act === "examples"){ sendMainText(`"${w.base}" 단어가 들어간, 결이 서로 다른 예문 3개 요청 — 각각 어떤 상황·어떤 느낌인지 한 줄씩.`); return; } // v2.37 기획·QA: 유일하게 남았던 명령형 발화 전환
 }
 /* v2.52: ✍️ 작문 셀렉트 — 방향을 고르면 그 연습으로 전환 + 즉시 출제 (두 버튼을 하나로, 사용자 요청). 위임: 셀렉트는 재렌더마다 새로 생긴다 */
-function startWriteMode(m){
-  const w = curWord();
+function startWriteMode(m, n){ // v3.2 ③: n개(진단실 "문장 3개") — 생략하면 기존 1개
+  const w = curWord(); const k = Math.max(1, Number(n) || 1), tail = k > 1 ? ` — 한 번에 하나씩, 내가 답하면 다음 문제` : "";
   const lvl = effLevel(state.activeWord);
   setThreadCfg(state.activeWord, { mode: m }); learnNote("mode", state.activeWord, { mode: m });
   renderChatLog(); // 모드 셀렉트·복귀 버튼 즉시 반영
-  if(m === "we") sendMainText(`"${w.base}" 단어를 활용한 ${lvl ? lvLabel(lvl) + " " : ""}작문 문제 1개 요청.`); // v2.37: 버튼 발화는 "~요청" 명사형
-  else sendMainText(`"${w.base}" 단어가 들어간 ${lvl ? lvLabel(lvl) + " " : ""}번역 문제 1개 요청.`); // 정답 보류는 MODE_EW가 항구 보장
+  if(m === "we") sendMainText(`"${w.base}" 단어를 활용한 ${lvl ? lvLabel(lvl) + " " : ""}작문 문제 ${k}개 요청${tail}.`); // v2.37: 버튼 발화는 "~요청" 명사형
+  else sendMainText(`"${w.base}" 단어가 들어간 ${lvl ? lvLabel(lvl) + " " : ""}번역 문제 ${k}개 요청${tail}.`); // 정답 보류는 MODE_EW가 항구 보장
 }
 /* v2.53: 📝 인출 시험 시작 — 모드 설정 + 유형 저장 + 요청 발화. 재료(푼 문제 기록)는 sendToThread가 시스템에 싣는다 */
 function startExam(type){
@@ -7168,6 +7689,9 @@ function openSettings(){
   renderProfileSettings(); // v3.0: 학습 설정 요약 · 함께 배우기 · 고급 접힘 · 지시문 미리 보기
   acctRenderSettings(); srvProbe(); // 👥 로그인 전/후 화면 + 서버 상태(가입 코드 필요? 서버 키?)
   document.getElementById("set-memo").checked = memoOn(); // v2.53
+  { const mh = document.getElementById("set-mic-hold"); if(mh) mh.checked = micHoldOn(); } // v3.2 ⑤
+  if(typeof voiceRenderSettings === "function") voiceRenderSettings(); // v3.2 ④
+  if(typeof designUiSync === "function") designUiSync(); // v4
   modalBg.classList.add("show"); modal.classList.add("show");
 }
 function closeSettings(){ modalBg.classList.remove("show"); modal.classList.remove("show"); }
@@ -7266,9 +7790,8 @@ function speakEn(text, btn){
     document.querySelectorAll(".tts-btn.speaking, .sg-word.speaking").forEach((x) => x.classList.remove("speaking")); // v2.36 QA: 글로스 단어의 재생 표시도 교차-정지 스윕에 포함
     const u = new SpeechSynthesisUtterance(text);
     u.lang = "en-US"; u.rate = 0.95;
-    const vs = synth.getVoices();
-    const v = vs.find((x) => x.lang === "en-US" && x.localService) || vs.find((x) => x.lang === "en-US") || vs.find((x) => String(x.lang).indexOf("en") === 0);
-    if(v) u.voice = v;
+    const pick = ttsPickVoice(ttsVoices(), "en", ttsSaved().en, { online: navigator.onLine !== false }); // v3.2 ④: 🗣과 같은 목소리·점수표
+    if(pick){ try { u.voice = pick.voice; } catch(e){} u.rate = ttsRate("en", pick.tier); }
     if(btn){ btn.classList.add("speaking"); u.onend = u.onerror = () => btn.classList.remove("speaking"); }
     _ttsUtter = u;
     synth.speak(u);
@@ -7458,6 +7981,7 @@ const M_MORE = [
   { id: "btn-memo", label: "📝 메모" },
   { id: "today-pill", label: "🌊 오늘" }, // v3.0
   { id: "acct-chip", label: "👤 계정" },
+  { id: "design-toggle", label: "🎨 모양 바꾸기" }, // v4
   { href: "old", label: "↩ 이전 판으로" } // v3.0: 신버전 이전의 pAdo(모바일 판)로 — 기록은 그대로 이어진다
 ];
 function renderDrawerTools(){ // 1회 — 도구 칩 + 🪜 단계 옵션(#level-select 복제) + 버전 도장(header .build가 단일 소스)
@@ -7923,6 +8447,7 @@ document.getElementById("set-save").addEventListener("click", () => {
     if(k) localStorage.setItem(LS_KEY, k); else localStorage.removeItem(LS_KEY);
     localStorage.setItem(LS_MODEL, document.getElementById("set-model").value);
     localStorage.setItem(LS_MEMO_ON, document.getElementById("set-memo").checked ? "1" : "0"); // v2.53
+    { const mh = document.getElementById("set-mic-hold"); if(mh){ const want = mh.checked ? "1" : "0"; if(localStorage.getItem(LS_MIC_HOLD) !== want){ if(typeof _mic !== "undefined" && _mic.on) micFinish("cancel"); localStorage.setItem(LS_MIC_HOLD, want); } } } // v3.2 ⑤: 기기별 — 듣는 중이면 끝내고 적용
     // 지시문: 비었거나 기본값과 동일하면 저장 안 함(기본 PHILO 사용) — 커스텀만 보관
     if(!sys.trim() || sys === PHILO) localStorage.removeItem(LS_SYSTEM);
     else localStorage.setItem(LS_SYSTEM, sys);
@@ -7950,7 +8475,7 @@ function moveB64Decode(b64){
   for(let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
   return new TextDecoder().decode(bytes);
 }
-function moveSkip(k){ return ["we_sync_url", "we_sync_secret", "we_sync_last", "we_acct_token", "we_acct_code", "we_admin_secret", "we_learn_q", "we_insights_v1", "we_mic_ok_v1", "we_model_rev", "we_mtab_v1", "we_vidh_v1", "we_tts_note_v1"].indexOf(k) >= 0; } // v3.0 2차 렌즈: 이사 코드에 세션 토큰·서버 주소·관리 암호·기기별 큐를 담지 않는다(코드에 적힌 임의 서버로 기록이 가는 길 차단)
+function moveSkip(k){ return ["we_design_v1", "we_theme_v1", "we_design_seen_v1", "we_tts_voice_v1", "we_tts_pick_note_v1", "we_mic_hold_v1", "we_sync_url", "we_sync_secret", "we_sync_last", "we_acct_token", "we_acct_code", "we_admin_secret", "we_learn_q", "we_insights_v1", "we_mic_ok_v1", "we_model_rev", "we_mtab_v1", "we_vidh_v1", "we_tts_note_v1"].indexOf(k) >= 0; } // v3.0 2차 렌즈: 이사 코드에 세션 토큰·서버 주소·관리 암호·기기별 큐를 담지 않는다(코드에 적힌 임의 서버로 기록이 가는 길 차단)
 function moveExportCode(){
   const data = {};
   for(let i = 0; i < localStorage.length; i++){
@@ -8037,8 +8562,8 @@ document.getElementById("move-import").addEventListener("click", () => {
    새 계정의 빈 기록 원칙(사용자 요구): 로그인 시 acctConnect가 confirm으로 확인 — 다른 계정으로 바꾸면 이 브라우저 기록을 비우고 시작, 첫 로그인은 "올릴까/비울까/그만둘까".
    안전장치(v2.45 계승): 제외 목록(키·토큰·암호·커서·기기별 요금)은 push·pull 양쪽에서 제외 / pull 성공 전 push 금지 / 서버 409 역행 거부 / 로그아웃·계정 바꾸기 뒤 새로 고침 전까지 저장·push 차단(_acctWiped). */
 const LS_SYNC_URL = "we_sync_url", LS_SYNC_SECRET = "we_sync_secret", LS_SYNC_LAST = "we_sync_last";
-const SYNC_EXCLUDE = [LS_KEY, LS_SYNC_URL, LS_SYNC_SECRET, LS_SYNC_LAST, LS_ACCT, "we_acct_code", LS_ACCT_NAME, LS_ADMIN, LS_USAGE, LS_RB_OPEN, LS_RAIL, "we_learn_q", "we_insights_v1", "we_mic_ok_v1", "we_model_rev", "we_mtab_v1", "we_vidh_v1", "we_tts_note_v1"]; // push 제외 + pull 무시 — 키·토큰·암호·커서·기기별 요금
-const ACCT_KEEP = [LS_KEY, LS_MODEL, LS_SYSTEM, LS_MEMO_ON, LS_SYNC_URL, LS_ACCT, LS_ACCT_NAME, LS_USAGE, LS_MTAB, "we_tts_note_v1", LS_RB_OPEN, LS_RAIL, "we_model_rev", "we_mic_ok_v1"]; // 계정을 바꿔도 남는 기기 설정(관리 암호는 이 화면에 두지 않는다 — v3.0 2차 렌즈)
+const SYNC_EXCLUDE = ["we_design_v1", "we_theme_v1", "we_design_seen_v1", "we_tts_voice_v1", "we_tts_pick_note_v1", "we_mic_hold_v1", LS_KEY, LS_SYNC_URL, LS_SYNC_SECRET, LS_SYNC_LAST, LS_ACCT, "we_acct_code", LS_ACCT_NAME, LS_ADMIN, LS_USAGE, LS_RB_OPEN, LS_RAIL, "we_learn_q", "we_insights_v1", "we_mic_ok_v1", "we_model_rev", "we_mtab_v1", "we_vidh_v1", "we_tts_note_v1"]; // push 제외 + pull 무시 — 키·토큰·암호·커서·기기별 요금
+const ACCT_KEEP = ["we_design_v1", "we_theme_v1", "we_design_seen_v1", "we_tts_voice_v1", "we_tts_pick_note_v1", "we_mic_hold_v1", LS_KEY, LS_MODEL, LS_SYSTEM, LS_MEMO_ON, LS_SYNC_URL, LS_ACCT, LS_ACCT_NAME, LS_USAGE, LS_MTAB, "we_tts_note_v1", LS_RB_OPEN, LS_RAIL, "we_model_rev", "we_mic_ok_v1"]; // 계정을 바꿔도 남는 기기 설정(관리 암호는 이 화면에 두지 않는다 — v3.0 2차 렌즈)
 let _syncPulledOk = false, _syncPushedHash = "", _syncBusy = false, _syncTimer = null, _srvInfo = null;
 function syncCfg(){
   const url = String(PADO_SERVER_URL || localStorage.getItem(LS_SYNC_URL) || "").trim().replace(/\/+$/, ""); // v3.0 2차 렌즈: 앱에 심긴 주소가 있으면 그것만(저장소의 we_sync_url로 바꿔치기 불가) — 심긴 값이 없을 때(개발·테스트)만 저장소 값
@@ -8130,6 +8655,7 @@ function mergeState(localJson, remoteJson){ // v3.1 ⑥: 통째 덮기 대신 �
     ["activeRight", "rbTab", "rightW", "rightChatH", "waveLogH", "today", "waveTrash"].forEach(k => { if(k in l) out[k] = l[k]; else delete out[k]; }); // 화면 배치·오늘 캐시·휴지통은 기기별
     if(l.plan && (!r.plan || Number(l.plan.at) > Number(r.plan.at))) out.plan = l.plan; // 처방·진단 시각은 더 새로운 쪽(QA 지적: 원격이 통째 이기던 것)
     if(Number(l.lastDiagAt) > Number(r.lastDiagAt || 0)) out.lastDiagAt = l.lastDiagAt;
+    if(l.diagV4 && (!r.diagV4 || Number(l.diagV4.at) > Number(r.diagV4.at || 0))) out.diagV4 = l.diagV4; // v3.2 ③: AI 진단 캐시는 더 새로운 쪽
     if(l.threadCfg || r.threadCfg) out.threadCfg = Object.assign({}, r.threadCfg || {}, l.threadCfg || {}); // 대화창별 단계·모드는 키별로(이 기기에서 정한 것이 남는다)
     if(l.memo || r.memo){ out.memo = Object.assign({}, r.memo || {}); Object.keys(l.memo || {}).forEach(k => { const a = l.memo[k], b = out.memo[k]; if(!b || Number(a && a.upto) > Number(b && b.upto)) out.memo[k] = a; }); } // 요약 기억은 더 멀리 요약한 쪽
     if(out.memo) Object.keys(clr).forEach(k => { if(!(l.memo || {})[k] || Number((r.chatClr || {})[k]) > Number((l.chatClr || {})[k] || 0)) delete out.memo[k]; }); // 지운 대화의 요약 기억은 병합 뒤에 뺀다(원격 초기화가 더 새로우면 로컬 요약도 버린다)
@@ -8501,21 +9027,36 @@ function rbLayerPlace(){ // v3.1: 레이어를 중앙 칸 안에 — 머리줄(�
   const c = document.querySelector("main.center"); if(!c) return;
   const r = c.getBoundingClientRect();
   const w = Math.min(760, Math.max(360, Math.round(r.width - 32)));
-  const top = Math.round(r.top + 46 + 8);
+  const fb = document.getElementById("flow-bar"); const fbh = (fb && !fb.hidden && typeof isV4 === "function" && isV4()) ? Math.round(fb.getBoundingClientRect().height) + 4 : 0; // 검수 [35]: v4 흐름 줄 아래로
+  const top = Math.round(r.top + 46 + 8 + fbh);
   const comp = c.querySelector(".composer"); const cr = comp ? comp.getBoundingClientRect() : null;
   const limit = (cr && cr.top > top + 200 ? cr.top : window.innerHeight - 96) - 8; // 입력 상자 위까지(상자가 아직 없거나 너무 높으면 바닥 여백만)
   const h = Math.max(320, Math.min(Math.round(window.innerHeight * 0.78), Math.round(limit - top)));
   const st = document.documentElement.style;
   st.setProperty("--rb-w", w + "px"); st.setProperty("--rb-left", Math.max(8, Math.round(r.left + (r.width - w) / 2)) + "px"); st.setProperty("--rb-top", top + "px"); st.setProperty("--rb-h", h + "px");
 }
-function moreBelowSync(){ // v3.1: 흐르는 답이 보이는 영역 아래로 이어지면 칩을 보인다(PC) — 스크롤은 학습자가 누를 때만
-  const mb = document.getElementById("more-below"), log = document.getElementById("chat-log"); if(!mb || !log) return;
-  const st = log.querySelector(".msg.ai.streaming"); if(!st || !isDeskView()){ mb.hidden = true; return; }
-  const r = st.getBoundingClientRect(), lr = log.getBoundingClientRect(); mb.hidden = !(r.bottom > lr.bottom + 12);
+function moreBelowSync(logId){ // v3.2: 답이 다 써진 뒤 — 마지막 답의 끝이 보이는 영역 아래에 있으면 ↓(끝으로) 하나를 보인다. 흐르는 중엔 보이지 않는다(쭉 써내려간다) · PC·폰 공통 · 스크롤은 누를 때만 · 검수 [6]: 파도 칸도 같은 ↓(마지막에 끝난 칸)
+  const mb = document.getElementById("more-below"); if(!mb) return; const log = document.getElementById(logId || mb.dataset.log || "chat-log"); if(!log) return; if(logId) mb.dataset.log = logId;
+  const ais = log.querySelectorAll(":scope > .msg.ai"), last = ais[ais.length - 1];
+  if(!last || last.classList.contains("streaming") || !log.classList.contains("has-room") || !log.offsetParent){ mb.hidden = true; return; }
+  if(log.id === "wave-log" && typeof isMobileView === "function" && isMobileView() && document.body.dataset.mtab !== "waves"){ mb.hidden = true; return; } // 폰에서 파도 화면이 아닐 때는 숨긴다
+  const r = last.getBoundingClientRect(), lr = log.getBoundingClientRect();
+  const show = r.bottom > lr.bottom + 24;
+  if(show){ mb.style.left = Math.round(lr.left + lr.width / 2) + "px"; mb.style.top = Math.round(lr.bottom - 48) + "px"; }
+  mb.hidden = !show;
 }
 function moreBelowHide(){ const mb = document.getElementById("more-below"); if(mb) mb.hidden = true; }
-document.getElementById("more-below").addEventListener("click", () => { const log = document.getElementById("chat-log"), st = log && log.querySelector(".msg.ai.streaming"); if(st) st.scrollIntoView({ block: "end", behavior: "smooth" }); moreBelowHide(); });
+function moreBelowGo(){ // ↓: 마지막 답의 끝을 로그 바닥에 맞춘다 — 로그 안에서만 움직인다(scrollIntoView는 폰에서 바깥 칸까지 끈다). 폰은 탭 순간 키보드가 내려가 로그 높이가 바뀌므로 700ms 뒤 한 번 더 맞춘다
+  const mb0 = document.getElementById("more-below"); const log = document.getElementById((mb0 && mb0.dataset.log) || "chat-log"), ais = log ? log.querySelectorAll(":scope > .msg.ai") : [], last = ais[ais.length - 1]; if(!last) return;
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const align = (smooth) => { const top = last.getBoundingClientRect().bottom - log.getBoundingClientRect().top + log.scrollTop - log.clientHeight + 8; try { log.scrollTo({ top: Math.max(0, top), behavior: smooth ? "smooth" : "auto" }); } catch(e){ log.scrollTop = Math.max(0, top); } };
+  align(!reduce);
+  setTimeout(() => { if(!last.isConnected) return; const r = last.getBoundingClientRect(), lr = log.getBoundingClientRect(); if(r.bottom > lr.bottom + 2) align(false); }, 700);
+}
+document.getElementById("more-below").addEventListener("click", () => { moreBelowGo(); moreBelowHide(); });
 document.getElementById("chat-log").addEventListener("scroll", () => { const mb = document.getElementById("more-below"); if(mb && !mb.hidden) moreBelowSync(); }, { passive: true });
+document.querySelector("aside.right").addEventListener("scroll", () => { const mb = document.getElementById("more-below"); if(mb && !mb.hidden && mb.dataset.log === "wave-log") moreBelowSync(); }, { passive: true, capture: true }); // 파도 로그는 재렌더되므로 조상에서(capture)
+window.addEventListener("resize", () => { const mb = document.getElementById("more-below"); if(mb && !mb.hidden) moreBelowSync(); });
 function rbSyncHead(){ // 머리줄(제목·세그먼트)·도크 라벨을 상태에 맞춘다
   const g = state.activeWord === GLOBAL_ID;
   const t = document.getElementById("rb-title"); if(t){ const want = g ? "🧭 파도 Chat — 📒 학습 일지 · 🪜 단계 · 📜 지침" : `${curWord().base} 자료`; if(t.textContent !== want) t.textContent = want; }
@@ -8821,6 +9362,7 @@ function renderToday(){
   const all = p.done >= p.total;
   if(n) n.textContent = all ? "✓" : `${p.done}/${p.total}`;
   if(pill){ pill.classList.toggle("done", all); pill.title = all ? "오늘의 파도를 다 탔어요 — 눌러서 다시 보기" : `오늘의 파도 — ${p.total}걸음 중 ${p.done}걸음 했어요`; }
+  if(typeof renderFlowBar === "function") renderFlowBar(p); // v4
   const body = document.getElementById("today-body");
   if(!body || !document.getElementById("today-modal").classList.contains("show")) return;
   document.getElementById("today-sub").innerHTML = (all ? "오늘의 걸음을 모두 마쳤어요. 더 하고 싶으면 아래에서 골라요." : p.total === 2 ? "오늘은 두 걸음이에요 — 복습할 카드가 아직 없어요." : "위에서부터 차례로 — 하루 10분이면 충분해요.")
@@ -8846,9 +9388,8 @@ function goWord(base){ // 단어 대화로 이동 — 목록에서 누른 것과
 }
 document.getElementById("today-pill").addEventListener("click", openToday);
 document.getElementById("today-close").addEventListener("click", closeToday);
-document.getElementById("today-body").addEventListener("click", (e) => {
-  const b = e.target.closest("[data-td]"); if(!b) return;
-  const k = b.dataset.td, p = todayPlan();
+function todayAct(k, tag){ // v4: 🌊 오늘의 파도 버튼·흐름 줄이 함께 쓴다(본문은 v3.1 그대로)
+  const p = todayPlan();
   if(k === "up"){ const nl = Math.min(7, myLv() + 1); setProfile({ lv: nl, upAt: Date.now() }); if(!ACTIVE.has(curChat())) renderChatLog(); levelChanged(true); renderToday(); weToast(`📈 한 칸 올렸어요 — 지금 단계: ${lvOption(nl + "단계")} (다음 답변부터 적용돼요)`); return; } // 재렌더 → 안내 말풍선 순서(말풍선이 지워지지 않게)
   if(k === "jr"){ const jrNew = (state.journal || []).slice(-3).filter(x => !SRS.some(it => it.key === "journal|" + x.line)); const added = srsAdd(jrNew.map(x => ({ title: x.line, key: "journal|" + x.line, why: `"${x.w}" 대화에서 짚은 것`, drill: x.q ? `그때 질문: ${x.q}` : "" })), Date.now(), { kind: "manual", src: "journal" }); weToast(added ? `🧠 ${added}줄을 복습에 담았어요 — 내일부터 카드로 나와요` : "이미 복습에 있어요"); renderToday(); return; } // v3.1
   closeToday();
@@ -8861,9 +9402,10 @@ document.getElementById("today-body").addEventListener("click", (e) => {
   if(k === "weak"){
     setThreadCfg(state.activeWord, { mode: "we" }); learnNote("mode", state.activeWord, { mode: "we" });
     renderChatLog();
-    sendMainText(`"${p.w.base}" 단어를 활용한 ${lvLabel(effLevel(state.activeWord)) ? lvLabel(effLevel(state.activeWord)) + " " : ""}작문 문제 1개 요청 — 특히 "${b.dataset.tdTag || ""}" 유형이 드러나는 문장으로.`);
+    sendMainText(`"${p.w.base}" 단어를 활용한 ${lvLabel(effLevel(state.activeWord)) ? lvLabel(effLevel(state.activeWord)) + " " : ""}작문 문제 1개 요청 — 특히 "${tag || ""}" 유형이 드러나는 문장으로.`);
   }
-});
+}
+document.getElementById("today-body").addEventListener("click", (e) => { const b = e.target.closest("[data-td]"); if(!b) return; todayAct(b.dataset.td, b.dataset.tdTag); });
 
 /* ── v3.0: 🤝 함께 배우기 — 모으기(이 기기 → 서버) · 받기(서버 주인이 확인한 정리 → 이 기기) · 끄기.
    보내는 조건: 로그인 + 학습 설정에서 "함께할게요"를 직접 고름 + 임시 비밀번호가 아님. 그 밖에는 아무것도 보내지 않는다.
@@ -8999,7 +9541,50 @@ function inviteId(){ try { const v = String(new URLSearchParams(String(location.
 const _inviteId = inviteId();
 try { if(/(^|[#&])id=/.test(location.hash || "")) history.replaceState(null, "", location.pathname + location.search); } catch(e){}
 if(typeof inAppBrowser === "function" && inAppBrowser()) setTimeout(() => weToast("카카오톡·인스타 같은 앱 안에서 열렸어요 — 오른쪽 위 메뉴에서 '다른 브라우저로 열기'(크롬·사파리)를 누르면 로그인·마이크가 제대로 돼요"), 1200);
+/* ── v4.0 「흐름(Flow)」 — 차세대 디자인 모드(요청 ⑥). 같은 파일 안의 <html data-design="v4"> 층: 토큰(색·글꼴·간격·반경·그림자·모션)을 재정의하고, 머리줄 아래 "오늘의 흐름" 줄(#flow-bar: 복습 → 새 파도 → 써 보기 → 확인)을 더한다.
+   기본은 클래식(저장값·?design= 둘 다 없을 때 — 하네스 1980건은 클래식으로 돈다). 진입: 기존 판의 ✨ 신버전 버튼(?design=v4) · 헤더 ⋯ 🎨 · ☰ 🎨 · ⚙️ 설정. 전환은 재렌더 없이 속성 토글 + 측정 함수 재호출(스크롤·초안 보존). 답이 흐르는 중엔 잠근다. 기기별 키(동기화·이사 코드 제외).
+   설계: 4안 제안 → 3심사(학습자·주인·개발) → 종합(신버전-v3-설계.md §13). 바꾸지 않는 것: 펌프·has-room·↓·sticky·46px 머리줄·236px 레일·DOM id 계약. ── */
+const LS_DESIGN = "we_design_v1", LS_THEME = "we_theme_v1";
+function isV4(){ return document.documentElement.getAttribute("data-design") === "v4"; }
+function designGet(){ try { return localStorage.getItem(LS_DESIGN) === "v4" ? "v4" : "classic"; } catch(e){ return "classic"; } }
+function themeGet(){ try { const t = localStorage.getItem(LS_THEME); return (t === "light" || t === "dark") ? t : "auto"; } catch(e){ return "auto"; } }
+function applyTheme(t){ if(t === undefined) t = themeGet(); else { try { localStorage.setItem(LS_THEME, t); } catch(e){} }
+  const h = document.documentElement; if(t === "light" || t === "dark") h.setAttribute("data-theme", t); else h.removeAttribute("data-theme");
+  const m = document.getElementById("meta-theme"); if(m){ let c = "#ffffff"; if(isV4()){ try { c = getComputedStyle(h).getPropertyValue("--bg").trim() || c; } catch(e){} } m.setAttribute("content", c); } }
+function setDesign(mode, opts){ const v4 = mode === "v4", h = document.documentElement, save = !(opts && opts.save === false);
+  if(v4) h.setAttribute("data-design", "v4"); else h.removeAttribute("data-design");
+  if(save){ try { localStorage.setItem(LS_DESIGN, v4 ? "v4" : "classic"); } catch(e){} }
+  const fb = document.getElementById("flow-bar"); if(fb) fb.hidden = !v4;
+  designUiSync(); applyTheme();
+  try { renderFlowBar(); if(typeof fitQaSelects === "function") fitQaSelects(); if(typeof stickyLeftSync === "function") stickyLeftSync(); if(document.body.classList.contains("rb-layer") && typeof rbLayerPlace === "function") rbLayerPlace(); if(typeof roomFit === "function") roomFit(document.getElementById("chat-log")); if(typeof moreBelowSync === "function") moreBelowSync(); } catch(e){}
+  if(v4 && save){ try { if(!localStorage.getItem("we_design_seen_v1")){ localStorage.setItem("we_design_seen_v1", "1"); weToast("✨ 새 모양 — 머리줄 아래 흐름 줄이 오늘 할 일을 알려줘요. ⚙️ 설정 › 🎨에서 되돌릴 수 있어요"); } } catch(e){} } }
+function designUiSync(){ const v4 = isV4(), busy = typeof _mainStreamN !== "undefined" && _mainStreamN > 0; // 배경 호출(일지·요약·진단)은 잠그지 않는다
+  const b = document.getElementById("design-toggle"); if(b){ b.setAttribute("aria-pressed", v4 ? "true" : "false"); b.innerHTML = `<i class="ico">🎨</i> <span class="lbl">${v4 ? "클래식 모양" : "새 모양"}</span>`; b.disabled = busy; b.title = busy ? "답이 끝나면 바꿀 수 있어요" : "화면 모양 — 새 모양(흐름)과 클래식을 오가요"; }
+  const sd = document.getElementById("set-design"); if(sd){ sd.value = v4 ? "v4" : "classic"; sd.disabled = busy; }
+  const st = document.getElementById("set-theme"); if(st) st.value = themeGet(); }
+function renderFlowBar(p){ // 오늘의 흐름 — todayPlan()의 steps/extra를 그대로 그린다(새 로직 0). 첫 미완료 칸이 지금 할 일
+  const bar = document.getElementById("flow-bar"); if(!bar) return; if(!isV4()){ bar.hidden = true; return; } bar.hidden = false;
+  try { if(!p) p = todayPlan(); } catch(e){ bar.innerHTML = ""; return; }
+  const st = (k) => (p.steps || []).find(x => x.k === k); const rv = st("review"), wd = st("word"), us = st("use"), ck = (p.extra || []).find(x => x.k === "check");
+  const due = srsDue().length;
+  const items = [
+    { k: "review", html: due ? `복습 <b>${due}장</b>` : "복습 없음 ✓", done: rv ? !!rv.done : true, na: false, title: rv ? rv.t : "오늘 볼 복습이 없어요 — 누르면 복습 창" },
+    { k: "word", html: `새 파도 — <b>${esc(p.w.base)}</b>`, done: wd ? !!wd.done : false, na: false, title: wd ? wd.t : "" },
+    { k: "use", html: p.low ? "고르기 퀴즈" : "써 보기", done: us ? !!us.done : false, na: false, title: us ? us.t : "" },
+    { k: "check", html: "확인", done: ck ? !!ck.done : false, na: !ck, title: ck ? ck.t : "이번 주 점검은 아직이에요" } ];
+  const cur = items.find(x => !x.done && !x.na); let streak = 0; try { streak = Number(p.streak) || 0; } catch(e){}
+  bar.innerHTML = items.map(x => `<button class="fb-step${x.done ? " done" : ""}${x.na ? " na" : ""}" type="button" data-fb="${x.k}"${x === cur ? ' aria-current="step"' : ""} title="${esc(x.title || "")}"><i class="fb-dot" aria-hidden="true"></i><span class="fb-t">${x.html}</span></button>`).join("")
+    + `<span class="fb-meta"><span class="fb-streak">${streak ? `🔥 ${streak}일째` : ""}</span><span class="fb-lv" title="내 학습 단계 — 모든 답이 이 단계에 맞춰져요">${myLv() ? myLv() + "단계" : ""}</span></span>`;
+}
+function micHintSync(on){ const h = document.getElementById("composer-hint"); if(h) h.textContent = on ? (_mic.lang === "en" ? "듣고 있어요 — 'that's all'(그게 다예요)이라고 말하거나 🎙을 다시 누르면 끝나요" : "듣고 있어요 — '여기까지'라고 말하거나 🎙을 다시 누르면 끝나요") : "Enter 보내기 · Shift+Enter 줄바꿈 · AI 답은 틀릴 수 있어요"; } // 검수 [2]: 영어로 듣는 중엔 영어 신호를
+document.getElementById("flow-bar").addEventListener("click", (e) => { const b = e.target.closest("[data-fb]"); if(!b) return; const k = b.dataset.fb; if(k === "review" && !srsDue().length){ openReview(); return; } if(b.classList.contains("na")){ weToast("이번 주 점검은 아직이에요 — 때가 되면 🌊 오늘에서 열려요"); return; } todayAct(k, ""); });
+document.getElementById("design-toggle").addEventListener("click", () => { if(typeof _mainStreamN !== "undefined" && _mainStreamN > 0){ weToast("답이 끝나면 바꿀 수 있어요"); return; } setDesign(isV4() ? "classic" : "v4"); });
+document.getElementById("set-design").addEventListener("change", (e) => { if(typeof _mainStreamN !== "undefined" && _mainStreamN > 0){ designUiSync(); weToast("답이 끝나면 바꿀 수 있어요"); return; } setDesign(e.target.value); });
+document.getElementById("set-theme").addEventListener("change", (e) => applyTheme(e.target.value));
+document.addEventListener("keydown", (e) => { if(e.altKey && !e.ctrlKey && !e.metaKey && (e.key === "t" || e.key === "T") && isV4()){ const c = document.querySelector('#flow-bar [aria-current="step"]'); if(c){ e.preventDefault(); c.click(); } } }); // Alt+T: 지금 할 일
+try { if(window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => applyTheme()); } catch(e){}
 /* ── 시작 ── */
+setDesign(designGet(), { save: false }); // v4: 저장값(또는 ?design=)대로 — 첫 그리기 전
 renderAll();
 acctChipRender();
 renderToday();

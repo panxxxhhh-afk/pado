@@ -982,7 +982,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </h1>
-    <span class="build">pAdo · v2.60</span>
+    <span class="build">pAdo · v2.61</span>
     <a id="btn-next" href="next.html" title="신버전 보기 — 넓어진 대화 화면 · 7단계 · 오늘의 파도. 기록은 그대로 이어져요">✨ 신버전</a><!-- v2.59 -->
     <span class="spacer"></span>
     <select id="level-select" title="학습 단계 — 모든 대화의 설명·예문·시험 난이도가 이 단계에 맞춰져요">
@@ -6625,7 +6625,7 @@ const M_MORE = [
 function renderDrawerTools(){ // 1회 — 도구 칩 + 🪜 단계 옵션(#level-select 복제) + 버전 도장(header .build가 단일 소스)
   const t = document.getElementById("dr-tools");
   if(t) t.innerHTML = M_MORE.map(m => m.href
-    ? `<a class="dm dm-next" href="${esc(padoNextHref())}" title="신버전 보기 — 기록은 그대로 이어져요">${esc(m.label)}</a>`
+    ? `<a class="dm dm-next" href="${esc(padoNextLink())}" title="신버전 보기 — 기록은 그대로 이어져요">${esc(m.label)}</a>`
     : `<button class="dm" type="button" data-mm="${esc(m.id)}">${esc(m.label)}${m.count ? ` <span class="dm-n" data-dmn="${esc(m.count)}"></span>` : ""}</button>`).join("");
   const dl = document.getElementById("dr-level"), sel = document.getElementById("level-select");
   if(dl && sel){ dl.innerHTML = ""; Array.from(sel.options).forEach(o => dl.add(new Option(o.text, o.value))); dl.value = sel.value; }
@@ -7521,7 +7521,8 @@ setRbTab(state.rbTab || "word");
 
 /* v2.59: ✨ 신버전 — 같은 폴더의 새 화면으로. 내 컴퓨터에서 연 파일(engine*.html)과 공개 주소(index·m·next)는 파일 이름이 다르다. 기록은 같은 저장소라 그대로 이어진다 */
 function padoNextHref(){ return /engine(-m)?\.html$/i.test(location.pathname) ? "engine-next.html" : "next.html"; }
-(function(){ const a = document.getElementById("btn-next"); if(a) a.href = padoNextHref(); })();
+function padoNextLink(){ return padoNextHref() + "?design=v4"; } // v2.61: ✨ 신버전 버튼은 새 모양(흐름)으로 — 신버전 안에서 클래식으로 되돌릴 수 있다
+(function(){ const a = document.getElementById("btn-next"); if(a) a.href = padoNextLink(); })();
 /* ── 시작 ── */
 renderAll();
 </script>
