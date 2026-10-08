@@ -1396,6 +1396,10 @@
   .hm-recent .hm-rc{display:flex;gap:8px;width:100%;text-align:left;border:0;background:transparent;font:inherit;color:var(--text-soft);font-size:var(--fs-1,.8rem);padding:5px 0;cursor:pointer;} .hm-rc:hover{color:var(--text);}
   .hm-quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;} .hm-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:10px;border-top:1px solid var(--border-soft,var(--border));font-size:var(--fs-0,.72rem);color:var(--text-mute);} .hm-theme{margin-left:10px;}
   @media (max-width:768px){ #home-layer{position:fixed;left:0;top:0;right:0;bottom:0;width:auto;height:auto;max-height:none;border-radius:0;border:0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));} .hm-head .hm-x{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;} .hm-stats{grid-template-columns:1fr 1fr;} #home-layer .g-btn,#home-layer .hm-step{min-height:44px;} .hm-recent .hm-rc{min-height:44px;align-items:center;} .hm-lnk{padding:8px 4px;} .hm-theme .hm-lnk{padding:8px 6px;} }
+  /* ══ v4.4 「옛글자 소리」 — 「」 안 f/v/z만 훈민정음 연서 글자로(화면 전용). 범례 창·발견 칩 ══ */
+  .snd{cursor:default;} html[data-snd="old"] .snd.on{font-family:'Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo','Noto Sans CJK KR',sans-serif;font-size:1.05em;letter-spacing:.02em;cursor:help;border-bottom:1px dotted var(--border);} #snd-legend{z-index:10000;} /* 검수: nowrap은 문장 길이 「」가 말풍선 밖으로 넘친다 — 제거. 범례는 설정창(9999) 위에 뜬다 */
+  #snd-legend table{border-collapse:collapse;margin:8px 0;font-size:.9rem;width:100%;} #snd-legend td,#snd-legend th{border:1px solid var(--border);padding:6px 8px;text-align:center;} #snd-legend .big{font-size:1.35em;font-family:'Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif;} #snd-legend td:nth-child(3){text-align:left;} #snd-legend .hint{line-height:1.6;}
+  .snd-chip{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;margin:6px 0 2px;font-size:.85rem;color:var(--text-mute);} .snd-chip .g-btn{font-size:.85rem;}
 </style>
 </head>
 <body>
@@ -1414,7 +1418,7 @@
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </button></h1>
-    <span class="build">pAdo · v4.3</span>
+    <span class="build">pAdo · v4.4</span>
     <button id="today-pill" type="button" title="오늘의 파도 — 오늘 할 세 걸음을 앱이 정해 드려요"><i class="ico">🌊</i> <span class="lbl">오늘</span> <b id="today-n"></b></button><!-- v3.0 -->
     <span class="spacer"></span>
     <select id="level-select" title="내 학습 단계 — 모든 대화의 설명·예문·문제 난이도가 이 단계에 맞춰져요"></select><!-- v3.0: 옵션은 LEVELS(7단계)에서 렌더 -->
@@ -1563,6 +1567,13 @@
 </div>
 <div id="we-toast"></div>
 
+<div class="modal" id="snd-legend" role="dialog" aria-modal="true" aria-labelledby="snd-legend-title"><!-- v4.4 옛글자 소리 범례 — 설정 [입 모양 그림 보기]·옛글자 탭·발견 칩에서 같은 창. 설정창 위에 뜬다(z-index 10000) · 문구는 검수(기획·QA) 반영 -->
+    <h3 id="snd-legend-title">입 모양 그림 — 한글에 없는 소리 셋</h3>
+    <div id="snd-legend-preview" class="hint" hidden></div>
+    <table><tr><th>글자</th><th>소리</th><th>비슷한 한글 소리와 다른 점</th><th>견주기</th></tr><tr><td><span class="big">ㆄ</span></td><td>f</td><td>ㅍ처럼 시작하지만 입술을 다물지 않아요 — 윗니를 아랫입술에 살짝 대고 바람만</td><td>파인(pine) ↔ ᅗᅡ인(fine)</td></tr><tr><td><span class="big">ㅸ</span></td><td>v</td><td>ㆄ f와 같은 입 모양에서 목만 울려요 — ㅂ처럼 입술을 다물지 않아요</td><td>밴(ban) ↔ ᄫᅢᆫ(van)</td></tr><tr><td><span class="big">ㅿ</span></td><td>z</td><td>ㅅ 자리(혀끝을 윗잇몸 가까이)에서 목만 울려요 — ㅈ이 아니에요</td><td>수-(sue) ↔ ᅀᅮ-(zoo)</td></tr></table>
+    <div class="hint">ㆄ·ㅸ는 ㅍ·ㅂ 아래에 ㅇ을 이어 쓴 글자예요(연서). 훈민정음은 이렇게 쓰면 입술을 가볍게 내는 소리(순경음)가 된다고 했고, pAdo는 그 작은 ㅇ을 "바람이 샌다"는 표시로 읽어요.<br>ㅿ는 세종 때부터 있던 ㅅ 계열 글자예요(반치음) — ㅇ을 이은 글자가 아니에요.<br>모음이 뒤따르면 ᅗᅡ처럼 붙고, 끝이나 자음 앞에선 ㆄ처럼 홀로 서요 — 같은 글자예요. 홀로 선 ㆄ·ㅸ·ㅿ는 받침이 아니라 따로 나는 소리예요('으'를 붙이지 않아요).<br>f·v·z는 다른 영어 글자와 붙어 있어도 바뀌어요: from 「ㆄr엄」 · left 「레ㆄt」. 「five」처럼 한글이 하나도 없는 영어 인용은 그대로 둬요.<br>r·th·끝의 k·s·t는 이번에는 영어 글자 그대로 둬요 — 이 세 글자로는 적을 수 없고, 끝소리를 한글 받침으로 쓰면 소리가 달라져서예요. r은 입술을 '우'처럼 오므리고 혀는 어디에도 닿지 않게, th는 혀끝을 이 사이에 살짝 내밀고 바람.<br>괄호 (드)는 있는 듯 없는 듯 작게 — 1908년 지석영의 『아학편』이 영어 소리를 적을 때 작은 글자로 쓰던 것과 같은 뜻이에요.<br>알아 두기: 받침 ㅇ은 원래 세종의 ㆁ(옛이응)이에요. 세종 때 ㆄ·ㅸ는 두 입술 소리였고 영어 f·v는 윗니 소리라 꼭 같진 않아요 — 진짜 소리는 🔊 읽어 주기로 들어요. 이 글자는 읽는 용도예요 — 영어나 한국어 글을 쓸 때는 쓰지 않아요.<br><span style="color:var(--text-mute)">출처: 1446 훈민정음 해례(연서: ㆄ·ㅸ) · 1948 문교부 「들온말 적는 법」(ㆄ=f·ㅸ=v·ㅿ=z). 표준 표기(외래어 표기법)가 아니라 학습용 근사치예요. AI는 이 글자를 쓰지 않아요 — 앱이 화면에서 그려요.</span></div>
+    <div class="acct-row" style="justify-content:flex-end;gap:8px;margin-top:10px"><button type="button" class="g-btn" id="snd-legend-no" hidden>지금처럼 둘게요</button><button type="button" class="g-btn primary" id="snd-legend-on" hidden>옛글자로 켜기</button><button type="button" class="g-btn" id="snd-legend-close">닫기</button></div>
+  </div>
 <div class="modal-bg" id="modal-bg"></div>
 <div class="modal" id="rules-modal">
   <h2>⚖️ 영어 규칙 — 영어의 공식</h2>
@@ -1636,6 +1647,9 @@
   <select id="set-design"><option value="classic">클래식 모양</option><option value="v4">새 모양</option></select>
   <select id="set-theme" style="margin-top:6px" aria-label="밝기"><option value="auto">밝기 자동(기기 설정)</option><option value="light">밝게</option><option value="dark">어둡게</option></select>
   <div class="hint">새 모양은 색·글꼴·간격이 차분하게 바뀐 모양이에요. 오늘 할 일은 🌊 오늘과 메인 화면(왼쪽 위 pAdo 로고)에서 봐요. 기록·설정은 두 모양이 같이 써요. 밝기는 고른 적이 없으면 밝게예요(자동은 기기 설정을 따라요). 이 설정은 이 기기에만 저장돼요.</div>
+  <label style="margin-top:16px" id="set-snd-label">🔤 소리 표기 — 영어 단어 옆에 붙는 한글 소리(on「온」·five「f아이v」)에서 한글에 없는 소리를 어떻게 적을지 (이 기기에만 저장)</label><!-- v4.4 -->
+  <select id="set-snd" aria-label="소리 표기"><option value="latin">지금처럼 — 영어 글자 섞기 (five = 「f아이v」)</option><option value="old">옛글자 섞기(실험) — ㆄ=f · ㅸ=v · ㅿ=z (five = 「ᅗᅡ이ㅸ」)</option></select>
+  <div class="hint" id="snd-hint">"바람 소리, 학 울음, 닭 울음, 개 짖는 소리까지 적을 수 있다" — 훈민정음 해례본, 정인지의 글(1446). 세종은 글자 스물여덟 개만이 아니라 글자 만드는 법도 남겼어요. ㅍ·ㅂ 아래 ㅇ을 이어 쓰면 입술을 가볍게 내는 소리(ㆄ·ㅸ), 그리고 세종 때부터 있던 ㅿ — 이 셋을 f·v·z 자리에만 빌려 와요.<br>소리를 눈으로 구분해 보는 실험 표기이고 표준 표기(외래어 표기법)가 아니에요 — 한글 표기는 늘 근사치예요. r·th는 이 글자들로도 못 적어 영어 글자 그대로예요. 소리는 설정과 상관없이 영어 글자를 섞은 원래 표기로 읽어 줘요. 2단계부터 글 속 「한글 소리」가 나올 때마다 보여요(1단계는 입 모양 그림만). 다른 앱에 붙여 넣으면 깨져 보일 수 있어요. <button type="button" class="g-btn" id="snd-legend-btn" style="margin-top:6px">입 모양 그림 보기</button></div>
   <div id="set-voice-box"><!-- v3.2 ④: 기기별 목소리 선택 — speechSynthesis가 없으면 JS가 숨긴다 -->
   <label style="margin-top:16px" id="set-voice">🗣 말하기 목소리 — 답을 읽어 주는 목소리(이 기기에만 저장)</label>
   <div class="hint" id="voice-hint">이 브라우저에 설치된 목소리 중에서 골라요 — 기기마다 달라요. "인터넷 필요"는 소리를 만들 때 브라우저 회사 서버를 쓰는 목소리예요. 윈도우에선 엣지 브라우저의 목소리(SunHi·Aria)가 가장 자연스러워요.</div>
@@ -1740,6 +1754,20 @@
    ════════════════════════════════════════════════════════════ */
 
 /* ── 유틸 ── */
+/* ── v4.4 「옛글자 소리」 — 「한글 소리」의 라틴 f/v/z를 훈민정음 연서 글자(ㆄ ㅸ ㅿ)로 *화면에서만* 바꿔 보인다. 저장·AI 지시문·읽어 주기·하네스 원문은 그대로(설계 §16). 기본 끔, 2~4단계에서만, 범례 동반 ── */
+const SND_L = { f: "\u1157", v: "\u112B", z: "\u1140" }; // 초성 조합형 ᅗ ᄫ ᅀ (뒤 음절의 초성 ㅇ 자리)
+const SND_C = { f: "\u3184", v: "\u3178", z: "\u317F" }; // 홀로 선 호환 자모 ㆄ ㅸ ㅿ (끝·자음 앞)
+const LS_SND = "we_snd_v1"; // "latin"(기본) | "old" — 기기별(글꼴 지원이 기기마다 달라 동기화하지 않는다)
+let _sndFont = null; // null=미측정 · true=글꼴이 옛 초성을 한 음절로 붙인다 · false=낱자 모드
+function sndMode(){ try { return localStorage.getItem(LS_SND) === "old" ? "old" : "latin"; } catch(e){ return "latin"; } }
+function sndFontOK(){ if(_sndFont !== null) return _sndFont; try { const c = document.createElement("canvas").getContext("2d"); c.font = "20px 'Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo','Noto Sans CJK KR',sans-serif"; const w = (x) => c.measureText(x).width; _sndFont = w("\u112B\u1165") < 0.75 * (w("\u112B") + w("\u1165")); } catch(e){ _sndFont = false; } return _sndFont; } // 조합되면 폭이 한 글자(≈1em), 안 되면 두 글자
+function sndLv(){ try { const k = state.activeWord; return lvNum(k && typeof effLevel === "function" ? effLevel(k) : globalLevel()) || 0; } catch(e){ return 0; } } // 보는 대화창의 단계(대화창별 단계 고쳐 쓰기 반영 — 검수)
+function sndOn(){ return sndMode() === "old" && sndLv() >= 2; } // 1단계는 범례 카드만(소리 단계 — 새 글자를 더 얹지 않는다). 상한은 없다: 「한글 소리」가 나오면 어느 단계든 바꾼다(검수 — 글 모드 5단계에도 공통 [발음 표기]가 붙는다)
+function sndOld(inner, mode){ // 「」 안 문자열만 — 한글이 하나도 없으면(「five」·「desk」 영어 인용) 그대로. 있으면 f/v/z 전부(다른 영어 글자와 붙어 있어도: fr엄→ㆄr엄 · 레ft→레ㆄt) → 뒤 음절 초성이 ㅇ이면 옛 초성으로 갈아 끼우고(ᅗᅡ), 아니면 홀로 선 낱자(ㆄ). <b>/<i> 태그가 끼어도 본다. 앞 글자를 먹지 않으므로 f이f티(fifty)의 둘째 f도 바뀐다(검수). 실패하면 원문
+  try { const s = String(inner); if(!/[가-힣]/.test(s)) return s; return s.replace(/([fvzFVZ])((?:<\/?[bi]>)*)([가-힣]?)/g, (m, ch, tags, syl) => { const k = ch.toLowerCase(); if(syl && mode !== "compat"){ const c = syl.charCodeAt(0) - 0xAC00, L = Math.floor(c / 588); if(L === 11){ const V = Math.floor((c % 588) / 28), T = c % 28; return tags + SND_L[k] + String.fromCharCode(0x1161 + V) + (T ? String.fromCharCode(0x11A7 + T) : ""); } } return SND_C[k] + tags + syl; }); } catch(e){ return String(inner); } }
+function sndPlain(x){ try { return String(x).replace(/[\u1157\u112B\u1140]/g, (c) => ({ "\u1157": "f\u110B", "\u112B": "v\u110B", "\u1140": "z\u110B" })[c]).replace(/[\u3184\u3178\u317F]/g, (c) => ({ "\u3184": "f", "\u3178": "v", "\u317F": "z" })[c]).normalize("NFC"); } catch(e){ return String(x); } } // 역변환 — 드래그·인용·스크린리더는 늘 현행 표기
+function sndWrap(inner){ const plain = String(inner).replace(/<[^>]+>/g, "").replace(/"/g, "&quot;"); if(!sndOn()) return `<span class="snd" data-plain="${plain}">「${inner}」</span>`; return `<span class="snd on" role="img" data-plain="${plain}" aria-label="${plain}" title="옛글자 소리(실험) — 누르면 입 모양 그림">「${sndOld(inner, sndFontOK() ? "full" : "compat")}」</span>`; }
+try { document.documentElement.setAttribute("data-snd", sndMode()); } catch(e){}
 function esc(s){ return String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
 /* 리치 텍스트: esc 후 안전 인라인만 복원(<u><b><i><em><code>) + *강조* / **굵게** (index.html 데이터 관례) */
 function rt(s){
@@ -1758,7 +1786,8 @@ function mdRender(src){
   const inline = (t) => esc(t)
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>")
-    .replace(/(^|[^*])\*([^*\s][^*]*)\*/g, "$1<i>$2</i>");
+    .replace(/(^|[^*])\*([^*\s][^*]*)\*/g, "$1<i>$2</i>")
+    .replace(/「([^「」\n]{1,80})」/g, (m, inner) => sndWrap(inner)); // v4.4: 「한글 소리」는 span으로(원문 data-plain) — 옛글자 모드면 f/v/z만 바꿔 그린다
   while(i < lines.length){
     const ln = lines[i];
     if(/^\s*$/.test(ln)){ flushPara(); i++; continue; }
@@ -5374,6 +5403,7 @@ function renderChatLog(){
   setSendBtn(log, ACTIVE.has(chat));
   renderQIndex();
   if(typeof renderToday === "function") renderToday(); // v3.0: 🌊 오늘 진행 표시
+  if(typeof sndAfterRender === "function") sndAfterRender(log); // v4.4: 옛글자 발견 칩·1단계 카드
 }
 function fitQaSelects(){ // PC 도구 줄의 셀렉트는 가장 긴 옵션이 아니라 지금 라벨 폭으로
   if(typeof isDeskView === "function" && !isDeskView()) return;
@@ -5966,7 +5996,7 @@ function saStress(en, stress){ if(!stress) return esc(en);
 function saDetailHTML(a){
   const kw = (a.keyWords||[]).map(w=>`
     <div class="sa-word">
-      <div class="sa-word-head"><span class="sa-word-w">${esc(w.word)}</span>${w.ipa?`<span class="sa-word-ipa">${esc(w.ipa)}</span>`:""}${w.koPron?`<span class="sa-word-ko">"${esc(w.koPron)}"</span>`:""}</div>
+      <div class="sa-word-head"><span class="sa-word-w">${esc(w.word)}</span>${w.ipa?`<span class="sa-word-ipa">${esc(w.ipa)}</span>`:""}${w.koPron?`<span class="sa-word-ko">"${sndOn() ? sndOld(esc(w.koPron), sndFontOK() ? "full" : "compat") : esc(w.koPron)}"</span>`:""}</div>
       ${(w.senses||[]).map(s=>`<div class="sa-sense"><span class="sa-pos">${esc(s.pos)}</span><span class="sa-sense-m">${esc(s.meaning)}</span>${s.example?`<span class="sa-sense-ex">${esc(s.example)}</span>`:""}</div>`).join("")}
       ${w.derivatives?`<div class="sa-deriv"><b>파생어</b> ${esc(w.derivatives)}</div>`:""}
       ${w.nuance?`<div class="sa-nuance"><b>뉘앙스</b> ${esc(w.nuance)}</div>`:""}
@@ -6083,12 +6113,12 @@ function selContext(sel, word){
     const r = sel.getRangeAt(0);
     const node = r.startContainer;
     let t = "", off = 0;
-    if(node.nodeType === 3){ t = String(node.textContent || "").replace(/🔊/g, "  "); off = r.startOffset; } // 🔊 → 두 칸 공백(서로게이트 쌍) — 오프셋 보존
+    if(node.nodeType === 3){ t = sndPlain(String(node.textContent || "")).replace(/🔊/g, "  "); off = r.startOffset; } // v4.4: 문맥도 현행 표기(받침 든 옛 음절 앞에선 오프셋이 한 칸 어긋날 수 있다 — 문맥은 근사) // 🔊 → 두 칸 공백(서로게이트 쌍) — 오프셋 보존
     if(t.replace(/\s+/g, "").length < word.replace(/\s+/g, "").length + 2){
       // 텍스트 노드가 선택 조각뿐이면(굵게 조각·짧은 스팬) 둘러싼 블록으로 확장
       const el = node.nodeType === 3 ? node.parentElement : node;
       const host = el && el.closest ? (el.closest("p, li, td, blockquote, .msg, .sv-item, section, div") || el) : el;
-      t = host ? String(host.innerText || "").replace(/🔊/g, " ") : t;
+      t = host ? sndPlain(String(host.innerText || "")).replace(/🔊/g, " ") : t; // v4.4(검수): 둘러싼 블록 경로도 현행 표기 — 옛 자모가 문맥(chipCtx)으로 새지 않게
       const i = t.indexOf(word);
       off = i >= 0 ? i : 0;
     }
@@ -6179,7 +6209,7 @@ function selectionChipHandler(e, origin){
   setTimeout(() => {
     const sel = window.getSelection();
     // v2.22: 🔊 버튼이 선택 범위에 끼어도 인용·질문 텍스트에선 지운다
-    const text = sel ? String(sel).replace(/🔊/g, "").trim() : "";
+    const text = sel ? sndPlain(String(sel)).replace(/🔊/g, "").trim() : ""; // v4.4: 옛글자 → 현행 표기
     // v2.28: 뜻이 있는 한 글자("약"·"결"·"a")도 허용 — 문장부호·공백 한 글자만 제외
     if(text && sel.rangeCount && (text.length >= 2 || /^[가-힣a-zA-Z]$/.test(text))){
       chipMenuShow(text, origin, selContext(sel, text), { x: e.clientX, y: e.clientY }); // 둘러싼 문장 — 문맥 인지 뜻 찾기 (v2.28)
@@ -6255,7 +6285,7 @@ document.addEventListener("selectionchange", () => {
   clearTimeout(_touchSelTimer);
   _touchSelTimer = setTimeout(() => {
     const sel = window.getSelection();
-    const text = sel ? String(sel).trim() : "";
+    const text = sel ? sndPlain(String(sel)).trim() : ""; // v4.4
     if(!text || text.length < 2 || !sel.rangeCount) return; // 선택 해제 시 숨김은 기존 바깥-탭(mousedown) 소관
     const node = sel.anchorNode && (sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentElement);
     if(!node) return;
@@ -7580,7 +7610,7 @@ document.addEventListener("click", (e) => {
 function closeOpenModals(){ // 바깥 클릭·Esc 공용 — 첫 설정·비밀번호 창은 닫지 않는다(고르던 것이 날아가지 않게) — v3.0 2차 렌즈. 3차: 학습 설정 고쳐 쓰기는 저장 없이 닫힌다(취소)
   if(document.getElementById("pw-modal").classList.contains("show")) return false;
   if(_ob){ if(_ob.edit) obClose(); return false; }
-  closeSettings(); closeMemo(); closeRules(); closeSaved(); closePractice(); closeQH(); closeReview(); closeToday();
+  closeSettings(); closeMemo(); closeRules(); closeSaved(); closePractice(); closeQH(); closeReview(); closeToday(); if(typeof closeSndLegend === "function") closeSndLegend();
   return true;
 }
 document.addEventListener("keydown", (e) => {
@@ -7588,12 +7618,12 @@ document.addEventListener("keydown", (e) => {
   const lb = document.querySelector(".img-lightbox");
   if(lb){ lb.remove(); return; }
   if(document.body.classList.contains("m-drawer")){ mDrawer(false); const mb = document.getElementById("m-menu"); if(mb) mb.focus(); return; } // ☰ 서랍도 Esc로 — 포커스는 ☰로 복귀
-  if(document.querySelector(".modal.show")){ closeOpenModals(); return; }
+  if(document.querySelector(".modal.show")){ const sl = document.getElementById("snd-legend"); if(sl && sl.classList.contains("show") && document.querySelectorAll(".modal.show").length > 1){ closeSndLegend(); return; } closeOpenModals(); return; } // v4.4(검수): 설정 위에 뜬 범례는 Esc로 범례만
   if(document.body.classList.contains("rb-layer")){ setRbOpen(false); return; } // v3.1: 자료 레이어도 Esc로(위에 창이 떠 있으면 창부터)
 });
 document.addEventListener("keydown", (e) => { // 접근성: 창이 떠 있는 동안 Tab은 창 안을 돈다(스크림 뒤 버튼에 Enter가 들어가 AI를 부르지 않게)
   if(e.key !== "Tab") return;
-  const ms = document.querySelectorAll(".modal.show"); let m = ms[ms.length - 1]; if(!m && document.body.classList.contains("home-open")) m = document.getElementById("home-layer"); if(!m) return; // v4.2 ⑪(검수·접근성): 홈이 떠 있으면 Tab은 홈 안을 돈다(가려진 말풍선·도구 줄로 새지 않게)
+  const ms = document.querySelectorAll(".modal.show"); let m = ms[ms.length - 1]; { const sl = document.getElementById("snd-legend"); if(sl && sl.classList.contains("show")) m = sl; } /* v4.4(검수): 범례가 설정 위에 떠 있으면 Tab은 범례 안을 돈다(DOM 순서상 범례가 앞) */ if(!m && document.body.classList.contains("home-open")) m = document.getElementById("home-layer"); if(!m) return; // v4.2 ⑪(검수·접근성): 홈이 떠 있으면 Tab은 홈 안을 돈다(가려진 말풍선·도구 줄로 새지 않게)
   const f = [...m.querySelectorAll("a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex='-1'])")].filter(x => x.offsetParent !== null && !x.hidden && x.tabIndex >= 0); // tabindex=-1(라디오 묶음의 나머지)은 정거장이 아니다 — 3차 렌즈: Shift+Tab 누수
   if(!f.length) return;
   const i = f.indexOf(document.activeElement);
@@ -8049,6 +8079,7 @@ function openSettings(){
   acctRenderSettings(); srvProbe(); // 👥 로그인 전/후 화면 + 서버 상태(가입 코드 필요? 서버 키?)
   document.getElementById("set-memo").checked = memoOn(); // v2.53
   { const mh = document.getElementById("set-mic-hold"); if(mh) mh.checked = micHoldOn(); } // v3.2 ⑤
+  { const ss = document.getElementById("set-snd"); if(ss) ss.value = sndMode(); } // v4.4
   if(typeof voiceRenderSettings === "function") voiceRenderSettings(); // v3.2 ④
   if(typeof designUiSync === "function") designUiSync(); // v4
   modalBg.classList.add("show"); modal.classList.add("show");
@@ -8110,7 +8141,7 @@ modalBg.addEventListener("click", closeOpenModals); // v3.0: 첫 설정·비밀�
 function ttsExtract(text){
   // 한국어를 경계로 잘라 영어 구간만 — "당신: If I could ..." 같은 혼합 줄에서 영어만 읽는다
   const runs = [];
-  String(text || "").split(/[가-힣ㄱ-ㅎㅏ-ㅣ]+/).forEach((seg) => {
+  String(text || "").split(/[가-힣ㄱ-ㅎㅏ-ㅣ\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uD7B0-\uD7FF]+/).forEach((seg) => { // v4.4: 옛 자모·호환 자모도 한국어 경계
     const s = seg.replace(/^[^A-Za-z]+/, "").replace(/[^A-Za-z0-9.!?'’"]+$/, "");
     if((s.match(/[A-Za-z][A-Za-z'’]*/g) || []).length >= 2) runs.push(s);
   });
@@ -8122,7 +8153,7 @@ function ttsExtract(text){
 const TTS_DOT = "\u2024"; // 문장 끝이 아닌 점을 잠시 바꿔 두는 자리표시(원 점 하나 리더)
 function ttsSentences(text){
   const out = [];
-  String(text || "").split(/[가-힣ㄱ-ㅎㅏ-ㅣ]+/).forEach((seg) => {
+  String(text || "").split(/[가-힣ㄱ-ㅎㅏ-ㅣ\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uD7B0-\uD7FF]+/).forEach((seg) => { // v4.4: 옛 자모·호환 자모도 한국어 경계
     let s = seg.replace(/…/g, ".") // 유니코드 말줄임표도 문장 끝
       .replace(/\b(Mr|Mrs|Ms|Dr|Prof|Sr|Jr|St|vs|etc)\./g, "$1" + TTS_DOT) // 약어의 점 ("No."는 독립 문장으로 흔해 제외 — QA)
       .replace(/\b([ei])\.([ge])\./g, "$1" + TTS_DOT + "$2" + TTS_DOT) // e.g. / i.e.
@@ -8839,7 +8870,7 @@ function moveB64Decode(b64){
   for(let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
   return new TextDecoder().decode(bytes);
 }
-function moveSkip(k){ return ["we_design_v1", "we_theme_v1", "we_design_seen_v1", "we_tts_voice_v1", "we_tts_pick_note_v1", "we_mic_hold_v1", "we_sync_url", "we_sync_secret", "we_sync_last", "we_acct_token", "we_acct_code", "we_admin_secret", "we_learn_q", "we_insights_v1", "we_mic_ok_v1", "we_model_rev", "we_mtab_v1", "we_vidh_v1", "we_tts_note_v1"].indexOf(k) >= 0; } // v3.0 2차 렌즈: 이사 코드에 세션 토큰·서버 주소·관리 암호·기기별 큐를 담지 않는다(코드에 적힌 임의 서버로 기록이 가는 길 차단)
+function moveSkip(k){ return ["we_design_v1", "we_theme_v1", "we_design_seen_v1", "we_tts_voice_v1", "we_tts_pick_note_v1", "we_mic_hold_v1", "we_snd_v1", "we_snd_note_v1", "we_snd_chip_v1", "we_snd_card_v1", "we_sync_url", "we_sync_secret", "we_sync_last", "we_acct_token", "we_acct_code", "we_admin_secret", "we_learn_q", "we_insights_v1", "we_mic_ok_v1", "we_model_rev", "we_mtab_v1", "we_vidh_v1", "we_tts_note_v1"].indexOf(k) >= 0; } // v3.0 2차 렌즈: 이사 코드에 세션 토큰·서버 주소·관리 암호·기기별 큐를 담지 않는다(코드에 적힌 임의 서버로 기록이 가는 길 차단)
 function moveExportCode(){
   const data = {};
   for(let i = 0; i < localStorage.length; i++){
@@ -8926,8 +8957,8 @@ document.getElementById("move-import").addEventListener("click", () => {
    새 계정의 빈 기록 원칙(사용자 요구): 로그인 시 acctConnect가 confirm으로 확인 — 다른 계정으로 바꾸면 이 브라우저 기록을 비우고 시작, 첫 로그인은 "올릴까/비울까/그만둘까".
    안전장치(v2.45 계승): 제외 목록(키·토큰·암호·커서·기기별 요금)은 push·pull 양쪽에서 제외 / pull 성공 전 push 금지 / 서버 409 역행 거부 / 로그아웃·계정 바꾸기 뒤 새로 고침 전까지 저장·push 차단(_acctWiped). */
 const LS_SYNC_URL = "we_sync_url", LS_SYNC_SECRET = "we_sync_secret", LS_SYNC_LAST = "we_sync_last";
-const SYNC_EXCLUDE = ["we_design_v1", "we_theme_v1", "we_design_seen_v1", "we_tts_voice_v1", "we_tts_pick_note_v1", "we_mic_hold_v1", LS_KEY, LS_SYNC_URL, LS_SYNC_SECRET, LS_SYNC_LAST, LS_ACCT, "we_acct_code", LS_ACCT_NAME, LS_ADMIN, LS_USAGE, LS_RB_OPEN, LS_RAIL, "we_learn_q", "we_insights_v1", "we_mic_ok_v1", "we_model_rev", "we_mtab_v1", "we_vidh_v1", "we_tts_note_v1"]; // push 제외 + pull 무시 — 키·토큰·암호·커서·기기별 요금
-const ACCT_KEEP = ["we_cost_v1", "we_design_v1", "we_theme_v1", "we_design_seen_v1", "we_tts_voice_v1", "we_tts_pick_note_v1", "we_mic_hold_v1", LS_KEY, LS_MODEL, LS_SYSTEM, LS_MEMO_ON, LS_SYNC_URL, LS_ACCT, LS_ACCT_NAME, LS_USAGE, LS_MTAB, "we_tts_note_v1", LS_RB_OPEN, LS_RAIL, "we_model_rev", "we_mic_ok_v1"]; // 계정을 바꿔도 남는 기기 설정(관리 암호는 이 화면에 두지 않는다 — v3.0 2차 렌즈)
+const SYNC_EXCLUDE = ["we_design_v1", "we_theme_v1", "we_design_seen_v1", "we_tts_voice_v1", "we_tts_pick_note_v1", "we_mic_hold_v1", "we_snd_v1", "we_snd_note_v1", "we_snd_chip_v1", "we_snd_card_v1", LS_KEY, LS_SYNC_URL, LS_SYNC_SECRET, LS_SYNC_LAST, LS_ACCT, "we_acct_code", LS_ACCT_NAME, LS_ADMIN, LS_USAGE, LS_RB_OPEN, LS_RAIL, "we_learn_q", "we_insights_v1", "we_mic_ok_v1", "we_model_rev", "we_mtab_v1", "we_vidh_v1", "we_tts_note_v1"]; // push 제외 + pull 무시 — 키·토큰·암호·커서·기기별 요금
+const ACCT_KEEP = ["we_cost_v1", "we_design_v1", "we_theme_v1", "we_design_seen_v1", "we_tts_voice_v1", "we_tts_pick_note_v1", "we_mic_hold_v1", "we_snd_v1", "we_snd_note_v1", "we_snd_chip_v1", "we_snd_card_v1", LS_KEY, LS_MODEL, LS_SYSTEM, LS_MEMO_ON, LS_SYNC_URL, LS_ACCT, LS_ACCT_NAME, LS_USAGE, LS_MTAB, "we_tts_note_v1", LS_RB_OPEN, LS_RAIL, "we_model_rev", "we_mic_ok_v1"]; // 계정을 바꿔도 남는 기기 설정(관리 암호는 이 화면에 두지 않는다 — v3.0 2차 렌즈)
 let _syncPulledOk = false, _syncPushedHash = "", _syncBusy = false, _syncTimer = null, _srvInfo = null;
 function syncCfg(){
   const url = String(PADO_SERVER_URL || localStorage.getItem(LS_SYNC_URL) || "").trim().replace(/\/+$/, ""); // v3.0 2차 렌즈: 앱에 심긴 주소가 있으면 그것만(저장소의 we_sync_url로 바꿔치기 불가) — 심긴 값이 없을 때(개발·테스트)만 저장소 값
@@ -9986,7 +10017,30 @@ function renderFlowBar(p){ // 오늘의 흐름 — todayPlan()의 steps/extra를
 document.getElementById("flow-bar").addEventListener("click", (e) => { const b = e.target.closest("[data-fb]"); if(!b) return; const k = b.dataset.fb; if(k === "review" && !srsDue().length){ openReview(); return; } if(b.classList.contains("na")){ weToast("이번 주 점검은 아직이에요 — 때가 되면 🌊 오늘에서 열려요"); return; } todayAct(k, ""); });
 document.getElementById("design-toggle").addEventListener("click", () => { if(typeof _mainStreamN !== "undefined" && _mainStreamN > 0){ weToast("답이 끝나면 바꿀 수 있어요"); return; } setDesign(isV4() ? "classic" : "v4"); });
 document.getElementById("set-design").addEventListener("change", (e) => { if(typeof _mainStreamN !== "undefined" && _mainStreamN > 0){ designUiSync(); weToast("답이 끝나면 바꿀 수 있어요"); return; } setDesign(e.target.value); });
-document.getElementById("set-theme").addEventListener("change", (e) => applyTheme(e.target.value));
+document.getElementById("set-theme").addEventListener("change", (e) => applyTheme(e.target.value))
+/* ── v4.4 「옛글자 소리」 배선(검수 반영: 흐르는 중 재렌더 금지 · 범례는 설정 위 · 발견 칩은 그 답 아래, 표식은 누를 때 · 1단계 카드는 글자별 · 드래그 중 범례 금지) ── */
+function applySnd(v){ try { localStorage.setItem(LS_SND, v === "old" ? "old" : "latin"); } catch(e){} document.documentElement.setAttribute("data-snd", sndMode()); const ss = document.getElementById("set-snd"); if(ss) ss.value = sndMode();
+  if(typeof _mainStreamN !== "undefined" && _mainStreamN > 0){ weToast("설정은 저장됐어요 — 답이 끝나면 글 속 표기가 바뀌어요"); return; } // 검수: 흐르는 중엔 저장만(모양 토글 선례) — 끝날 때의 재렌더가 반영한다
+  if(typeof renderAll === "function") renderAll();
+  if(sndMode() === "old"){ let seen = false; try { seen = !!localStorage.getItem("we_snd_note_v1"); } catch(e){} if(!seen){ try { localStorage.setItem("we_snd_note_v1", "1"); } catch(e){} weToast(sndLv() >= 2 ? "옛글자 셋(ㆄ·ㅸ·ㅿ)이 f·v·z 자리에 나와요 — 모르는 글자가 보이면 눌러 보세요. 소리는 그대로 읽어 줘요" : "옛글자 소리는 2단계부터 글 속에 보여요 — 지금은 입 모양 그림만"); } if(!sndFontOK()) weToast("이 기기 글꼴은 옛글자를 한 글자로 못 붙여요 — 낱자(ㆄ아이ㅸ)로 보여 드려요"); } }
+let _sndLegendFrom = null; // 범례를 연 요소 — 닫을 때 포커스 복귀(설정 위에 떴을 때 [입 모양 그림 보기]로)
+function openSndLegend(opts){ const m = document.getElementById("snd-legend"); if(!m) return; _sndLegendFrom = document.activeElement; const pv = document.getElementById("snd-legend-preview"); if(pv){ pv.hidden = !(opts && opts.preview); if(opts && opts.preview) pv.textContent = opts.preview; } ["snd-legend-no", "snd-legend-on"].forEach(id => { const b = document.getElementById(id); if(b) b.hidden = !(opts && opts.offer); }); m.classList.add("show"); modalBg.classList.add("show"); try { document.getElementById("snd-legend-close").focus(); } catch(e){} }
+function closeSndLegend(){ const m = document.getElementById("snd-legend"); if(m && m.classList.contains("show")){ m.classList.remove("show"); if(!document.querySelector(".modal.show")) modalBg.classList.remove("show"); /* 검수: 설정창이 아직 떠 있으면 스크림은 남긴다 */ const f = _sndLegendFrom; _sndLegendFrom = null; try { if(f && f.focus && document.contains(f) && f.offsetParent !== null) f.focus(); } catch(e){} } }
+const SND_CARD = { f: "오늘 소리 f — five 「f아이v」. ㅍ처럼 시작하지만 입술을 다물지 않아요(윗니를 아랫입술에 살짝). 옛글자로는 ㆄ(ㅍ 아래 ㅇ = 바람이 샘).", v: "오늘 소리 v — van 「v앤」. ㅂ처럼 시작하지만 입술을 다물지 않고 목을 울려요. 옛글자로는 ㅸ(ㅂ 아래 ㅇ).", z: "오늘 소리 z — zoo 「z우-」. ㅅ 자리에서 목을 울려요 — ㅈ이 아니에요. 옛글자로는 ㅿ." }; // 1단계 첫 카드 — 답에 처음 나온 글자에 맞춰(검수: five 고정 금지)
+const SND_HIT = /(^|[^A-Za-z])[fvzFVZ](?![A-Za-z])/; // 「」 원문에 f/v/z가 한 글자로 든 답
+function sndAfterRender(log){ // 발견 칩(토글 꺼짐·2단계 이상·f/v/z 든 *마지막* 답 아래·누르거나 "안 볼래요"까지 유지 — 표식은 그때, 기기당 1회) · 1단계 첫 카드(토글 켬·1단계·1회). 흐르는 중엔 둘 다 미룬다
+  try { if(!log) return; const lv = sndLv(); const ais = [...log.querySelectorAll(".msg.ai")]; const last = ais[ais.length - 1]; if(!last || last.classList.contains("streaming")) return;
+    let msg = null, hit = null; for(let i = ais.length - 1; i >= 0 && !hit; i--){ const h = [...ais[i].querySelectorAll(".snd")].find(el => SND_HIT.test(el.dataset.plain || "")); if(h){ hit = h; msg = ais[i]; } } if(!hit) return;
+    const seen = (k) => { try { return !!localStorage.getItem(k); } catch(e){ return false; } }, mark = (k) => { try { localStorage.setItem(k, "1"); } catch(e){} };
+    if(sndMode() === "latin" && lv >= 2 && !seen("we_snd_chip_v1")){ const row = document.createElement("div"); row.className = "snd-chip"; row.innerHTML = `<button type="button" class="g-btn" data-snd-try data-plain="${esc(hit.dataset.plain || "")}">옛글자로 보기</button><span>f·v·z를 훈민정음 글자로 보는 실험이 있어요</span><button type="button" class="g-btn" data-snd-skip>안 볼래요</button>`; const nx = msg.nextElementSibling; (nx && nx.classList.contains("ans-row") ? nx : msg).insertAdjacentElement("afterend", row); return; } // 그 답(과 답 버튼 줄) 바로 아래 — 미리보기도 그 답의 「」
+    if(sndMode() === "old" && lv === 1 && !seen("we_snd_card_v1")){ mark("we_snd_card_v1"); const m = (hit.dataset.plain || "").match(SND_HIT); const k = m ? m[0].replace(/[^fvzFVZ]/g, "").toLowerCase() : "f"; const row = document.createElement("div"); row.className = "snd-chip"; row.textContent = (SND_CARD[k] || SND_CARD.f) + " 2단계부터 글 속에 보여 드릴게요. 🔊 읽어 주기로 들어 보세요."; log.appendChild(row); } } catch(e){} }
+function sndChipDone(){ try { localStorage.setItem("we_snd_chip_v1", "1"); } catch(e){} document.querySelectorAll(".snd-chip [data-snd-try]").forEach(b => { const r = b.closest(".snd-chip"); if(r) r.remove(); }); } // 발견 칩 1회 표식 — 눌렀거나 "안 볼래요"·"지금처럼 둘게요"
+document.getElementById("set-snd").addEventListener("change", (e) => applySnd(e.target.value));
+document.getElementById("snd-legend-btn").addEventListener("click", () => openSndLegend());
+document.getElementById("snd-legend-close").addEventListener("click", closeSndLegend);
+document.getElementById("snd-legend-on").addEventListener("click", () => { closeSndLegend(); sndChipDone(); applySnd("old"); });
+document.getElementById("snd-legend-no").addEventListener("click", () => { closeSndLegend(); sndChipDone(); });
+document.addEventListener("click", (e) => { const t = e.target; if(!t || !t.closest) return; const tr = t.closest("[data-snd-try]"); if(tr){ const plain = tr.dataset.plain || "f아이v"; openSndLegend({ offer: true, preview: `이 답의 「${plain}」 — 옛글자로 보면 「${sndOld(plain, sndFontOK() ? "full" : "compat")}」` }); return; } if(t.closest("[data-snd-skip]")){ sndChipDone(); return; } if(t.closest(".snd.on")){ const sel = window.getSelection(); if(sel && !sel.isCollapsed && String(sel).trim()) return; /* 검수: 글을 긁는 중엔 범례를 열지 않는다(칩 메뉴만) */ openSndLegend(); } });
 /* ── v4.2 ⑪ 홈(메인 화면) — 로고 실클릭(또는 Alt+0, 폰은 ☰ 서랍 '홈')으로만 연다(자동으로 열지 않는다 — 흐름 보호). 심사 확정안: 작고 차분한 한 칸 — 제일 큰 글자는 하나(다음 한 걸음), 버튼도 하나. 모든 값은 앱이 이미 계산하는 것(AI 호출 0). 인사·감탄·그래프 없음 ── */
 function homeOpen(){ return document.body.classList.contains("home-open"); }
 function homePlace(){ // PC: 중앙 칸 안(자료 레이어와 같은 측정) — 폭 ≤600, 머리줄부터 입력 상자 위까지
