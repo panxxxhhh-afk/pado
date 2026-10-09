@@ -1401,6 +1401,21 @@
   .snd{cursor:default;} html[data-snd="old"] .snd.on{font-family:'Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo','Noto Sans CJK KR',sans-serif;font-size:1.05em;letter-spacing:.02em;cursor:help;border-bottom:1px dotted var(--border);} #snd-legend{z-index:10000;} /* 검수: nowrap은 문장 길이 「」가 말풍선 밖으로 넘친다 — 제거. 범례는 설정창(9999) 위에 뜬다 */
   #snd-legend table{border-collapse:collapse;margin:8px 0;font-size:.9rem;width:100%;} #snd-legend td,#snd-legend th{border:1px solid var(--border);padding:6px 8px;text-align:center;} #snd-legend .big{font-size:1.35em;font-family:'Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif;} #snd-legend td:nth-child(3){text-align:left;} #snd-legend .hint{line-height:1.6;}
   .snd-chip{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;margin:6px 0 2px;font-size:.85rem;color:var(--text-mute);} .snd-chip .g-btn{font-size:.85rem;}
+
+  /* ══ 신버전2 「학습비 되찾기」 — 패널·게이지·라이브 ══ */
+  #fund-modal{width:min(94vw,720px);max-height:92vh;overflow-y:auto;z-index:10000;} #live-modal{width:min(94vw,640px);max-height:92vh;overflow-y:auto;z-index:10001;} /* 설정창(9999) 위에 뜬다 */
+  .fd-badge{display:inline-block;font-size:.72rem;color:var(--text-mute);border:1px solid var(--border);border-radius:999px;padding:1px 8px;margin-bottom:8px;}
+  .fd-tabs{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0 12px;} .fd-tabs button{border:1px solid var(--border);background:var(--card);color:var(--text-soft);border-radius:999px;padding:4px 10px;font-size:.78rem;cursor:pointer;} .fd-tabs button.on{background:var(--accent-soft);color:var(--accent-deep);border-color:transparent;font-weight:600;}
+  .fd-big{font-size:2rem;font-weight:700;letter-spacing:-.01em;line-height:1.1;color:var(--text);} .fd-sub{font-size:.82rem;color:var(--text-soft);margin-top:4px;}
+  .fd-gauge{height:10px;border-radius:999px;background:var(--border-soft,var(--border));overflow:hidden;margin:10px 0 6px;} .fd-gauge i{display:block;height:100%;background:var(--accent);border-radius:999px;width:0;transition:width .2s;}
+  .fd-next{font-size:.85rem;color:var(--text);margin:6px 0 10px;}
+  .fd-row{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border-soft,var(--border));font-size:.82rem;} .fd-row.zero{color:var(--text-mute);} .fd-row .fd-u{flex:none;min-width:34px;font-weight:700;text-align:right;} .fd-row .fd-u.zero{font-weight:400;} .fd-row .fd-t{flex:1;min-width:0;} .fd-row .g-btn{flex:none;font-size:.72rem;padding:2px 8px;}
+  .fd-list{max-height:48vh;overflow-y:auto;}
+  .fd-terms li{margin:6px 0;line-height:1.55;font-size:.9rem;} .fd-terms{padding-left:20px;}
+  .fd-dist{display:flex;gap:6px;align-items:flex-end;height:64px;margin:8px 0;} .fd-dist div{flex:1;background:var(--accent-soft);border-radius:6px 6px 0 0;position:relative;} .fd-dist div span{position:absolute;left:0;right:0;bottom:-18px;text-align:center;font-size:.7rem;color:var(--text-mute);}
+  .lv-step{display:none;} .lv-step.on{display:block;} .lv-consent label{display:block;margin:4px 0;font-size:.88rem;line-height:1.5;} #live-video{width:100%;max-height:220px;background:#111;border-radius:10px;object-fit:cover;}
+  .lv-q{font-size:1.05rem;line-height:1.6;margin:10px 0;} .lv-timer{font-variant-numeric:tabular-nums;color:var(--text-mute);font-size:.82rem;} #live-ans{width:100%;min-height:72px;}
+  .fd-ok{color:#2f9e63;} .fd-warn{color:#c25858;}
 </style>
 </head>
 <body>
@@ -1413,15 +1428,16 @@
       <span id="rm-rules-slot"></span><!-- #btn-rules가 여기로 옮겨진다 -->
       <div class="rm-row"><span>🌓 밝기</span><select id="rm-theme" class="mini-sel" aria-label="밝기"><option value="light">밝게</option><option value="dark">어둡게</option><option value="auto">자동(기기 설정)</option></select></div>
       <button class="rm-item" type="button" data-mm="design-toggle" role="menuitem">🎨 모양 바꾸기</button>
-      <a class="rm-item" id="rm-next2" href="#" role="menuitem">🎒 신버전2(되찾기)</a><!-- v4.6 -->
+      <button class="rm-item" type="button" data-mm="fund-btn" role="menuitem">🎒 학습비 되찾기</button><!-- 신버전2 -->
       <button class="rm-item" type="button" data-mm="btn-settings" role="menuitem">⚙️ 설정</button>
     </div>
     <h1 class="brand" title="pAdo — 파도를 타듯 언어를 이해하는 AI 학습 엔진"><button id="brand-btn" class="brand-btn" type="button" aria-expanded="false" aria-controls="home-layer" title="홈 — 오늘 할 일 · Alt+0 (다시 누르면 닫혀요)"><!-- v4.2 ⑪(사용자: "로고를 클릭하면 아무 반응이 없어 — 메인 대시보드") -->
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </button></h1>
-    <span class="build">pAdo · v4.6</span>
+    <span class="build">pAdo · v4.5 · 신버전2 v0.1</span>
     <button id="today-pill" type="button" title="오늘의 파도 — 오늘 할 세 걸음을 앱이 정해 드려요"><i class="ico">🌊</i> <span class="lbl">오늘</span> <b id="today-n"></b></button><!-- v3.0 -->
+    <button class="top-btn" id="fund-btn" type="button" title="학습비 되찾기(신버전2) — 공부해서 꺼내 쓴 순간마다 모의 학습비가 되돌아와요 · 이 기기 계산 · 서버 확인 전"><i class="ico">🎒</i> <span class="lbl" id="fund-btn-t">되찾기</span></button><!-- 신버전2 -->
     <span class="spacer"></span>
     <select id="level-select" title="내 학습 단계 — 모든 대화의 설명·예문·문제 난이도가 이 단계에 맞춰져요"></select><!-- v3.0: 옵션은 LEVELS(7단계)에서 렌더 -->
     <button class="top-btn" id="btn-review" type="button" title="오늘 볼 복습 카드 — 드래그로 담은 부분·작문·시험에서 틀린 곳이 1일·3일·1주일·2주일·한 달·석 달 간격으로 다시 나와요"><i class="ico">🧠</i> <span class="lbl">복습</span></button>
@@ -1434,7 +1450,7 @@
       <button class="top-btn" id="btn-memo" type="button" title="메모 — 글과 그림, 자동 저장"><i class="ico">📝</i> <span class="lbl">메모</span></button>
       <button class="top-btn" id="design-toggle" type="button" aria-pressed="false" title="화면 모양 — 새 모양(흐름)과 클래식을 오가요"><i class="ico">🎨</i> <span class="lbl">새 모양</span></button><!-- v4 -->
       <a class="top-btn" id="link-old" href="#" title="신버전 이전의 pAdo로 돌아가기 — 기록은 그대로 이어져요"><i class="ico">↩</i> <span class="lbl">이전 판으로</span></a>
-      <a class="top-btn" id="link-next2" href="#" title="신버전2(실험) — 학습비 되찾기 프로토타입 · 모의 학습비 · 기록은 그대로 이어져요"><i class="ico">🎒</i> <span class="lbl">신버전2(되찾기)</span></a><!-- v4.6 -->
+      <a class="top-btn" id="link-next1" href="#" title="신버전(next)으로 — 기록은 그대로 이어져요"><i class="ico">↩</i> <span class="lbl">신버전으로</span></a><!-- 신버전2 -->
     </div>
     <button class="top-btn" id="acct-chip" type="button" title="계정 — 같은 아이디로 로그인하면 PC와 폰이 이어져요"><i class="ico">👤</i> <span class="lbl" id="acct-chip-t">로그인</span></button><!-- v3.0 -->
     <button class="top-btn" id="btn-settings" type="button" title="설정 — 학습 설정 · 계정 · API 키 · 기기 이사"><i class="ico">⚙️</i> <span class="lbl">설정</span></button>
@@ -1577,6 +1593,20 @@
     <div class="hint">ㆄ·ㅸ는 ㅍ·ㅂ 아래에 ㅇ을 이어 쓴 글자예요(연서). 훈민정음은 이렇게 쓰면 입술을 가볍게 내는 소리(순경음)가 된다고 했고, pAdo는 그 작은 ㅇ을 "바람이 샌다"는 표시로 읽어요.<br>ㅿ는 세종 때부터 있던 ㅅ 계열 글자예요(반치음) — ㅇ을 이은 글자가 아니에요.<br>모음이 뒤따르면 ᅗᅡ처럼 붙고, 끝이나 자음 앞에선 ㆄ처럼 홀로 서요 — 같은 글자예요. 홀로 선 ㆄ·ㅸ·ㅿ는 받침이 아니라 따로 나는 소리예요('으'를 붙이지 않아요).<br>f·v·z는 다른 영어 글자와 붙어 있어도 바뀌어요: from 「ㆄr엄」 · left 「레ㆄt」. 「five」처럼 한글이 하나도 없는 영어 인용은 그대로 둬요.<br>r·th·끝의 k·s·t는 이번에는 영어 글자 그대로 둬요 — 이 세 글자로는 적을 수 없고, 끝소리를 한글 받침으로 쓰면 소리가 달라져서예요. r은 입술을 '우'처럼 오므리고 혀는 어디에도 닿지 않게, th는 혀끝을 이 사이에 살짝 내밀고 바람.<br>괄호 (드)는 있는 듯 없는 듯 작게 — 1908년 지석영의 『아학편』이 영어 소리를 적을 때 작은 글자로 쓰던 것과 같은 뜻이에요.<br>알아 두기: 받침 ㅇ은 원래 세종의 ㆁ(옛이응)이에요. 세종 때 ㆄ·ㅸ는 두 입술 소리였고 영어 f·v는 윗니 소리라 꼭 같진 않아요 — 진짜 소리는 🔊 읽어 주기로 들어요. 이 글자는 읽는 용도예요 — 영어나 한국어 글을 쓸 때는 쓰지 않아요.<br><span style="color:var(--text-mute)">출처: 1446 훈민정음 해례(연서: ㆄ·ㅸ) · 1948 문교부 「들온말 적는 법」(ㆄ=f·ㅸ=v·ㅿ=z). 표준 표기(외래어 표기법)가 아니라 학습용 근사치예요. AI는 이 글자를 쓰지 않아요 — 앱이 화면에서 그려요.</span></div>
     <div class="acct-row" style="justify-content:flex-end;gap:8px;margin-top:10px"><button type="button" class="g-btn" id="snd-legend-no" hidden>지금처럼 둘게요</button><button type="button" class="g-btn primary" id="snd-legend-on" hidden>옛글자로 켜기</button><button type="button" class="g-btn" id="snd-legend-close">닫기</button></div>
   </div>
+
+<div class="modal" id="fund-modal" role="dialog" aria-modal="true" aria-labelledby="fund-title"><!-- 신버전2 학습비 되찾기 -->
+  <div class="fd-badge" id="fund-badge">예시 · 모의 학습비 · 이 기기 계산(서버 확인 전)</div>
+  <h3 id="fund-title">🎒 학습비 되찾기</h3>
+  <div class="fd-tabs" role="tablist"><button type="button" data-ft="home" class="on">되찾기</button><button type="button" data-ft="log">적립 내역</button><button type="button" data-ft="cert">수료 조건</button><button type="button" data-ft="pool">기수 현황</button><button type="button" data-ft="terms">고지</button><button type="button" data-ft="appeal">이의</button></div>
+  <div id="fund-body"></div>
+  <div class="acct-row" style="justify-content:flex-end;gap:8px;margin-top:12px"><button type="button" class="g-btn" id="fund-close">닫기</button></div>
+</div>
+<div class="modal" id="live-modal" role="dialog" aria-modal="true" aria-labelledby="live-title"><!-- 신버전2 최종 라이브 -->
+  <div class="fd-badge">예시 · 1차는 녹화하지 않아요 · 이 기기 채점(서버 확인 전)</div>
+  <h3 id="live-title">🎥 최종 라이브 시험</h3>
+  <div id="live-body"></div>
+  <div class="acct-row" style="justify-content:flex-end;gap:8px;margin-top:12px"><button type="button" class="g-btn" id="live-close">닫기</button></div>
+</div>
 <div class="modal-bg" id="modal-bg"></div>
 <div class="modal" id="rules-modal">
   <h2>⚖️ 영어 규칙 — 영어의 공식</h2>
@@ -1653,6 +1683,9 @@
   <label style="margin-top:16px" id="set-snd-label">🔤 소리 표기 — 영어 단어 옆에 붙는 한글 소리(on「온」·five「f아이v」)에서 한글에 없는 소리를 어떻게 적을지 (이 기기에만 저장)</label><!-- v4.4 -->
   <select id="set-snd" aria-label="소리 표기"><option value="latin">지금처럼 — 영어 글자 섞기 (five = 「f아이v」)</option><option value="old">옛글자 섞기(실험) — ㆄ=f · ㅸ=v · ㅿ=z (five = 「ᅗᅡ이ㅸ」)</option></select>
   <div class="hint" id="snd-hint">"바람 소리, 학 울음, 닭 울음, 개 짖는 소리까지 적을 수 있다" — 훈민정음 해례본, 정인지의 글(1446). 세종은 글자 스물여덟 개만이 아니라 글자 만드는 법도 남겼어요. ㅍ·ㅂ 아래 ㅇ을 이어 쓰면 입술을 가볍게 내는 소리(ㆄ·ㅸ), 그리고 세종 때부터 있던 ㅿ — 이 셋을 f·v·z 자리에만 빌려 와요.<br>소리를 눈으로 구분해 보는 실험 표기이고 표준 표기(외래어 표기법)가 아니에요 — 한글 표기는 늘 근사치예요. r·th는 이 글자들로도 못 적어 영어 글자 그대로예요. 소리는 설정과 상관없이 영어 글자를 섞은 원래 표기로 읽어 줘요. 2단계부터 글 속 「한글 소리」가 나올 때마다 보여요(1단계는 입 모양 그림만). 다른 앱에 붙여 넣으면 깨져 보일 수 있어요. <button type="button" class="g-btn" id="snd-legend-btn" style="margin-top:6px">입 모양 그림 보기</button></div>
+  <label style="margin-top:16px" id="set-fund-label">🎒 학습비 되찾기(신버전2 · 모의) — 실제 결제가 아니에요</label>
+  <div class="acct-row" style="gap:8px;flex-wrap:wrap"><input id="set-fund-paid" type="number" min="0" step="1000" placeholder="모의 학습비(원), 예: 99000" style="max-width:200px" aria-label="모의 학습비(원)"><input id="set-fund-start" type="date" aria-label="기수 시작일" style="max-width:170px"><select id="set-fund-mode" aria-label="완주 보너스 방식"><option value="A">완주 보너스 A — 사업자 정액(기본)</option><option value="B">B — 미수료 잔액 나눔(법률 검토 전 · 실험)</option></select></div>
+  <div class="hint" id="set-fund-hint">학습비의 35%는 운영비로 되찾을 수 없고, 나머지가 되찾기 상한이에요. 되찾기는 복습에서 기억해 내기·수료 확인 시험 통과처럼 '꺼내 쓴' 순간에만 쌓여요. 모든 숫자는 이 기기 계산이고 서버가 확인하기 전까지는 예시예요. <button type="button" class="g-btn" id="set-fund-terms">🧾 고지 다시 보기</button> <button type="button" class="g-btn" id="set-fund-reset">처음부터</button></div>
   <div id="set-voice-box"><!-- v3.2 ④: 기기별 목소리 선택 — speechSynthesis가 없으면 JS가 숨긴다 -->
   <label style="margin-top:16px" id="set-voice">🗣 말하기 목소리 — 답을 읽어 주는 목소리(이 기기에만 저장)</label>
   <div class="hint" id="voice-hint">이 브라우저에 설치된 목소리 중에서 골라요 — 기기마다 달라요. "인터넷 필요"는 소리를 만들 때 브라우저 회사 서버를 쓰는 목소리예요. 윈도우에선 엣지 브라우저의 목소리(SunHi·Aria)가 가장 자연스러워요.</div>
@@ -4225,6 +4258,7 @@ const EXAM_TYPES = [
   { v: "cloze", label: "빈칸 채우기", desc: "기록의 영어 문장에서 이 단어(또는 틀렸던 조각 — 관사·전치사·시제 자리)를 ____로 비우고 채우게 한다. 보기는 주지 않는다." },
   { v: "pick", label: "결 고르기(3지선다)", desc: "기록의 문장 자리에 맞는 표현 1개 + 한국인이 헷갈리기 쉬운 오답 2개를 번호로 주고 고르게 한다. 고른 뒤 왜 그런지(뜻이 아니라 결로) 설명한다." },
   { v: "recall", label: "배운 것 확인(학습 일지)", desc: "[최근 배운 것] 줄에서 출제한다: 줄의 핵심(단어의 느낌·쓰임)을 빈칸·한→영·결 고르기로 바꿔 낸다. 줄에 없는 내용은 지어내지 않는다. 줄이 없으면 '아직 일지가 없어요'라고 말한다." }, // v3.1
+  { v: "cert", label: "수료 확인(변형·추론)", desc: "학습비 되찾기의 수료 확인 시험. 아래 기록 가운데 24시간 이전 것만 재료로 쓴다. 기록의 문장을 그대로 내지 않고 주어·시제·상황을 바꾼 변형 4문항 + '왜 이 표현인가'를 한 줄로 설명하게 하는 추론 1문항 — 모두 5문항을 한 번에 번호로 낸다. 힌트·보기·정답은 주지 않는다. 답이 오면 5문항을 한 번에 채점하고 [기록]을 붙인다(통과는 70점 이상)." }, // 신버전2
   { v: "wrong", label: "틀린 것만 다시(지난 기록)", desc: "기록에서 틀렸던 것만 다시 낸다 — '미통과' 기록의 문제, 그리고 통과한 시험 기록이라도 '틀린 곳'·'모범'에 적힌 개별 문항. 같은 유형(원래 한→영이면 한→영)으로. 맞혔던 문항은 내지 않는다." }
 ];
 function qaExamSelectHTML(cfg){
@@ -4519,6 +4553,7 @@ function buildSystemRaw(extra, cfg, ownerKey, dyn){ // extra = 대화창에 고�
     else if(cfg && cfg.mode === "exam"){ // v2.53
       const et = EXAM_TYPES.find(o => o.v === cfg.exam) || EXAM_TYPES[0];
       base += MODE_EXAM + `\n[시험 유형 — ${et.label}] ${et.desc}`;
+      if(cfg.exam === "cert") base += "\n[수료 확인] 재료는 [푼 문제 기록]·[최근 배운 것] 가운데 24시간 이전 것만. 변형 4 + 추론 1, 5문항 고정. 문항마다 번호를 붙이고, 채점 [기록]의 score는 5문항 평균으로."; // 신버전2
     }
     if(cfg && cfg.mode === "tutor" && typeof _voiceMode !== "undefined" && _voiceMode && scope !== "coach") base += VOICE_TUTOR_FORM; // v4.3: 🗣 형식 재선언(모드 형식 뒤에 와야 이긴다 · 고정부라 캐시)
     const rules = localStorage.getItem(LS_RULES);
@@ -4903,7 +4938,7 @@ async function sendToThread({ thread, text, img, systemExtra, logEl, onDone, cfg
           t: Date.now(), key: ownerKey, w: practiceLabel(ownerKey), kind: practiceMode,
           q: prev && prev.role === "assistant" ? String(prev.content).slice(0, practiceMode === "exam" ? 1200 : 300) : "", // v2.53: 시험은 문항 묶음 — 더 길게
           a: String(text).slice(0, 300) || (img ? "[이미지로 제출]" : ""), // v2.35 QA: 이미지 답안도 기록에 맥락이 남게
-          score: g.score, pass: g.pass, errors: g.errors, fix: g.fix
+          score: g.score, pass: g.pass, errors: g.errors, fix: g.fix, exam: practiceMode === "exam" ? String((cfg && cfg.exam) || "") : undefined // 신버전2: 시험 유형(수료 확인 판별)
         });
         savePractice();
         (g.errors || []).slice(0, 3).forEach(e => learnNote("err", ownerKey, cfg, e && e.note, e && e.tag)); // v3.0: 함께 배우기 — 틀린 유형과 한 줄 메모
@@ -7639,7 +7674,7 @@ document.addEventListener("click", (e) => {
 function closeOpenModals(){ // 바깥 클릭·Esc 공용 — 첫 설정·비밀번호 창은 닫지 않는다(고르던 것이 날아가지 않게) — v3.0 2차 렌즈. 3차: 학습 설정 고쳐 쓰기는 저장 없이 닫힌다(취소)
   if(document.getElementById("pw-modal").classList.contains("show")) return false;
   if(_ob){ if(_ob.edit) obClose(); return false; }
-  closeSettings(); closeMemo(); closeRules(); closeSaved(); closePractice(); closeQH(); closeReview(); closeToday(); if(typeof closeSndLegend === "function") closeSndLegend();
+  closeSettings(); closeMemo(); closeRules(); closeSaved(); closePractice(); closeQH(); closeReview(); closeToday(); if(typeof closeSndLegend === "function") closeSndLegend(); if(typeof closeFund === "function"){ closeFund(); closeLive(); }
   return true;
 }
 document.addEventListener("keydown", (e) => {
@@ -8404,8 +8439,9 @@ const M_MORE = [
   { id: "today-pill", label: "🌊 오늘" }, // v3.0
   { id: "acct-chip", label: "👤 계정" },
   { id: "design-toggle", label: "🎨 모양 바꾸기" }, // v4
+  { id: "fund-btn", label: "🎒 되찾기" }, // 신버전2
   { href: "old", label: "↩ 이전 판으로" }, // v3.0: 신버전 이전의 pAdo(모바일 판)로 — 기록은 그대로 이어진다
-  { href: "next2", label: "🎒 신버전2(되찾기)" } // v4.6: 학습비 되찾기 프로토타입
+  { href: "next", label: "↩ 신버전으로" } // 신버전2: 본판(next)으로
 ];
 function renderDrawerTools(){ // 1회 — 도구 칩 + 🪜 단계 옵션(#level-select 복제) + 버전 도장(header .build가 단일 소스)
   const t = document.getElementById("dr-tools");
@@ -8900,7 +8936,7 @@ function moveB64Decode(b64){
   for(let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
   return new TextDecoder().decode(bytes);
 }
-function moveSkip(k){ return ["we_design_v1", "we_theme_v1", "we_design_seen_v1", "we_tts_voice_v1", "we_tts_pick_note_v1", "we_mic_hold_v1", "we_snd_v1", "we_snd_note_v1", "we_snd_chip_v1", "we_snd_card_v1", "we_sync_url", "we_sync_secret", "we_sync_last", "we_acct_token", "we_acct_code", "we_admin_secret", "we_learn_q", "we_insights_v1", "we_mic_ok_v1", "we_model_rev", "we_mtab_v1", "we_vidh_v1", "we_tts_note_v1"].indexOf(k) >= 0; } // v3.0 2차 렌즈: 이사 코드에 세션 토큰·서버 주소·관리 암호·기기별 큐를 담지 않는다(코드에 적힌 임의 서버로 기록이 가는 길 차단)
+function moveSkip(k){ return ["we_design_v1", "we_theme_v1", "we_design_seen_v1", "we_tts_voice_v1", "we_tts_pick_note_v1", "we_mic_hold_v1", "we_snd_v1", "we_snd_note_v1", "we_snd_chip_v1", "we_snd_card_v1", "we_fund_dev_v1", "we_live_tmp_v1", "we_sync_url", "we_sync_secret", "we_sync_last", "we_acct_token", "we_acct_code", "we_admin_secret", "we_learn_q", "we_insights_v1", "we_mic_ok_v1", "we_model_rev", "we_mtab_v1", "we_vidh_v1", "we_tts_note_v1"].indexOf(k) >= 0; } // v3.0 2차 렌즈: 이사 코드에 세션 토큰·서버 주소·관리 암호·기기별 큐를 담지 않는다(코드에 적힌 임의 서버로 기록이 가는 길 차단)
 function moveExportCode(){
   const data = {};
   for(let i = 0; i < localStorage.length; i++){
@@ -8987,8 +9023,8 @@ document.getElementById("move-import").addEventListener("click", () => {
    새 계정의 빈 기록 원칙(사용자 요구): 로그인 시 acctConnect가 confirm으로 확인 — 다른 계정으로 바꾸면 이 브라우저 기록을 비우고 시작, 첫 로그인은 "올릴까/비울까/그만둘까".
    안전장치(v2.45 계승): 제외 목록(키·토큰·암호·커서·기기별 요금)은 push·pull 양쪽에서 제외 / pull 성공 전 push 금지 / 서버 409 역행 거부 / 로그아웃·계정 바꾸기 뒤 새로 고침 전까지 저장·push 차단(_acctWiped). */
 const LS_SYNC_URL = "we_sync_url", LS_SYNC_SECRET = "we_sync_secret", LS_SYNC_LAST = "we_sync_last";
-const SYNC_EXCLUDE = ["we_design_v1", "we_theme_v1", "we_design_seen_v1", "we_tts_voice_v1", "we_tts_pick_note_v1", "we_mic_hold_v1", "we_snd_v1", "we_snd_note_v1", "we_snd_chip_v1", "we_snd_card_v1", LS_KEY, LS_SYNC_URL, LS_SYNC_SECRET, LS_SYNC_LAST, LS_ACCT, "we_acct_code", LS_ACCT_NAME, LS_ADMIN, LS_USAGE, LS_RB_OPEN, LS_RAIL, "we_learn_q", "we_insights_v1", "we_mic_ok_v1", "we_model_rev", "we_mtab_v1", "we_vidh_v1", "we_tts_note_v1"]; // push 제외 + pull 무시 — 키·토큰·암호·커서·기기별 요금
-const ACCT_KEEP = ["we_cost_v1", "we_design_v1", "we_theme_v1", "we_design_seen_v1", "we_tts_voice_v1", "we_tts_pick_note_v1", "we_mic_hold_v1", "we_snd_v1", "we_snd_note_v1", "we_snd_chip_v1", "we_snd_card_v1", LS_KEY, LS_MODEL, LS_SYSTEM, LS_MEMO_ON, LS_SYNC_URL, LS_ACCT, LS_ACCT_NAME, LS_USAGE, LS_MTAB, "we_tts_note_v1", LS_RB_OPEN, LS_RAIL, "we_model_rev", "we_mic_ok_v1"]; // 계정을 바꿔도 남는 기기 설정(관리 암호는 이 화면에 두지 않는다 — v3.0 2차 렌즈)
+const SYNC_EXCLUDE = ["we_design_v1", "we_theme_v1", "we_design_seen_v1", "we_tts_voice_v1", "we_tts_pick_note_v1", "we_mic_hold_v1", "we_snd_v1", "we_snd_note_v1", "we_snd_chip_v1", "we_snd_card_v1", "we_fund_dev_v1", "we_live_tmp_v1", LS_KEY, LS_SYNC_URL, LS_SYNC_SECRET, LS_SYNC_LAST, LS_ACCT, "we_acct_code", LS_ACCT_NAME, LS_ADMIN, LS_USAGE, LS_RB_OPEN, LS_RAIL, "we_learn_q", "we_insights_v1", "we_mic_ok_v1", "we_model_rev", "we_mtab_v1", "we_vidh_v1", "we_tts_note_v1"]; // push 제외 + pull 무시 — 키·토큰·암호·커서·기기별 요금
+const ACCT_KEEP = ["we_cost_v1", "we_design_v1", "we_theme_v1", "we_design_seen_v1", "we_tts_voice_v1", "we_tts_pick_note_v1", "we_mic_hold_v1", "we_snd_v1", "we_snd_note_v1", "we_snd_chip_v1", "we_snd_card_v1", "we_fund_dev_v1", "we_live_tmp_v1", LS_KEY, LS_MODEL, LS_SYSTEM, LS_MEMO_ON, LS_SYNC_URL, LS_ACCT, LS_ACCT_NAME, LS_USAGE, LS_MTAB, "we_tts_note_v1", LS_RB_OPEN, LS_RAIL, "we_model_rev", "we_mic_ok_v1"]; // 계정을 바꿔도 남는 기기 설정(관리 암호는 이 화면에 두지 않는다 — v3.0 2차 렌즈)
 let _syncPulledOk = false, _syncPushedHash = "", _syncBusy = false, _syncTimer = null, _srvInfo = null;
 function syncCfg(){
   const url = String(PADO_SERVER_URL || localStorage.getItem(LS_SYNC_URL) || "").trim().replace(/\/+$/, ""); // v3.0 2차 렌즈: 앱에 심긴 주소가 있으면 그것만(저장소의 we_sync_url로 바꿔치기 불가) — 심긴 값이 없을 때(개발·테스트)만 저장소 값
@@ -9108,7 +9144,7 @@ function syncMergePlan(remote){ // 받은 기록을 지금 저장소와 병합�
     if(k.indexOf("we_") !== 0 || SYNC_EXCLUDE.indexOf(k) >= 0) continue; // 제외 목록은 받아도 안 쓴다 (이중 방어)
     if(typeof remote.data[k] !== "string") continue;
     const mine = localStorage.getItem(k);
-    const val = k === LS_PROFILE ? mergeProfileShare(mine, remote.data[k]) : k === LS_STATE ? mergeState(mine, remote.data[k]) : k === LS_PRACTICE ? mergePractice(mine, remote.data[k]) : k === LS_SRS ? mergeSrs(mine, remote.data[k], srsDelMap(remote.data[LS_STATE])) : remote.data[k]; // v3.0 3차: 동의는 시각으로 · v3.1: 대화·파도·일지는 스레드별, 채점·복습 카드는 합집합
+    const val = k === LS_PROFILE ? mergeProfileShare(mine, remote.data[k]) : k === LS_STATE ? mergeState(mine, remote.data[k]) : k === LS_PRACTICE ? mergePractice(mine, remote.data[k]) : k === LS_SRS ? mergeSrs(mine, remote.data[k], srsDelMap(remote.data[LS_STATE])) : k === "we_fund_v1" ? mergeFund(mine, remote.data[k]) : remote.data[k]; // 신버전2: 되찾기 원장은 id 합집합 // v3.0 3차: 동의는 시각으로 · v3.1: 대화·파도·일지는 스레드별, 채점·복습 카드는 합집합
     if(mine !== val){ pend[k] = val; changed++; }
   }
   return { pend, changed };
@@ -10071,7 +10107,6 @@ document.getElementById("snd-legend-close").addEventListener("click", closeSndLe
 document.getElementById("snd-legend-on").addEventListener("click", () => { closeSndLegend(); sndChipDone(); applySnd("old"); });
 document.getElementById("snd-legend-no").addEventListener("click", () => { closeSndLegend(); sndChipDone(); });
 document.addEventListener("click", (e) => { const t = e.target; if(!t || !t.closest) return; const tr = t.closest("[data-snd-try]"); if(tr){ const plain = tr.dataset.plain || "f아이v"; openSndLegend({ offer: true, preview: `이 답의 「${plain}」 — 옛글자로 보면 「${sndOld(plain, sndFontOK() ? "full" : "compat")}」` }); return; } if(t.closest("[data-snd-skip]")){ sndChipDone(); return; } if(t.closest(".snd.on")){ const sel = window.getSelection(); if(sel && !sel.isCollapsed && String(sel).trim()) return; /* 검수: 글을 긁는 중엔 범례를 열지 않는다(칩 메뉴만) */ openSndLegend(); } });
-{ ["link-next2", "rm-next2"].forEach(id => { const a = document.getElementById(id); if(a) a.href = padoPage("next2"); }); } // v4.6: 신버전2 링크
 /* ── v4.2 ⑪ 홈(메인 화면) — 로고 실클릭(또는 Alt+0, 폰은 ☰ 서랍 '홈')으로만 연다(자동으로 열지 않는다 — 흐름 보호). 심사 확정안: 작고 차분한 한 칸 — 제일 큰 글자는 하나(다음 한 걸음), 버튼도 하나. 모든 값은 앱이 이미 계산하는 것(AI 호출 0). 인사·감탄·그래프 없음 ── */
 function homeOpen(){ return document.body.classList.contains("home-open"); }
 function homePlace(){ // PC: 중앙 칸 안(자료 레이어와 같은 측정) — 폭 ≤600, 머리줄부터 입력 상자 위까지
@@ -10123,7 +10158,7 @@ function homeHTML(){
   const quick = `<div class="hm-quick">${empty ? `<button class="g-btn" type="button" data-home-go="coach">파도 Chat</button>` : `<button class="g-btn" type="button" data-home-go="coach">파도 Chat</button><button class="g-btn" type="button" data-home-go="review">복습${due ? " " + due : ""}</button><button class="g-btn" type="button" data-home-go="tutor">튜터 — ${esc(p.w.base)}</button><button class="g-btn" type="button" data-home-go="journal">일지</button>`}</div>`;
   const u = usageLoad(), mk = usageMonth(); const srv = _acctInfo && _acctInfo.usage && _acctInfo.usage.month === mk ? _acctInfo.usage : null; const curU = srv || (u.m === mk ? u : null);
   const th = themeGet();
-  const foot = `<div class="hm-foot"><span>${(!empty && curU && (curU.n || 0) > 0) ? `<button class="hm-lnk" type="button" data-home-go="cost">이번 달 AI 요금 ≈ ${esc(usdText(curU.usd))} (추정) · ${curU.n}회 · ${srv ? "계정 기준" : "이 기기 기준"}</button>` : ""}</span><span><a class="hm-lnk" href="${esc(padoPage("next2"))}">🎒 신버전2</a> · <button class="hm-lnk" type="button" data-home-go="settings">설정</button>${isV4() ? ` <span class="hm-theme" role="group" aria-label="밝기">${[["auto", "자동"], ["light", "밝게"], ["dark", "어둡게"]].map(([v, t]) => `<button type="button" class="hm-lnk${th === v ? " on" : ""}" data-home-theme="${v}" aria-pressed="${th === v ? "true" : "false"}">${t}</button>`).join(" · ")}</span>` : ""}</span></div>`;
+  const foot = `<div class="hm-foot"><span>${(!empty && curU && (curU.n || 0) > 0) ? `<button class="hm-lnk" type="button" data-home-go="cost">이번 달 AI 요금 ≈ ${esc(usdText(curU.usd))} (추정) · ${curU.n}회 · ${srv ? "계정 기준" : "이 기기 기준"}</button>` : ""}</span><span><button class="hm-lnk" type="button" data-home-go="fund">🎒 되찾기</button> · <button class="hm-lnk" type="button" data-home-go="settings">설정</button>${isV4() ? ` <span class="hm-theme" role="group" aria-label="밝기">${[["auto", "자동"], ["light", "밝게"], ["dark", "어둡게"]].map(([v, t]) => `<button type="button" class="hm-lnk${th === v ? " on" : ""}" data-home-theme="${v}" aria-pressed="${th === v ? "true" : "false"}">${t}</button>`).join(" · ")}</span>` : ""}</span></div>`;
   return head + `<div class="hm-sec">${hero}${steps}</div>` + fix + stats + resume + recent + quick + foot;
 }
 function renderHome(){ const l = document.getElementById("home-layer"); if(l) l.innerHTML = homeHTML(); }
@@ -10156,7 +10191,7 @@ document.getElementById("home-layer").addEventListener("click", (e) => {
   const w = t.closest("[data-home-word]"); if(w){ const k = w.dataset.homeWord; homeGo(() => goWord(k === GLOBAL_ID || WORDS.some(x => x.base === k) ? k : GLOBAL_ID)); return; }
   const th = t.closest("[data-home-theme]"); if(th){ applyTheme(th.dataset.homeTheme); const st = document.getElementById("set-theme"); if(st) st.value = th.dataset.homeTheme; const rt = document.getElementById("rm-theme"); if(rt) rt.value = th.dataset.homeTheme; renderHome(); const nb = document.querySelector(`#home-layer [data-home-theme="${th.dataset.homeTheme}"]`); if(nb){ try { nb.focus(); } catch(e){} } return; }
   const go = t.closest("[data-home-go]"); if(go){ const k = go.dataset.homeGo;
-    if(k === "coach") homeGo(() => goWord(GLOBAL_ID)); else if(k === "review") homeShow(openReview); else if(k === "practice") homeShow(openPractice); else if(k === "settings") homeShow(openSettings);
+    if(k === "coach") homeGo(() => goWord(GLOBAL_ID)); else if(k === "review") homeShow(openReview); else if(k === "practice") homeShow(openPractice); else if(k === "settings") homeShow(openSettings); else if(k === "fund") homeShow(() => openFund("home"));
     else if(k === "cost") homeShow(() => { openSettings(); const c = document.getElementById("set-cost"); if(c){ try { c.scrollIntoView({ block: "center" }); } catch(e){} } });
     else if(k === "tutor") homeGo(() => { goWord(todayWord().base); qaAct("tutor"); }); else if(k === "journal") homeShow(() => { if(isMobileView()){ setMTab("chat"); mSheet(true, "journal"); } else { setRbTab("journal"); setRbOpen(true); } }); return; } // 폰은 📖 시트의 📒 탭
 });
@@ -10179,6 +10214,134 @@ renderToday();
 learnInit();
 if(!syncCfg().on) obMaybeShow(); // v3.0: 첫 설정 — 로그인한 기기는 initSync가 계정의 설정을 받아 본 뒤에 띄운다
 if(_inviteId && syncCfg().url && !syncCfg().on && !document.getElementById("ob-modal").classList.contains("show")){ openSettings(); const i = document.getElementById("acct-id"); if(i){ i.value = _inviteId; const pw = document.getElementById("acct-pw"); if(pw) pw.focus(); } } // 첫 설정을 이미 끝낸 브라우저로 초대 주소를 열면 설정창의 로그인 칸에
+
+/* ══ NEXT2:BEGIN — 신버전2 「학습비 되찾기」 층. 설계 신버전2-설계.md · 계약 sync/FUND-CONTRACT.md. 금지어(이자·원금·예치·수익·투자) 없음 · 모든 수치는 이 기기 계산 ══ */
+const LS_FUND = "we_fund_v1", LS_FUND_DEV = "we_fund_dev_v1", LS_LIVE_TMP = "we_live_tmp_v1";
+const FUND_RULES = { feeRate: .35, unitsTotal: 600, nonLiveCap: 420, dayCap: 20, cardHours: 20, matAgeH: 24, liveUnits: 180, certUnits: 4, certBonusScore: 90, certPerDay: 2, certGapMin: 20, weeks: 12, bonusA: 5000, liveEligUnits: 300, liveEligCert: 2, liveEligGapDays: 7, taxOver: 50000, taxRate: .22, minCohort: 10, termsV: "0.1" };
+const LIVE_RECORD = false; // 1차: 녹화·업로드 없음(미리보기만)
+function fundNorm(j){ const f = Object.assign({ v: 1, paid: 0, feeRate: FUND_RULES.feeRate, bonusA: FUND_RULES.bonusA, mode: "A", startAt: 0, weeks: FUND_RULES.weeks, agreedAt: 0, terms: { v: FUND_RULES.termsV, at: 0 }, sumBase: 0, ledger: [], exams: [], live: { status: "none", signals: {} }, appeals: [], demo: { n: 30, pass: 12, poolB: 410000 } }, j || {}); if(!Array.isArray(f.ledger)) f.ledger = []; if(!Array.isArray(f.appeals)) f.appeals = []; if(!f.live || typeof f.live !== "object") f.live = { status: "none", signals: {} }; f.paid = Math.max(0, Math.round(Number(f.paid) || 0)); f.mode = f.mode === "B" ? "B" : "A"; return f; }
+let FUND = (() => { try { return fundNorm(JSON.parse(localStorage.getItem(LS_FUND) || "null")); } catch(e){ return fundNorm({}); } })();
+function fundSave(){ try { while(FUND.ledger.length > 3000){ const d = FUND.ledger.shift(); if(d && d.st === "ok") FUND.sumBase = (Number(FUND.sumBase) || 0) + (Number(d.u) || 0); } localStorage.setItem(LS_FUND, JSON.stringify(FUND)); } catch(e){} }
+function mergeFund(localJson, remoteJson){ // 원장·이의는 id 합집합(t 정렬), 스칼라는 agreedAt이 큰 쪽, demo는 내 것
+  try { const L = fundNorm(JSON.parse(localJson || "null")), R = fundNorm(JSON.parse(remoteJson || "null")); const base = (R.agreedAt || 0) > (L.agreedAt || 0) ? R : L; const other = base === R ? L : R;
+    const ids = new Set(base.ledger.map(e => e.id)); other.ledger.forEach(e => { if(e && !ids.has(e.id)){ base.ledger.push(e); ids.add(e.id); } }); base.ledger.sort((a, b) => (a.t || 0) - (b.t || 0));
+    const aids = new Set(base.appeals.map(e => e.id)); other.appeals.forEach(e => { if(e && !aids.has(e.id)){ base.appeals.push(e); aids.add(e.id); } });
+    base.sumBase = Math.max(Number(L.sumBase) || 0, Number(R.sumBase) || 0); base.demo = L.demo; return JSON.stringify(base); } catch(e){ return remoteJson; }
+}
+function fundDev(){ try { return JSON.parse(localStorage.getItem(LS_FUND_DEV) || "{}") || {}; } catch(e){ return {}; } }
+function fundDevSave(d){ try { localStorage.setItem(LS_FUND_DEV, JSON.stringify(d)); } catch(e){} }
+function fundOn(){ return FUND.paid > 0; }
+function fundR(){ return Math.round(FUND.paid * (1 - FUND.feeRate)); }
+function fundFee(){ return FUND.paid - fundR(); }
+function fundUnit(){ return fundR() / FUND_RULES.unitsTotal; }
+function fundUnits(filter){ return FUND.ledger.filter(e => e.st === "ok" && (!filter || filter(e))).reduce((a, e) => a + (Number(e.u) || 0), 0) + (filter ? 0 : (Number(FUND.sumBase) || 0)); }
+function fundUnitsNonLive(){ return fundUnits(e => e.kind !== "live") + (Number(FUND.sumBase) || 0); }
+function fundG(){ return Math.min(fundR(), Math.round(fundUnits() * fundUnit())); }
+function fundLiveOk(){ return FUND.ledger.some(e => e.kind === "live" && (e.st === "ok" || e.st === "pending")); }
+function fundDayKey(t){ const d = new Date(t); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; }
+function fundWon(n){ return (Math.round(Number(n) || 0)).toLocaleString("ko-KR") + "원"; }
+function fundDaysLeft(){ if(!FUND.startAt) return 0; return Math.max(0, Math.ceil((FUND.startAt + FUND.weeks * 7 * DAY_MS - Date.now()) / DAY_MS)); }
+function fundCertDates(){ return PRACTICE.filter(p => p.kind === "exam" && p.exam === "cert" && p.t >= FUND.startAt); }
+function fundCertPassTimes(){ return fundCertDates().filter(p => Number(p.score) >= 70).map(p => p.t).sort((a, b) => a - b); }
+function fundLiveEligible(){ const u = fundUnitsNonLive(); const pt = fundCertPassTimes(); let two = false; for(let i = 1; i < pt.length && !two; i++){ if(pt[i] - pt[0] >= FUND_RULES.liveEligGapDays * DAY_MS) two = true; } return { units: u >= FUND_RULES.liveEligUnits, cert: pt.length >= FUND_RULES.liveEligCert && two, certN: pt.length, ok: u >= FUND_RULES.liveEligUnits && pt.length >= FUND_RULES.liveEligCert && two }; }
+function fundSync(){ // 렌더마다·멱등 — 앱이 이미 기록한 지연 인출 성공(🧠 복습 ok · 📝 수료 확인 통과)만 원장에 보탠다. 씨앗(즉시 통과)은 0단위로 보인다
+  try { if(!fundOn() || !FUND.startAt) return; const have = new Set(FUND.ledger.map(e => e.id)); const cand = [];
+    (SRS || []).forEach(it => { if(!it || !Array.isArray(it.hist)) return; let stage = 0; const ref = String(it.key || it.title || "").slice(0, 120); it.hist.forEach(h => { if(!h) return; if(h.ok){ const u = stage <= 1 ? 1 : stage <= 3 ? 2 : 3; if(h.ts >= FUND.startAt) cand.push({ id: `srs:${ref}:${h.ts}`, t: h.ts, kind: "srs", u, ref, card: ref, cardT: it.ts || 0, note: `🧠 복습(${SRS_LABELS[Math.min(stage, SRS_LABELS.length - 1)]} 간격 기억) · 카드: ${String(it.title || "").slice(0, 40)}` }); stage++; } else if(h.r === "no") stage = 0; }); });
+    (PRACTICE || []).forEach(p => { if(!p || p.t < FUND.startAt) return; if(p.kind === "exam" && p.exam === "cert"){ const sc = Number(p.score) || 0; cand.push({ id: `prac:${p.t}`, t: p.t, kind: "cert", u: sc >= 70 ? (sc >= FUND_RULES.certBonusScore ? FUND_RULES.certUnits + 1 : FUND_RULES.certUnits) : 0, ref: `prac:${p.t}`, note: `📝 수료 확인 시험 ${sc}점${sc >= 70 ? " 통과" : " — 70점 미만"}`, pass: sc >= 70 }); } else if(["tutor", "we", "ew", "role"].includes(p.kind) && p.pass){ cand.push({ id: `seed:${p.t}`, t: p.t, kind: "seed", u: 0, ref: `prac:${p.t}`, note: `${{ tutor: "🎓 튜터 문장 완성", we: "✍️ 작문 통과", ew: "✍️ 번역 통과", role: "🎭 상황극" }[p.kind]} — 씨앗(내일부터 복습 카드로 적립 대상)` }); } });
+    cand.sort((a, b) => a.t - b.t);
+    cand.forEach(c => { if(have.has(c.id)) return; have.add(c.id); let u = c.u, st = u > 0 ? "ok" : "zero", why = "";
+      if(c.kind === "seed"){ st = "seed"; }
+      else if(c.kind === "cert" && !c.pass){ st = "zero"; }
+      else if(c.kind === "cert"){ const sameDay = FUND.ledger.filter(e => e.kind === "cert" && fundDayKey(e.t) === fundDayKey(c.t)).length; if(sameDay >= FUND_RULES.certPerDay){ u = 0; st = "zero"; why = "하루 2회까지만 쌓여요"; } }
+      else if(c.kind === "srs"){ if(c.cardT && c.t - c.cardT < FUND_RULES.matAgeH * 3600000){ u = 0; st = "zero"; why = "24시간이 안 된 기록이라 다음에 쌓여요"; }
+        else { const prev = FUND.ledger.filter(e => e.kind === "srs" && e.st === "ok" && e.card === c.card && c.t - e.t < FUND_RULES.cardHours * 3600000).length; if(prev){ u = 0; st = "zero"; why = "같은 카드는 20시간 뒤부터 다시 쌓여요"; } } }
+      if(st === "ok"){ const day = FUND.ledger.filter(e => e.st === "ok" && e.kind !== "live" && fundDayKey(e.t) === fundDayKey(c.t)).reduce((a, e) => a + e.u, 0); if(day >= FUND_RULES.dayCap){ u = 0; st = "zero"; why = "하루 상한 20에 닿았어요"; } else if(day + u > FUND_RULES.dayCap) u = FUND_RULES.dayCap - day; }
+      if(st === "ok"){ const tot = fundUnitsNonLive(); if(tot >= FUND_RULES.nonLiveCap){ u = 0; st = "zero"; why = "복습·시험 몫 420단위는 다 채웠어요 — 남은 건 최종 라이브"; } else if(tot + u > FUND_RULES.nonLiveCap) u = FUND_RULES.nonLiveCap - tot; }
+      FUND.ledger.push({ id: c.id, t: c.t, kind: c.kind, u, ref: c.ref, card: c.card, note: c.note + (why ? ` · ${why}` : ""), st }); });
+    fundSave(); } catch(e){ console.warn("fundSync", e); }
+}
+function fundBadgeSync(){ const b = document.getElementById("fund-btn-t"); if(!b) return; b.textContent = fundOn() ? fundWon(fundG()) : "되찾기"; }
+let _fundTab = "home", _fundPrev = null;
+function openFund(tab){ fundSync(); _fundTab = tab || _fundTab || "home"; _fundPrev = document.activeElement; renderFund(); const m = document.getElementById("fund-modal"); m.classList.add("show"); modalBg.classList.add("show"); try { document.getElementById("fund-close").focus(); } catch(e){} }
+function closeFund(){ const m = document.getElementById("fund-modal"); if(m && m.classList.contains("show")){ m.classList.remove("show"); if(!document.querySelector(".modal.show")) modalBg.classList.remove("show"); } }
+function fundTermsHTML(){ const P = FUND.paid || 99000, R = Math.round(P * (1 - FUND.feeRate)), F = P - R; return `<ol class="fd-terms"><li>학습비 ${fundWon(P)} 가운데 운영비 ${fundWon(F)}(${Math.round(FUND.feeRate * 100)}%)은 되찾을 수 없어요 — AI 사용료·결제 수수료·시험 검토 비용이에요.</li><li>나머지 ${fundWon(R)}은 공부해서 되찾아요 — 복습에서 기억해 내기·시험 통과처럼 '꺼내 쓴' 순간에만 쌓여요. 시간을 보내거나 진도만 나가면 쌓이지 않아요.</li><li>수료 = ${FUND.weeks}주 안 게이지 70% + 최종 라이브 통과. 수료하면 ${fundWon(R)} 전부, 수료하지 못해도 쌓인 만큼 돌려드려요.</li><li>완주 보너스는 사업자가 미리 정한 ${fundWon(FUND.bonusA)}이에요 — 다른 사람의 결과와 무관해요.${FUND.mode === "B" ? "<br><span class=\"fd-warn\">B(법률 검토 전) 미수료 잔액 나눔은 실제 돈에 쓰지 않아요.</span>" : ""}</li><li>기수가 끝난 뒤 14일 안에 본인 명의 계좌로 보내요. 5만원 넘는 보너스는 세금 22%를 뗄 수 있어요.</li><li>7일 안에는 이유 없이 전액 환불돼요 — 그때는 게이지도 사라져요.</li><li>판정은 모두 기록으로 남고, 이의 신청은 30일 안, 무료 재시험 1회예요.</li></ol>`; }
+function renderFund(){ const body = document.getElementById("fund-body"); if(!body) return; document.querySelectorAll("#fund-modal .fd-tabs button").forEach(b => b.classList.toggle("on", b.dataset.ft === _fundTab)); const badge = document.getElementById("fund-badge"); if(badge) badge.textContent = fundOn() ? "예시 · 모의 학습비 · 이 기기 계산(서버 확인 전)" : "예시 · 아직 모의 학습비가 없어요";
+  const G = fundG(), R = fundR(), u = fundUnits(), uNL = fundUnitsNonLive(), live = fundLiveOk();
+  if(_fundTab === "home"){ if(!fundOn()){ body.innerHTML = `<div class="fd-big">0원</div><div class="fd-sub">⚙️ 설정에서 모의 학습비를 넣으면 시작돼요 — 실제 결제가 아니에요</div><div class="fd-next"><button type="button" class="g-btn primary" data-fund-go="terms">🧾 고지 읽고 시작하기</button></div>`; return; }
+    const pct = R ? Math.min(100, Math.round(G / R * 100)) : 0; const today = FUND.ledger.filter(e => e.st === "ok" && fundDayKey(e.t) === fundDayKey(Date.now())).reduce((a, e) => a + e.u, 0); const seeds = FUND.ledger.filter(e => e.st === "seed" && Date.now() - e.t < DAY_MS).length;
+    body.innerHTML = `<div class="fd-big">${fundWon(G)}</div><div class="fd-sub">되찾은 학습비 · 최대 ${fundWon(R)} · 이 기기 계산 · 서버 확인 전</div><div class="fd-gauge" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="되찾기 게이지"><i style="width:${pct}%"></i></div><div class="fd-sub">${pct}% · ${u}단위 / ${FUND_RULES.unitsTotal} · 오늘 ${today}단위(하루 상한 ${FUND_RULES.dayCap}) · 남은 날 ${fundDaysLeft()}일${seeds ? ` · 씨앗 ${seeds}개(내일부터 적립 대상)` : ""}</div><div class="fd-next">${uNL >= FUND_RULES.nonLiveCap ? (live ? "복습·시험 몫은 다 채웠고 최종 라이브까지 봤어요" : "복습·시험 몫은 다 채웠어요 — 남은 건 🎥 최종 라이브") : `다음 복습 한 장을 기억해 내면 +${fundWon(fundUnit())} 안팎`}</div><div class="acct-row" style="gap:8px;flex-wrap:wrap"><button type="button" class="g-btn" data-fund-go="cert">수료 조건</button><button type="button" class="g-btn" data-fund-go="log">적립 내역</button><button type="button" class="g-btn" data-fund-go="pool">기수 현황(예시)</button><button type="button" class="g-btn" id="fund-cert-start">📝 수료 확인 시험(파도 Chat)</button><button type="button" class="g-btn" id="fund-live-open">🎥 최종 라이브</button></div>`; return; }
+  if(_fundTab === "log"){ const rows = FUND.ledger.slice().reverse().slice(0, 120); const last = rows.find(e => e.st === "ok"); body.innerHTML = `<div class="fd-big">${last ? "+" + last.u : "0"}</div><div class="fd-sub">최근 적립 단위 · 1단위 ≈ ${fundOn() ? fundWon(fundUnit()) : "0원"} · 신호는 검토 계기이지 자동 실격이 아니에요</div><div class="fd-list">${rows.length ? rows.map(e => `<div class="fd-row${e.st === "ok" ? "" : " zero"}"><span class="fd-u${e.st === "ok" ? "" : " zero"}">${e.st === "ok" ? "+" + e.u : e.st === "pending" ? "대기" : "0"}</span><span class="fd-t">${new Date(e.t).toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" })} · ${esc(e.note || "")}${e.st === "ok" ? ` · ${fundWon(e.u * fundUnit())}` : ""}</span><button type="button" class="g-btn" data-fund-appeal="${esc(e.id)}">이의</button></div>`).join("") : `<div class="fd-sub">아직 적립 내역이 없어요 — 🧠 복습에서 카드를 기억해 내면 쌓여요</div>`}</div>`; return; }
+  if(_fundTab === "cert"){ const okG = uNL >= FUND_RULES.nonLiveCap; const n = (okG ? 1 : 0) + (live ? 1 : 0); const el = fundLiveEligible(); body.innerHTML = `<div class="fd-big">${n}/2</div><div class="fd-sub">수료 조건</div><div class="fd-row"><span class="fd-u">${okG ? "☑" : "☐"}</span><span class="fd-t">게이지 70% — 복습·시험 ${FUND_RULES.nonLiveCap}단위 가운데 ${Math.min(uNL, FUND_RULES.nonLiveCap)}</span></div><div class="fd-row"><span class="fd-u">${live ? "☑" : "☐"}</span><span class="fd-t">최종 라이브 통과${live ? "(예비 — 사람이 확인한 뒤 확정돼요)" : ""}</span></div><div class="fd-sub" style="margin-top:8px">남은 날 ${fundDaysLeft()}일 · 최종 라이브 자격: 게이지 50%(${FUND_RULES.liveEligUnits}단위) ${el.units ? "✓" : "—"} + 수료 확인 시험 통과 2회(7일 간격) ${el.cert ? "✓" : `— 지금 ${el.certN}회`}</div>`; return; }
+  if(_fundTab === "pool"){ const d = FUND.demo || { n: 30, pass: 12, poolB: 410000 }; const bB = Math.min(Math.round(d.poolB / Math.max(1, d.pass)), Math.max(0, FUND.paid - R)); body.innerHTML = `<div class="fd-badge">예시 숫자 — 서버가 열리면 실제로 바뀌어요</div><div class="fd-big">${d.n}명</div><div class="fd-sub">이번 기수(예시) · 수료 ${d.pass} · 되찾지 못한 학습비 합계 ${fundWon(d.poolB)}(개인 없음)</div><div class="fd-dist">${[["0~25%", 6], ["25~50%", 7], ["50~70%", 5], ["70%↑", 12]].map(([l, v]) => `<div style="height:${Math.round(v / 12 * 100)}%"><span>${l} ${v}</span></div>`).join("")}</div><div class="fd-sub" style="margin-top:24px">내 완주 보너스: A ${fundWon(FUND.bonusA)}${FUND.mode === "B" ? ` · B ${fundWon(bB)} — <span class="fd-warn">법률 검토 전</span>` : ""}</div>`; return; }
+  if(_fundTab === "terms"){ body.innerHTML = `${fundTermsHTML()}<label style="display:block;margin:8px 0"><input type="checkbox" id="fund-terms-ok"${FUND.agreedAt ? " checked" : ""}> 읽었어요</label><div class="acct-row" style="gap:8px"><button type="button" class="g-btn primary" id="fund-terms-go"${FUND.agreedAt ? "" : " disabled"}>${fundOn() ? "고지 확인" : "모의 학습비 넣기(99,000원 예시)"}</button></div>`; return; }
+  if(_fundTab === "appeal"){ const refs = FUND.ledger.slice().reverse().slice(0, 60); body.innerHTML = `<div class="fd-sub">판정이 잘못됐다고 생각하면 적어 두세요 — 서버 배포 전이라 이 기기에 보관돼요(30일 안).</div><select id="fund-ap-ref" class="mini-sel" style="max-width:100%;margin:8px 0">${refs.map(e => `<option value="${esc(e.id)}">${new Date(e.t).toLocaleDateString("ko-KR")} · ${esc(String(e.note || "").slice(0, 40))}</option>`).join("")}</select><select id="fund-ap-reason" class="mini-sel"><option value="judge">판정 오류</option><option value="outage">서버 장애</option><option value="undisclosed">조건 미고지</option><option value="other">기타</option></select><textarea id="fund-ap-text" maxlength="200" placeholder="무엇이 잘못 판정됐는지 한 줄(200자)" style="width:100%;min-height:60px;margin:8px 0"></textarea><div class="acct-row" style="gap:8px"><button type="button" class="g-btn primary" id="fund-ap-send">이의 접수</button></div><div class="fd-list" style="margin-top:10px">${FUND.appeals.slice().reverse().map(a => `<div class="fd-row"><span class="fd-t">${new Date(a.t).toLocaleDateString("ko-KR")} · ${esc(a.reason)} · ${esc(a.text)}</span><span class="fd-sub">접수(이 기기)</span></div>`).join("")}</div>`; return; }
+}
+function fundStart(paid){ const p = Math.max(0, Math.round(Number(paid) || 0)); FUND.paid = p; if(p && !FUND.startAt) FUND.startAt = Date.now(); FUND.agreedAt = FUND.agreedAt || Date.now(); FUND.terms = { v: FUND_RULES.termsV, at: FUND.agreedAt }; fundSave(); fundSync(); fundBadgeSync(); fundSettingsRender(); }
+function fundReset(){ FUND = fundNorm({ demo: FUND.demo }); fundSave(); fundBadgeSync(); fundSettingsRender(); renderFund(); }
+function fundSettingsRender(){ const a = document.getElementById("set-fund-paid"), b = document.getElementById("set-fund-start"), c = document.getElementById("set-fund-mode"); if(a) a.value = FUND.paid || ""; if(b) b.value = FUND.startAt ? new Date(FUND.startAt).toISOString().slice(0, 10) : ""; if(c) c.value = FUND.mode; }
+function fundCertAllowed(){ if(!fundOn()){ weToast("🎒 먼저 설정에서 모의 학습비를 넣어 주세요"); return false; } const today = fundCertDates().filter(p => fundDayKey(p.t) === fundDayKey(Date.now())); if(today.length >= FUND_RULES.certPerDay){ weToast("수료 확인 시험은 하루 2회까지예요 — 내일 다시 볼 수 있어요"); return false; } const last = fundCertDates().slice(-1)[0]; if(last && Date.now() - last.t < FUND_RULES.certGapMin * 60000){ weToast(`수료 확인 시험은 ${FUND_RULES.certGapMin}분 간격으로 — 조금 뒤에 다시`); return false; } return true; }
+function startCertExam(){ if(!fundCertAllowed()) return; closeFund(); if(state.activeWord === GLOBAL_ID){ weToast("수료 확인 시험은 단어 대화에서 봐요 — 단어를 하나 고른 뒤 다시"); return; } startExam("cert"); weToast("📝 수료 확인 시험 — 24시간 이전 기록만 재료 · 5문항 · 힌트 없음 · 이 기기 채점(서버 확인 전)"); }
+{ const _startExam0 = startExam; startExam = function(type){ if(type === "cert" && !fundCertAllowed()) return; _startExam0(type); }; } // 수료 확인은 하루 2회·20분 간격
+{ const _renderAll0 = renderAll; renderAll = function(){ _renderAll0(); fundSync(); fundBadgeSync(); }; const _srsRate0 = srsRate; srsRate = function(it, r){ _srsRate0(it, r); fundSync(); fundBadgeSync(); }; const _savePractice0 = savePractice; savePractice = function(){ _savePractice0(); fundSync(); fundBadgeSync(); }; }
+document.getElementById("fund-btn").addEventListener("click", () => openFund());
+document.getElementById("fund-close").addEventListener("click", closeFund);
+document.getElementById("fund-modal").addEventListener("click", (e) => { const t = e.target; const ft = t.closest("[data-ft]"); if(ft){ _fundTab = ft.dataset.ft; renderFund(); return; } const go = t.closest("[data-fund-go]"); if(go){ _fundTab = go.dataset.fundGo; renderFund(); return; } const ap = t.closest("[data-fund-appeal]"); if(ap){ _fundTab = "appeal"; renderFund(); const sel = document.getElementById("fund-ap-ref"); if(sel) sel.value = ap.dataset.fundAppeal; return; }
+  if(t.closest("#fund-cert-start")){ startCertExam(); return; } if(t.closest("#fund-live-open")){ closeFund(); openLive(); return; }
+  if(t.closest("#fund-terms-go")){ if(!document.getElementById("fund-terms-ok").checked) return; if(!fundOn()) fundStart(Number(document.getElementById("set-fund-paid") && document.getElementById("set-fund-paid").value) || 99000); else { FUND.agreedAt = FUND.agreedAt || Date.now(); fundSave(); } _fundTab = "home"; renderFund(); weToast("🎒 되찾기가 시작됐어요 — 모의 학습비, 이 기기 계산"); return; }
+  if(t.closest("#fund-ap-send")){ const txt = String((document.getElementById("fund-ap-text") || {}).value || "").trim(); if(!txt){ weToast("한 줄만 적어 주세요"); return; } FUND.appeals.push({ id: "ap" + Date.now().toString(36), lid: (document.getElementById("fund-ap-ref") || {}).value || "", reason: (document.getElementById("fund-ap-reason") || {}).value || "other", text: txt.slice(0, 200), t: Date.now(), st: "local" }); fundSave(); renderFund(); weToast("이의를 접수했어요 — 서버 배포 전이라 이 기기에 보관돼요"); return; } });
+document.getElementById("fund-modal").addEventListener("change", (e) => { if(e.target.id === "fund-terms-ok"){ const b = document.getElementById("fund-terms-go"); if(b) b.disabled = !e.target.checked; } });
+document.getElementById("set-fund-paid").addEventListener("change", (e) => { const v = Math.max(0, Math.round(Number(e.target.value) || 0)); if(v && !FUND.agreedAt){ FUND.paid = v; fundSave(); openFund("terms"); return; } fundStart(v); weToast(v ? `모의 학습비 ${fundWon(v)} — 되찾기 상한 ${fundWon(fundR())}` : "모의 학습비를 비웠어요"); });
+document.getElementById("set-fund-start").addEventListener("change", (e) => { const t = Date.parse(e.target.value); if(isFinite(t)){ FUND.startAt = t; fundSave(); fundSync(); fundBadgeSync(); } });
+document.getElementById("set-fund-mode").addEventListener("change", (e) => { FUND.mode = e.target.value === "B" ? "B" : "A"; fundSave(); if(FUND.mode === "B") weToast("B(미수료 잔액 나눔)는 법률 검토 전 실험이에요 — 실제 돈에 쓰지 않아요"); });
+document.getElementById("set-fund-terms").addEventListener("click", () => { closeSettings(); openFund("terms"); });
+document.getElementById("set-fund-reset").addEventListener("click", () => { if(!confirm("되찾기 기록(모의)을 처음부터 지울까요?")) return; if(!confirm("정말 지울까요? 되돌릴 수 없어요")) return; fundReset(); weToast("처음부터 — 모의 학습비와 적립 내역을 지웠어요"); });
+{ const _openSettings0 = openSettings; openSettings = function(){ _openSettings0(); fundSettingsRender(); }; }
+/* ── 🎥 최종 라이브(1차: 브라우저만 · 녹화 없음 · 신호 횟수만 · 이 기기 예비 채점) ── */
+let LIVE = null, _liveStream = null, _liveTimer = null;
+function liveItems(){ // 본인 기록(24시간 이전)에서 5문항: 말하기 3(한국어 → 영어로 말하기) + 타자 2(변형 작문). 기록이 모자라면 예시 문항
+  const old = (PRACTICE || []).filter(p => p && Date.now() - p.t >= FUND_RULES.matAgeH * 3600000);
+  const ko = old.filter(p => p.kind === "tutor" && p.q).map(p => String(p.q).slice(0, 120)); const en = old.filter(p => p.fix).map(p => String(p.fix).slice(0, 160));
+  (SRS || []).forEach(it => { if(it && Date.now() - (it.ts || 0) >= FUND_RULES.matAgeH * 3600000 && it.ctx) en.push(String(it.ctx).slice(0, 160)); });
+  const pick = (arr, n, fb) => { const out = []; const a = arr.slice(); while(out.length < n){ if(a.length){ out.push(a.splice(Math.floor(Math.random() * a.length), 1)[0]); } else out.push(fb[out.length % fb.length] + "(예시)"); } return out; };
+  const spk = pick(ko, 3, ["그 보고서는 책상 위에 있어요.", "우리는 새 아이디어가 필요해요.", "나는 매일 아침 버스를 타요."]).map(q => ({ kind: "speak", q: `다음 상황을 영어로 말해 보세요(🎙 또는 타자): ${q}` }));
+  const typ = pick(en, 2, ["The report is on the desk.", "We need a new idea."]).map(q => ({ kind: "type", q: `다음 문장의 주어나 시제를 바꿔 다시 써 보세요: ${q}` }));
+  return [spk[0], typ[0], spk[1], spk[2], typ[1]];
+}
+function openLive(){ const el = fundLiveEligible(); LIVE = { step: 1, items: [], i: 0, answers: [], signals: { hidden: 0, blur: 0, paste: 0, reauth: 0, camEnd: 0 }, rhythm: { n: 0, mean: 0, m2: 0 }, t0: 0, elig: el, reauthCode: String(1000 + Math.floor(Math.random() * 9000)) }; renderLive(); const m = document.getElementById("live-modal"); m.classList.add("show"); modalBg.classList.add("show"); }
+function closeLive(){ const m = document.getElementById("live-modal"); if(m && m.classList.contains("show")){ m.classList.remove("show"); if(!document.querySelector(".modal.show")) modalBg.classList.remove("show"); } liveStop(); }
+function liveStop(){ if(_liveTimer){ clearInterval(_liveTimer); _liveTimer = null; } if(_liveStream){ try { _liveStream.getTracks().forEach(t => t.stop()); } catch(e){} _liveStream = null; } try { localStorage.removeItem(LS_LIVE_TMP); } catch(e){} }
+function renderLive(){ const body = document.getElementById("live-body"); if(!body || !LIVE) return; const L = LIVE;
+  if(L.step === 1){ const e = L.elig; body.innerHTML = `<div class="fd-sub">혼자 응시하고, 사람이 나중에 검토해요(1차는 예시).</div><div class="fd-row"><span class="fd-u">${e.units ? "✓" : "—"}</span><span class="fd-t">게이지 50% 이상(${FUND_RULES.liveEligUnits}단위)</span></div><div class="fd-row"><span class="fd-u">${e.cert ? "✓" : "—"}</span><span class="fd-t">수료 확인 시험 통과 2회(7일 간격) — 지금 ${e.certN}회</span></div><div class="fd-row"><span class="fd-u">${fundOn() ? "✓" : "—"}</span><span class="fd-t">모의 학습비 있음</span></div><div class="acct-row" style="gap:8px;margin-top:10px"><button type="button" class="g-btn primary" id="live-next">${e.ok ? "다음 — 고지·동의" : "자격이 아직이에요 — 예시로 둘러보기"}</button></div>`; return; }
+  if(L.step === 2){ body.innerHTML = `<div class="lv-consent"><label><input type="checkbox" class="lv-c"> 카메라와 마이크를 켜요.</label><label><input type="checkbox" class="lv-c"> 영상과 소리는 pAdo 서버로 보내지도 저장하지도 않아요. 1차는 녹화하지 않아요.</label><label><input type="checkbox" class="lv-c"> 받아쓰기(🎙)는 브라우저 회사(구글·MS·애플) 서버를 거칠 수 있어요 — 🎙 동의와 같아요.</label><label><input type="checkbox" class="lv-c"> 얼굴 특징은 저장하지 않아요. 탭 이탈·붙여넣기 횟수는 기록돼요.</label><label><input type="checkbox" class="lv-c"> 혼자 응시하고, 사람이 나중에 검토해요.</label></div><div class="acct-row" style="gap:8px;margin-top:10px"><button type="button" class="g-btn primary" id="live-consent-go" disabled>동의하고 시작</button></div>`; return; }
+  if(L.step === 3){ body.innerHTML = `<div class="fd-sub">장비 점검 — 내 모습이 보이면 다음으로</div><video id="live-video" autoplay muted playsinline></video><div class="fd-sub" id="live-cam-note"></div><div class="acct-row" style="gap:8px;margin-top:10px"><button type="button" class="g-btn primary" id="live-start">문항 시작(5문항 · 문항당 90초)</button></div>`; liveCam(); return; }
+  if(L.step === 4){ const it = L.items[L.i]; const re = L.i === 2 ? `<div class="fd-row"><span class="fd-t">무작위 확인 — 화면의 숫자를 소리 내어 읽어 주세요: <b>${L.reauthCode}</b></span><button type="button" class="g-btn" id="live-reauth">읽었어요</button></div>` : ""; body.innerHTML = `<div class="fd-sub">문항 ${L.i + 1} / ${L.items.length} · <span class="lv-timer" id="live-timer">90</span>초 · 되돌아갈 수 없어요</div>${re}<div class="lv-q">${esc(it.q)}</div><textarea id="live-ans" placeholder="${it.kind === "speak" ? "🎙로 말하거나 여기 적어요" : "여기 적어요(붙여넣기는 막혀요)"}"></textarea><div class="acct-row" style="gap:8px;margin-top:8px">${it.kind === "speak" && typeof micSupported === "function" && micSupported() ? `<button type="button" class="g-btn" id="live-mic">🎙 말하기</button>` : ""}<button type="button" class="g-btn primary" id="live-submit-item">${L.i + 1 < L.items.length ? "다음 문항" : "제출"}</button></div>`; liveTimerStart(); return; }
+  if(L.step === 5){ const sc = L.score; body.innerHTML = `<div class="fd-big">${sc == null ? "—" : sc + "점"}</div><div class="fd-sub">${sc == null ? "채점에는 API 키(또는 설정된 서버)가 필요해요 — 답안은 이 기기에 보관됐어요(예시)" : sc >= 70 ? "예비 통과 — 사람이 확인한 뒤 확정돼요(1차는 예시)" : "아쉬워요 — 7일 뒤 무료 재응시 1회(예시)"}</div><div class="fd-sub" style="margin-top:8px">신호(검토 계기일 뿐 자동 실격이 아니에요): 탭 이탈 ${L.signals.hidden} · 창 이탈 ${L.signals.blur} · 붙여넣기 ${L.signals.paste} · 확인 읽기 ${L.signals.reauth} · 카메라 끊김 ${L.signals.camEnd}</div>`; return; }
+}
+async function liveCam(){ const v = document.getElementById("live-video"), note = document.getElementById("live-cam-note"); try { _liveStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true }); if(v) v.srcObject = _liveStream; _liveStream.getTracks().forEach(t => { t.addEventListener("ended", () => { if(LIVE) LIVE.signals.camEnd++; }); }); if(note) note.textContent = "카메라·마이크가 켜졌어요 — 1차는 녹화하지 않아요"; } catch(e){ if(note) note.textContent = "카메라를 열 수 없어요 — 장비 점검 없이 계속할 수 있어요(예시) · PC에서 보는 걸 권해요"; } }
+function liveTimerStart(){ if(_liveTimer) clearInterval(_liveTimer); let left = 90; const el = document.getElementById("live-timer"); _liveTimer = setInterval(() => { left--; if(el) el.textContent = String(left); if(left <= 0) liveNextItem(); }, 1000); }
+function liveNextItem(){ if(!LIVE || LIVE.step !== 4) return; const ta = document.getElementById("live-ans"); LIVE.answers.push(String((ta && ta.value) || "").trim().slice(0, 600)); try { localStorage.setItem(LS_LIVE_TMP, JSON.stringify({ i: LIVE.i, answers: LIVE.answers, signals: LIVE.signals })); } catch(e){} if(LIVE.i + 1 < LIVE.items.length){ LIVE.i++; renderLive(); } else { if(_liveTimer){ clearInterval(_liveTimer); _liveTimer = null; } liveSubmit(); } }
+async function liveSubmit(){ const L = LIVE; L.step = 5; L.score = null; renderLive(); let hasKey = false; try { hasKey = !!(localStorage.getItem(LS_KEY) || (typeof syncCfg === "function" && syncCfg().on)); } catch(e){}
+  if(hasKey){ try { let out = ""; const user = L.items.map((it, i) => `${i + 1}. ${it.q}\n답: ${L.answers[i] || "(빈 답)"}`).join("\n"); for await (const c of streamClaude({ system: "[최종 라이브 채점] 아래 5문항의 답을 영어 문장 완성도·뜻 전달·자연스러움으로 채점한다. 각 문항 0~100, 전체는 평균. 마지막 줄에 정확히 이 형식: [기록] {\"score\":정수,\"pass\":true|false,\"errors\":[],\"fix\":\"\"} [/기록]. 빈 답은 0점. 설명은 두 줄 안.", messages: [{ role: "user", content: user }], light: true, maxTokens: 500 })) out += c; const g = parseGrade(out); if(g) L.score = Math.round(Number(g.score)); } catch(e){} }
+  FUND.live = { consent: "live-" + FUND_RULES.termsV, consentAt: L.consentAt || Date.now(), submittedAt: Date.now(), score: L.score, status: L.score != null && L.score >= 70 ? "pending" : (L.score == null ? "ungraded" : "fail"), signals: L.signals, rhythm: { mean: L.rhythm.n ? Math.round(L.rhythm.mean) : 0, sd: L.rhythm.n > 1 ? Math.round(Math.sqrt(L.rhythm.m2 / (L.rhythm.n - 1))) : 0, n: L.rhythm.n } };
+  if(L.score != null && L.score >= 70 && !FUND.ledger.some(e => e.kind === "live")){ FUND.ledger.push({ id: `live:${FUND.live.submittedAt}`, t: FUND.live.submittedAt, kind: "live", u: FUND_RULES.liveUnits, ref: `live:${FUND.live.submittedAt}`, note: `🎥 최종 라이브 ${L.score}점 — 예비 통과(사람 확인 전)`, st: "pending" }); }
+  fundSave(); liveStop(); fundBadgeSync(); renderLive();
+}
+document.getElementById("live-close").addEventListener("click", closeLive);
+document.getElementById("live-modal").addEventListener("click", (e) => { const t = e.target; if(!LIVE) return;
+  if(t.closest("#live-next")){ LIVE.step = 2; renderLive(); return; }
+  if(t.closest("#live-consent-go")){ if([...document.querySelectorAll("#live-modal .lv-c")].every(c => c.checked)){ LIVE.consentAt = Date.now(); LIVE.step = 3; renderLive(); } return; }
+  if(t.closest("#live-start")){ LIVE.items = liveItems(); LIVE.i = 0; LIVE.answers = []; LIVE.step = 4; LIVE.t0 = Date.now(); renderLive(); return; }
+  if(t.closest("#live-reauth")){ LIVE.signals.reauth++; t.closest("#live-reauth").disabled = true; return; }
+  if(t.closest("#live-mic")){ const ta = document.getElementById("live-ans"); if(typeof micStart === "function" && ta){ const inp = document.getElementById("chat-input"); const keep = inp ? inp.value : ""; weToast("🎙 말한 뒤 멈추면 답 칸에 들어가요(예시 — 받아쓰기는 브라우저 회사 서버를 거칠 수 있어요)"); try { micStart(); } catch(e){} const poll = setInterval(() => { if(!inp) return clearInterval(poll); if(inp.value && inp.value !== keep){ ta.value = inp.value; inp.value = keep; clearInterval(poll); } }, 500); setTimeout(() => clearInterval(poll), 60000); } return; }
+  if(t.closest("#live-submit-item")){ liveNextItem(); return; } });
+document.getElementById("live-modal").addEventListener("change", (e) => { if(e.target.classList.contains("lv-c")){ const b = document.getElementById("live-consent-go"); if(b) b.disabled = ![...document.querySelectorAll("#live-modal .lv-c")].every(c => c.checked); } });
+document.getElementById("live-modal").addEventListener("paste", (e) => { if(LIVE && LIVE.step === 4 && e.target && e.target.id === "live-ans"){ e.preventDefault(); LIVE.signals.paste++; weToast("붙여넣기는 막혀 있어요 — 직접 적어 주세요"); } });
+document.getElementById("live-modal").addEventListener("keydown", (e) => { if(!LIVE || LIVE.step !== 4 || !e.target || e.target.id !== "live-ans") return; const now = performance.now(); if(LIVE._lastKey){ const d = now - LIVE._lastKey; const r = LIVE.rhythm; r.n++; const delta = d - r.mean; r.mean += delta / r.n; r.m2 += delta * (d - r.mean); } LIVE._lastKey = now; });
+document.addEventListener("visibilitychange", () => { if(LIVE && LIVE.step === 4 && document.hidden) LIVE.signals.hidden++; });
+window.addEventListener("blur", () => { if(LIVE && LIVE.step === 4) LIVE.signals.blur++; });
+{ const a = document.getElementById("link-next1"); if(a) a.href = padoPage("next"); }
+fundSync(); fundBadgeSync();
+/* ══ NEXT2:END ══ */
 </script>
 </body>
 </html>
