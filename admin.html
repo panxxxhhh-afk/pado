@@ -13,7 +13,7 @@
 const PADO_SERVER_URL = ""; // sync/deploy.sh 가 배포 후 여기에 심는다
 </script>
 <style>
-  /* pAdo 계정 발급 v1.1 — 색 토큰·버튼 radius 10px·초점 링은 engine-m.html "v2.58 디자인 패스/심사 반영"과 같은 값 */
+  /* pAdo 계정 발급 v1.2 — 색 토큰·버튼 radius 10px·초점 링은 engine-m.html "v2.58 디자인 패스/심사 반영"과 같은 값 */
   :root{
     --bg:#f4f5fa; --card:#ffffff; --card-soft:#f1f3f9;
     --text:#1f2333; --text-soft:#4b5163; --text-mute:#6a7088;
@@ -166,6 +166,10 @@ const PADO_SERVER_URL = ""; // sync/deploy.sh 가 배포 후 여기에 심는다
   .tbl tbody + tbody{border-top:1px solid var(--border-soft);}
   .tbl .uid{font-weight:700;font-size:.94rem;letter-spacing:-.005em;}
   .tbl .note{font-size:.8rem;color:var(--text-mute);}
+  .tbl .nick{font-size:.8rem;color:var(--text-soft);} .tbl .nick.none{color:var(--text-mute);} /* v4.7 */
+  .prof-grid{display:grid;grid-template-columns:minmax(96px,140px) minmax(0,1fr);gap:8px 16px;font-size:.88rem;line-height:1.5;} .prof-grid .k{color:var(--text-mute);} .prof-grid .v{min-width:0;overflow-wrap:anywhere;}
+  .rc-out{display:inline-block;font-family:ui-monospace,Consolas,monospace;font-size:1.15rem;letter-spacing:.06em;padding:8px 12px;border-radius:8px;background:var(--card);user-select:all;margin:6px 0;}
+  .cfg-contact{margin-top:20px;padding-top:16px;border-top:1px solid var(--border-soft);}
   .tbl .c-seen{color:var(--text-soft);font-variant-numeric:tabular-nums;}
   .cost{font-variant-numeric:tabular-nums;white-space:nowrap;}
   .cost b{font-weight:700;}
@@ -360,7 +364,7 @@ const PADO_SERVER_URL = ""; // sync/deploy.sh 가 배포 후 여기에 심는다
       <svg class="brand-badge" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="pado-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b6ef7"/><stop offset="1" stop-color="#4b9fee"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="9" fill="url(#pado-g)"/><path d="M4 20 C8 14, 12 14, 16 18 S24 24, 28 18 L28 26 C20 30, 12 30, 4 26 Z" fill="rgba(255,255,255,.94)"/><path d="M4 15 C8 9, 13 9, 17 13 S25 19, 28 13" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"/></svg>
       <span class="brand-name">p<span class="brand-a">A</span>do</span>
     </div>
-    <span class="stamp" id="stamp">계정 발급 v1.1</span>
+    <span class="stamp" id="stamp">계정 발급 v1.2</span>
     <span class="sp"></span>
     <!-- 새 탭 + noopener: 같은 탭으로 학습 화면에 가면 sessionStorage(관리 암호)가 그대로 이어진다(§9) -->
     <a class="btn sm ghost" id="open-pado" href="next.html" target="_blank" rel="noopener noreferrer" data-act="open-pado">pAdo 열기</a>
@@ -512,7 +516,7 @@ const PADO_SERVER_URL = ""; // sync/deploy.sh 가 배포 후 여기에 심는다
 <div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 <script>
 "use strict";
-/* ── pAdo 계정 발급 v1.1 (v3.1: 초대장 11줄·공유/문자/메일·#id=·[키 점검]) ───────────────────────────────────────────────
+/* ── pAdo 계정 발급 v1.2 (v3.1: 초대장 11줄·공유/문자/메일·#id=·[키 점검]) ───────────────────────────────────────────────
  * 계약: 신버전-v3-설계.md §7 · §7-1(우선) · §9
  * 보안 원칙
  *  - 관리 암호는 sessionStorage "we_admin_secret" 에만(탭을 닫으면 잊는다). localStorage·URL·콘솔·화면에 싣지 않는다.
@@ -530,10 +534,13 @@ const IS_FILE = location.protocol === "file:";
 const ID_RE = /^[a-z0-9][a-z0-9._-]{2,19}$/;
 const TEMP_TTL = 7 * 24 * 60 * 60 * 1000; // 임시 비밀번호 7일
 const PW_CHARS = "abcdefghijkmnpqrstuvwxyz23456789"; // 32자 — 헷갈리는 0 O o 1 l I 제외(32 = 2^5 라 치우침 없음)
-const MODE_KO = { we: "작문", ew: "작문", tutor: "튜터", role: "상황극", exam: "시험" };
+const MODE_KO = { we: "작문", ew: "작문", tutor: "튜터", role: "상황극", exam: "시험", talk: "일상대화" }; // v4.7: 🗣️ 일상대화
 const SIGNUP_KO = { closed: "내가 발급한 계정만", code: "가입 코드를 아는 사람", open: "누구나" };
 const NO_CODE_TEXT = "서버에 가입 코드가 없어서 이 방식은 고를 수 없어요. 코드를 두려면 bash sync/deploy.sh 를 다시 실행해 ④에서 정해 주세요.";
-const OPEN_WARN = "주소를 아는 누구나 가입해 AI를 쓸 수 있어요 — 요금은 내가 부담해요";
+const OPEN_WARN = "주소를 아는 누구나 가입해 AI를 쓸 수 있어요 — 요금은 내가 부담해요. 가입할 때 닉네임·이름·태어난 해·성별·휴대전화 번호를 받고(인증은 아직 없어요) 복구 코드를 한 번 보여 줘요."; // v4.7
+const SEX_KO = { f: "여성", m: "남성", x: "답하지 않음" }; // v4.7 가입 정보
+const CONTACT_MAX = 80; // sync/worker.js CONTACT_MAX 와 같은 값
+const RC_WARN = "이 코드로 누구나 이 계정의 비밀번호를 바꿀 수 있어요 — 본인에게만 직접 전해 주세요(메일·문자로 보내지 마세요). 지금만 보여요 — 닫으면 다시 볼 수 없어요.";
 const REDEPLOY = "bash sync/deploy.sh 를 다시 실행해 서버를 새로 올려 주세요";
 const SECRET_HINT = "이 탭에서만 기억해요 — 탭을 닫으면 잊어요.";
 const URL_DIFF = "이 서버 주소는 처음에 정해 둔 주소와 달라요. 직접 바꾼 게 아니라면 되돌려 주세요.";
@@ -556,7 +563,7 @@ const S = {
   users: [], ai: false, signup: "", hasCode: false,
   config: null, learn: null,   // GET /admin/config · /admin/learn 응답(③④ 구역이 쓴다)
   invite: null,                // { id, pw, at:"create"|"row" } — 한 번에 하나만, [닫기]를 누를 때까지 남는다
-  panel: null,                 // { id, kind:"edit"|"pw"|"del", msg? } — 한 번에 하나만
+  panel: null,                 // { id, kind:"edit"|"pw"|"del"|"prof"|"rc"|"rc-show", msg?, show?, code? } — 한 번에 하나만 (v4.7: 가입 정보 · 복구 코드 — 코드는 여기(메모리)에만)
   fetching: false,             // 연결 직후 /admin/config · /admin/learn 을 받는 중
   sgPick: "",                  // ③ 골랐지만 아직 저장하지 않은 가입 방식
   lopen: "",                   // ④ 펼친 단어
@@ -601,6 +608,9 @@ function monthUsd(u){
   return Math.max(0, Number(g.usd) || 0);
 }
 function capOf(u){ const c = u.capUsd == null ? 10 : Number(u.capUsd); return isFinite(c) && c > 0 ? c : 0; }
+function maskPhone(p){ const d = String(p || "").replace(/\D/g, ""); if(d.length === 11) return d.slice(0, 3) + "-****-" + d.slice(7); if(d.length === 10) return d.slice(0, 3) + "-***-" + d.slice(6); return d ? "****" : "—"; } // v4.7: 목록·패널 기본은 가림
+function fmtPhone(p){ const d = String(p || "").replace(/\D/g, ""); if(d.length === 11) return d.slice(0, 3) + "-" + d.slice(3, 7) + "-" + d.slice(7); if(d.length === 10) return d.slice(0, 3) + "-" + d.slice(3, 6) + "-" + d.slice(6); return d || "—"; }
+function fmtDate(ts){ const d = new Date(Number(ts) || 0); if(!Number(ts)) return "—"; const z = (n) => String(n).padStart(2, "0"); return d.getFullYear() + "-" + z(d.getMonth() + 1) + "-" + z(d.getDate()); }
 function statusOf(u, now){
   if(!u.temp) return { k: "ok", t: "사용 중" };
   const at = Number(u.tempAt) || 0;
@@ -696,6 +706,16 @@ function errText(e, where){
   if(st === 429) return "여러 번 틀려서 잠시 잠겼어요 — 10분 뒤에 다시 해 주세요";
   if(code === "weak_admin_secret") return "서버의 관리 암호가 너무 짧아요(16자 이상) — bash sync/deploy.sh 를 다시 실행해 ③에서 새로 정해 주세요";
   if(st === 409 || code === "exists") return "이미 있는 아이디예요";
+  if(code === "bad_nick") return "닉네임은 2~12자여야 해요(기호 < > [ ] { } # @ 는 안 돼요)"; // v4.7 ↓ 가입 정보 코드(앱의 가입 창과 같은 뜻)
+  if(code === "nick_blocked") return "쓸 수 없는 닉네임이에요(운영자·관리자 같은 이름)";
+  if(code === "bad_name") return "이름은 2~30자여야 해요";
+  if(code === "bad_birth") return "태어난 해는 네 자리 숫자여야 해요";
+  if(code === "under_14") return "만 14세 미만은 보호자 동의가 필요해 가입할 수 없어요";
+  if(code === "bad_sex") return "성별 값이 올바르지 않아요";
+  if(code === "bad_phone") return "휴대전화 번호 형식이 올바르지 않아요";
+  if(code === "no_consent") return "개인정보 동의가 없어요";
+  if(code === "too_many_signups") return "오늘 이 네트워크에서 만들 수 있는 계정 수를 넘었어요";
+  if(code === "bad_contact") return "연락처는 " + CONTACT_MAX + "자 이하로, 줄바꿈·괄호·주소 없이 적어 주세요";
   if(code === "bad_id") return "아이디는 영문 소문자 · 숫자 · 마침표 · 밑줄 · 붙임표로 3~20자여야 해요(첫 글자는 영문 소문자나 숫자)";
   if(code === "bad_pw") return "비밀번호는 6자 이상 128자 이하여야 해요";
   if(code === "no_code") return NO_CODE_TEXT;
@@ -830,7 +850,7 @@ async function connect(auto){
 }
 function disconnect(msg, keepDrafts){ // keepDrafts: 서버 쪽 사정(401 등)으로 끊길 때는 고치던 정리본을 이 탭에 남긴다 — 다시 연결하면 돌아온다
   ssSet(SS_SECRET, ""); ssSet(SS_FOR, "");
-  S.secret = ""; S.users = []; S.config = null; S.learn = null; S.invite = null; S.panel = null;
+  S.secret = ""; S.users = []; S.config = null; S.learn = null; S.invite = null; S.panel = null; S.contactDraft = undefined;
   S.signup = ""; S.hasCode = false; S.fetching = false; S.sgPick = ""; S.lopen = ""; S.led = {}; S.lc = "";
   if(!keepDrafts) ssSet(SS_DRAFT, "");
   renderInvite(); renderList(); renderSignup(); renderLearn();
@@ -848,6 +868,25 @@ function failText(e, where){
 /* ── ③ 가입 방식 ── 고르면 바로 바뀌지 않는다: 경고를 읽고 [가입 방식 바꾸기]를 눌러야 PUT /admin/config */
 function signupNow(){ const v = (S.config && S.config.signup) || S.signup; return SIGNUP_KO[v] ? v : ""; }
 function hasCodeNow(){ return (S.config && typeof S.config.hasCode === "boolean") ? S.config.hasCode : !!S.hasCode; }
+function contactNow(){ return typeof S.contactDraft === "string" ? S.contactDraft : String((S.config && S.config.contact) || ""); } // v4.7: 적다 만 값은 다시 그려도 남는다
+async function saveContact(btn){ // v4.7: PUT /admin/config { contact } — 가입 방식은 건드리지 않는다
+  if(S.busy) return;
+  const inp = $("cfg-contact"); const v = String((inp && inp.value) || "").replace(/^ +| +$/g, "");
+  const m = $("contact-msg"); if(m) m.textContent = "";
+  if(/[\r\n\[\]{}<>#@`]|https?:|www\./i.test(v) || v.length > CONTACT_MAX){ if(m) m.textContent = errText({ status: 400, code: "bad_contact" }); if(inp) inp.focus(); return; }
+  S.busy = true; btn.disabled = true; btn.textContent = "저장하는 중…";
+  let msg = "";
+  try {
+    const r = await api("PUT", "/admin/config", { contact: v });
+    S.config = Object.assign({}, S.config || {}, r); S.contactDraft = undefined;
+    toast(v ? "연락처를 저장했어요 — 회원가입 창에 보여요" : "연락처를 비웠어요");
+  } catch(e){ msg = failText(e, "config"); }
+  finally { S.busy = false; }
+  if(!S.secret) return;
+  renderSignup();
+  if($("contact-msg")) $("contact-msg").textContent = msg;
+  const i2 = $("cfg-contact"); if(i2) i2.focus();
+}
 function renderSignup(){
   const host = $("sec-signup");
   if(!S.secret){ host.innerHTML = ""; return; }
@@ -871,7 +910,11 @@ function renderSignup(){
     + opt("open", "서버 주소만 알면 누구든 스스로 가입할 수 있어요.")
     + '</div><p class="note-warn" id="signup-warn" aria-live="polite"></p>'
     + '<div class="form-foot"><button type="button" class="btn primary" id="btn-signup" data-act="signup-save">가입 방식 바꾸기</button>'
-    + '<span class="sub" id="signup-now">지금: ' + SIGNUP_KO[now] + '</span><p class="form-msg" id="signup-msg" role="alert"></p></div>';
+    + '<span class="sub" id="signup-now">지금: ' + SIGNUP_KO[now] + '</span><p class="form-msg" id="signup-msg" role="alert"></p></div>'
+    + '<div class="cfg-contact"><div class="field"><label for="cfg-contact">운영하는 분 연락처 — 회원가입 창의 개인정보 안내에 그대로 보여요</label>' // v4.7
+    + '<input class="in" id="cfg-contact" type="text" maxlength="' + CONTACT_MAX + '" autocomplete="off" value="' + esc(contactNow()) + '" aria-describedby="cfg-contact-hint">'
+    + '<div class="hint" id="cfg-contact-hint">예: 카톡 아이디 · 전화번호. 비워 두면 "따로 적어 두지 않았어요 — 이 주소를 알려 준 분에게 물어보세요"로 보여요. 줄바꿈·괄호·인터넷 주소는 쓸 수 없어요.</div></div>'
+    + '<div class="form-foot"><button type="button" class="btn" id="btn-contact" data-act="contact-save">연락처 저장</button><p class="form-msg" id="contact-msg" role="alert"></p></div></div>';
   syncSignup();
 }
 function syncSignup(){ // 다시 그리지 않고 고른 값만 반영(라디오의 초점을 지킨다)
@@ -1384,9 +1427,37 @@ function panelHTML(u, p){
       + '</div><div class="panel-foot"><button type="button" class="btn sm primary" data-act="edit-save" data-id="' + id + '">저장</button>'
       + '<button type="button" class="btn sm ghost" data-act="panel-close" data-id="' + id + '">취소</button>' + msg + "</div></div>";
   }
+  if(p.kind === "prof"){ // v4.7: 가입 정보(스스로 가입한 회원만 있다) — 전화번호는 가려 두고 [번호 보기]로만
+    const pr = u.prof, y = new Date().getFullYear();
+    const kv = (k, v) => '<div class="k">' + esc(k) + '</div><div class="v">' + v + "</div>";
+    const body = pr
+      ? '<div class="prof-grid">' + kv("닉네임", esc(pr.nick || "—")) + kv("이름", esc(pr.name || "—"))
+        + kv("나이", pr.birthYear ? esc((y - Number(pr.birthYear)) + "세 (" + pr.birthYear + "년생)") : "—") + kv("성별", esc(SEX_KO[pr.sex] || "—"))
+        + kv("휴대전화", '<span id="pf-phone-' + id + '">' + esc(p.show ? fmtPhone(pr.phone) : maskPhone(pr.phone)) + '</span> <span class="pill ' + (pr.phoneV ? "ok" : "warn") + '">' + (pr.phoneV ? "인증됨" : "인증 전") + "</span> "
+          + '<button type="button" class="btn sm ghost" data-act="prof-phone" data-id="' + id + '" aria-pressed="' + !!p.show + '">' + (p.show ? "가리기" : "번호 보기") + "</button>")
+        + kv("개인정보 동의", esc((pr.pAt ? fmtDate(pr.pAt) : "—") + (pr.pV ? " · 안내 판 " + pr.pV : "")))
+        + kv("복구 코드", u.hasRc ? "있음" : "없음 — [복구 코드 다시 발급]으로 만들어 줄 수 있어요") + "</div>"
+      : '<p class="panel-q">가입 정보 없음(발급 계정) — 이 페이지에서 만든 계정은 이름·전화번호를 받지 않아요.</p><p class="sub">복구 코드: ' + (u.hasRc ? "있음" : "없음 — 임시 비밀번호를 바꿀 때 자동으로 받거나, [복구 코드 다시 발급]으로 만들어 줄 수 있어요") + "</p>";
+    return '<div class="panel" data-panel="prof" role="group" aria-label="' + id + ' 가입 정보">' + body
+      + '<p class="sub">이 정보는 운영하는 분만 봐요 — 다른 곳에 옮겨 적지 마세요.</p>'
+      + '<div class="panel-foot"><button type="button" class="btn sm ghost" data-act="panel-close" data-id="' + id + '">닫기</button>' + msg + "</div></div>";
+  }
+  if(p.kind === "rc"){ // v4.7: 복구 코드 재발급 확인
+    return '<div class="panel" data-panel="rc" role="group" aria-label="' + id + ' 복구 코드 다시 발급"><p class="panel-q"><b>' + id + "</b> 계정의 복구 코드를 다시 발급할까요?</p>"
+      + '<p class="sub">이전 코드는 더 쓸 수 없어요. 비밀번호·로그인은 그대로예요. 새 코드는 발급한 뒤 한 번만 보여요 — 본인에게 직접 전해 주세요.</p>'
+      + '<div class="panel-foot"><button type="button" class="btn sm primary" data-act="rc-go" data-id="' + id + '">만들기</button>'
+      + '<button type="button" class="btn sm ghost" data-act="panel-close" data-id="' + id + '">취소</button>' + msg + "</div></div>";
+  }
+  if(p.kind === "rc-show"){ // v4.7: 새 코드 — 메모리(S.panel.code)에만, [닫기]면 사라진다
+    return '<div class="panel" data-panel="rc-show" role="group" aria-label="' + id + ' 새 복구 코드"><p class="panel-q"><b>' + id + "</b> 계정의 새 복구 코드예요.</p>"
+      + '<code class="rc-out" id="rc-out">' + esc(p.code || "") + "</code>"
+      + '<p class="sub rc-warn">' + esc(RC_WARN) + "</p>"
+      + '<div class="panel-foot"><button type="button" class="btn sm tint" data-act="rc-copy" data-id="' + id + '">복사</button>'
+      + '<button type="button" class="btn sm ghost" data-act="panel-close" data-id="' + id + '">닫기</button>' + msg + "</div></div>";
+  }
   if(p.kind === "pw"){
     return '<div class="panel" data-panel="pw" role="group" aria-label="' + id + ' 비밀번호 다시 발급"><p class="panel-q"><b>' + id + "</b> 계정의 비밀번호를 다시 발급할까요?</p>"
-      + '<p class="sub">이 계정으로 로그인된 기기는 모두 로그아웃돼요. 새 임시 비밀번호는 발급한 뒤 한 번만 보여요.</p>'
+      + '<p class="sub">이 계정으로 로그인된 기기는 모두 로그아웃돼요. 새 임시 비밀번호는 발급한 뒤 한 번만 보여요. 복구 코드도 함께 지워져요 — 새 비밀번호로 처음 로그인해 바꿀 때 새 코드를 받아요.</p>'
       + '<div class="panel-foot"><button type="button" class="btn sm primary" data-act="pw-go" data-id="' + id + '">다시 발급</button>'
       + '<button type="button" class="btn sm ghost" data-act="panel-close" data-id="' + id + '">취소</button>' + msg + "</div></div>";
   }
@@ -1403,9 +1474,9 @@ function rowHTML(u, now){
   const pct = cap > 0 ? Math.min(100, Math.round(usd / cap * 100)) : 0;
   const mcls = usd >= cap ? " over" : pct >= 80 ? " warn" : "";
   const p = (S.panel && S.panel.id === u.id) ? S.panel : null;
-  const ex = (k) => ' aria-expanded="' + (p && p.kind === k ? "true" : "false") + '"';
+  const ex = (k) => ' aria-expanded="' + (p && (p.kind === k || (k === "rc" && p.kind === "rc-show")) ? "true" : "false") + '"';
   return '<tbody data-id="' + id + '"><tr class="r-main">'
-    + '<td class="c-id"><div class="uid">' + id + "</div>" + (u.note ? '<div class="note">' + esc(u.note) + "</div>" : "") + "</td>"
+    + '<td class="c-id"><div class="uid">' + id + "</div>" + (u.nick ? '<div class="nick">닉네임 ' + esc(u.nick) + "</div>" : (u.prof ? "" : '<div class="nick none">가입 정보 없음(발급 계정)</div>')) + (u.note ? '<div class="note">' + esc(u.note) + "</div>" : "") + "</td>"
     + '<td class="c-st" data-label="상태"><span class="pill ' + st.k + '">' + st.t + "</span></td>"
     + '<td class="c-seen" data-label="마지막 접속">' + fmtAgo(u.lastSeen, now) + "</td>"
     + '<td class="c-cost" data-label="이번 달 요금 / 한도"><div class="cost"><b>' + fmtUsd(usd) + "</b> <span>/ " + (cap > 0 ? fmtUsd(cap) : "한도 없음") + "</span></div>"
@@ -1415,7 +1486,9 @@ function rowHTML(u, now){
     + '<td class="c-ai" data-label="AI"><button type="button" class="switch" role="switch" aria-checked="' + aiOn + '" aria-label="' + id + ' 계정의 AI" data-act="ai" data-id="' + id + '"><span class="track"></span><span>' + (aiOn ? "켬" : "끔") + "</span></button></td>"
     + '</tr><tr class="r-act"><td colspan="6"><div class="acts" role="group" aria-label="' + id + ' 동작">'
     + '<button type="button" class="btn sm" data-act="edit" data-id="' + id + '"' + ex("edit") + ">한도·메모 고치기</button>"
+    + '<button type="button" class="btn sm" data-act="prof" data-id="' + id + '"' + ex("prof") + ">가입 정보</button>"
     + '<button type="button" class="btn sm" data-act="pw" data-id="' + id + '"' + ex("pw") + ">비밀번호 다시 발급</button>"
+    + '<button type="button" class="btn sm" data-act="rc" data-id="' + id + '"' + ex("rc") + ">복구 코드 다시 발급</button>"
     + '<button type="button" class="btn sm danger" data-act="del" data-id="' + id + '"' + ex("del") + ">삭제</button></div>"
     + (p ? panelHTML(u, p) : "")
     + (S.invite && S.invite.at === "row" && S.invite.id === u.id ? '<div class="panel">' + inviteHTML(S.invite) + "</div>" : "") // 초대장은 [닫기]를 누를 때까지 남는다(다른 칸을 열어도)
@@ -1449,7 +1522,7 @@ function openPanel(id, kind){
 }
 function closePanel(){
   const p = S.panel; if(!p) return;
-  S.panel = null; renderList(); focusAct(p.kind, p.id);
+  S.panel = null; renderList(); focusAct(p.kind === "rc-show" ? "rc" : p.kind, p.id);
 }
 function panelFail(e){ const t = failText(e); if(t && S.panel){ S.panel.msg = t; renderList(); const r = rowEl(S.panel.id), b = r && r.querySelector(".panel .btn"); if(b) b.focus(); } }
 async function run(btn, busyText, fn){ // 한 번에 한 요청만
@@ -1494,10 +1567,20 @@ function reissue(btn, id){
   return run(btn, "발급 중…", async () => {
     const pw = genPw();
     await api("POST", "/admin/users/" + enc(id) + "/password", { pw });
-    upsertUser({ id, temp: true, tempAt: Date.now() });
+    upsertUser({ id, temp: true, tempAt: Date.now(), hasRc: false }); // v4.7: 서버가 복구 코드를 지운다
     S.invite = { id, pw, at: "row" }; S.panel = null;
     renderInvite(); renderList(); focusInvite();
     toast(id + " 계정의 임시 비밀번호를 새로 만들었어요");
+  });
+}
+function rcIssue(btn, id){ // v4.7: POST /admin/users/<id>/recovery → 새 코드는 메모리(S.panel.code)에만 · [닫기]면 사라진다
+  return run(btn, "만드는 중…", async () => {
+    const r = await api("POST", "/admin/users/" + enc(id) + "/recovery");
+    upsertUser({ id, hasRc: true });
+    S.panel = { id, kind: "rc-show", code: String((r && r.recovery) || "") };
+    renderList();
+    const row = rowEl(id), b = row && row.querySelector('[data-act="rc-copy"]'); if(b) b.focus();
+    toast(id + " 계정의 복구 코드를 새로 만들었어요 — 지금만 보여요");
   });
 }
 function removeUser(btn, id){
@@ -1566,7 +1649,11 @@ function onClick(ev){
   else if(act === "invite-mail"){ if(S.invite) location.href = "mailto:?subject=" + encodeURIComponent("pAdo(파도) 초대장") + "&body=" + encodeURIComponent(inviteMailLines(S.invite).join("\n")); }
   else if(act === "invite-close") closeInvite();
   else if(act === "refresh") refresh(el);
-  else if(act === "edit" || act === "pw" || act === "del") openPanel(id, act);
+  else if(act === "edit" || act === "pw" || act === "del" || act === "prof" || act === "rc") openPanel(id, act); // v4.7: 가입 정보 · 복구 코드
+  else if(act === "prof-phone"){ if(S.panel && S.panel.kind === "prof" && S.panel.id === id){ S.panel.show = !S.panel.show; renderList(); const r = rowEl(id), b = r && r.querySelector('[data-act="prof-phone"]'); if(b) b.focus(); } }
+  else if(act === "rc-go") rcIssue(el, id);
+  else if(act === "rc-copy"){ if(S.panel && S.panel.kind === "rc-show" && S.panel.code) copyText(S.panel.code, "복구 코드를 복사했어요 — 본인에게만 전해 주세요", el.closest(".panel")); }
+  else if(act === "contact-save") saveContact(el);
   else if(act === "panel-close") closePanel();
   else if(act === "ai") toggleAi(el, id);
   else if(act === "edit-save") saveEdit(el, id);
@@ -1640,6 +1727,7 @@ function init(){
     window.__padoAdminBound = true;
     APP.addEventListener("click", onClick);
     APP.addEventListener("input", onInput);
+    APP.addEventListener("input", (e) => { if(e.target && e.target.id === "cfg-contact") S.contactDraft = e.target.value; }); // v4.7
     APP.addEventListener("change", onChange);
     APP.addEventListener("keydown", onKey);
     window.addEventListener("beforeunload", onBeforeUnload);
